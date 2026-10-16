@@ -1,6 +1,10 @@
 name: Tauhid Ads Lab - Daily Automated Social Media Poster
 
 on:
+  push:
+    branches:
+      - master
+      - main
   schedule:
     # Runs 4 times a day:
     # 03:00 UTC = 09:00 AM BST (Bangladesh Time)
