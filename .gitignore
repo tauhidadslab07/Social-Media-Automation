@@ -1,0 +1,24 @@
+# Security: Ignore environment secrets
+.env
+
+# Python cache
+__pycache__/
+*.pyc
+
+# Node cache
+node_modules/
+
+# Temporary scratch and test files
+scratch_*.js
+test_*.js
+list_*.js
+verify_*.js
+download_samples.js
+extract_clean_images.js
+generate_profile_pics.js
+inspect_pins.js
+clean_pin_images.json
+pinterest_state.json
+parsed_pins_summary.json
+live_post_test.js
+sample_pins/

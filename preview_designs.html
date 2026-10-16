@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Tauhid Ads Lab - 100% English Posts with Bold Formatting</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #090d16;
+      color: #f8fafc;
+      padding: 30px 20px;
+      margin: 0;
+    }
+    .header {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    .header h1 {
+      font-size: 28px;
+      color: #f59e0b;
+      margin: 0 0 8px 0;
+    }
+    .header p {
+      color: #94a3b8;
+      font-size: 15px;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    .badge-bar {
+      margin-top: 15px;
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      flex-wrap: wrap;
+    }
+    .badge-bar span {
+      background: #1e293b;
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 13px;
+      color: #38bdf8;
+      border: 1px solid #334155;
+      font-weight: 600;
+    }
+    .comparison-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 30px;
+      justify-content: center;
+      max-width: 1300px;
+      margin: 30px auto;
+    }
+    .platform-col {
+      flex: 1;
+      min-width: 380px;
+      max-width: 580px;
+      background: #111827;
+      border-radius: 16px;
+      padding: 20px;
+      border: 1px solid #1f2937;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    }
+    .platform-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: bold;
+      margin-bottom: 16px;
+    }
+    .fb-badge { background: #1877f2; color: white; }
+    .li-badge { background: #0a66c2; color: white; }
+    .preview-box {
+      width: 100%;
+      height: 480px;
+      position: relative;
+      border-radius: 12px;
+      overflow: hidden;
+      margin-bottom: 20px;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.4);
+    }
+    .caption-box {
+      background: #0f172a;
+      border: 1px solid #334155;
+      border-radius: 10px;
+      padding: 18px;
+      font-size: 13.5px;
+      line-height: 1.65;
+      color: #cbd5e1;
+      white-space: pre-line;
+      max-height: 340px;
+      overflow-y: auto;
+    }
+    .caption-title {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: #f59e0b;
+      margin-bottom: 8px;
+      font-weight: bold;
+    }
+
+    /* 1. Facebook Graphic Simulation */
+    .fb-graphic {
+      width: 100%; height: 100%;
+      background: #f8fafc; color: #0f172a;
+      position: relative; box-sizing: border-box;
+    }
+    .fb-graphic .top-wave {
+      position: absolute; top: 0; left: 0; right: 0; height: 100px;
+      background: #1e3a8a; clip-path: polygon(0 0, 100% 0, 100% 65%, 0 100%);
+      padding: 14px 20px;
+    }
+    .fb-graphic .top-accent {
+      position: absolute; top: 0; right: 0; width: 110px; height: 85px;
+      background: #f59e0b; clip-path: polygon(30% 0, 100% 0, 100% 80%, 0 0);
+    }
+    .fb-graphic .content {
+      position: absolute; top: 115px; left: 24px; right: 24px;
+    }
+    .fb-graphic .hook { color: #1e3a8a; font-weight: 800; font-size: 16px; }
+    .fb-graphic .headline {
+      color: #f59e0b; font-size: 28px; font-weight: 900; line-height: 1.1; margin: 4px 0 10px 0;
+    }
+    .fb-graphic .bullets {
+      background: #ffffff; border: 2px solid #f59e0b; border-radius: 12px;
+      padding: 12px 16px; margin: 14px 0;
+    }
+    .fb-graphic .b-item {
+      display: flex; align-items: center; gap: 10px; font-size: 13px; font-weight: 700; color: #1e293b; margin-bottom: 8px;
+    }
+    .fb-graphic .b-item:last-child { margin-bottom: 0; }
+    .fb-graphic .check {
+      background: #f59e0b; color: white; width: 18px; height: 18px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: bold;
+    }
+    .fb-graphic .btn {
+      display: inline-block; background: #f59e0b; color: white; font-weight: 800; font-size: 13px; padding: 9px 20px; border-radius: 25px;
+    }
+    .fb-graphic .footer {
+      position: absolute; bottom: 0; left: 0; right: 0; height: 50px;
+      background: #1e3a8a; display: flex; align-items: center; justify-content: space-between; padding: 0 20px;
+    }
+
+    /* 2. LinkedIn Graphic Simulation */
+    .li-graphic {
+      width: 100%; height: 100%;
+      background: #f8fafc; color: #0f172a;
+      position: relative; border: 4px solid #0f172a; box-sizing: border-box;
+    }
+    .li-graphic .top-bar {
+      background: #0f172a; height: 60px; display: flex; align-items: center; justify-content: space-between; padding: 0 20px; color: white;
+    }
+    .li-graphic .content { padding: 20px; }
+    .li-graphic .cat-badge {
+      display: inline-block; background: #dbeafe; color: #1d4ed8; font-size: 11px; font-weight: 800; padding: 4px 10px; border-radius: 6px; margin-bottom: 8px;
+    }
+    .li-graphic .subhead { color: #64748b; font-size: 14px; font-weight: 800; margin: 0; }
+    .li-graphic .mainhead {
+      color: #0f172a; font-size: 24px; font-weight: 900; margin: 2px 0 12px 0;
+    }
+    .li-graphic .grid-cards {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px;
+    }
+    .li-graphic .m-card {
+      background: #ffffff; border: 1.5px solid #93c5fd; border-radius: 10px; padding: 10px 12px; font-size: 12px; font-weight: 700; color: #1e293b;
+    }
+    .li-graphic .m-card span {
+      display: inline-block; background: #dbeafe; color: #2563eb; font-size: 10px; font-weight: 900; padding: 2px 6px; border-radius: 4px; margin-bottom: 4px;
+    }
+    .li-graphic .strategy-callout {
+      background: #0f172a; color: white; padding: 12px 16px; border-radius: 10px;
+    }
+    .li-graphic .strategy-callout h4 { margin: 0 0 4px 0; font-size: 12px; color: #60a5fa; }
+    .li-graphic .strategy-callout p { margin: 0; font-size: 11px; color: #cbd5e1; }
+    .li-graphic .footer {
+      position: absolute; bottom: 0; left: 0; right: 0; height: 46px;
+      background: #2563eb; display: flex; align-items: center; justify-content: space-between; padding: 0 20px; color: white;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <h1>🚀 100% English Posts with True Bold Formatting</h1>
+    <p>All posts are now written in high-converting American/International English with real <strong>Unicode Bold</strong> formatting on critical lines!</p>
+    <div class="badge-bar">
+      <span>🇺🇸 100% English</span>
+      <span>𝗕𝗼𝗹𝗱 True Unicode Bolding</span>
+      <span>🌐 tauhidadslab.com</span>
+      <span>📅 Calendly Booking</span>
+      <span>📞 +8801624608468</span>
+    </div>
+  </div>
+
+  <div class="comparison-container">
+
+    <!-- Column 1: Facebook -->
+    <div class="platform-col">
+      <div class="platform-badge fb-badge">🔵 Facebook Page (Orbit Media English Copy)</div>
+      
+      <!-- Facebook Graphic Preview -->
+      <div class="preview-box">
+        <div class="fb-graphic">
+          <div class="top-wave">
+            <div style="color:white; font-weight:900; font-size:16px;">⚡ TAUHID ADS LAB</div>
+            <div style="color:#fef3c7; font-size:11px; font-weight:bold;">🌐 tauhidadslab.com • ADS STRATEGY</div>
+          </div>
+          <div class="top-accent"></div>
+          <div class="content">
+            <div class="hook">WE HELP TO</div>
+            <div class="headline">GROW YOUR BUSINESS</div>
+            <div class="bullets">
+              <div class="b-item"><div class="check">✔</div> Laser Targeted Local Ads</div>
+              <div class="b-item"><div class="check">✔</div> E-commerce Sales Funnels</div>
+              <div class="b-item"><div class="check">✔</div> Full Funnel Retargeting</div>
+              <div class="b-item"><div class="check">✔</div> High-ROAS Campaign Scaling</div>
+            </div>
+            <div class="btn">🚀  BOOK FREE AUDIT TODAY</div>
+          </div>
+          <div class="footer">
+            <span style="color:white; font-size:13px; font-weight:800;">TAUHID ADS LAB</span>
+            <span style="color:#f59e0b; font-size:13px; font-weight:800;">📞 Call/WA: +8801624608468</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Facebook Caption Preview -->
+      <div class="caption-title">📝 Generated Facebook Caption:</div>
+      <div class="caption-box">𝗦𝘁𝗼𝗽 𝗪𝗮𝘀𝘁𝗶𝗻𝗴 𝗬𝗼𝘂𝗿 𝗔𝗱 𝗕𝘂𝗱𝗴𝗲𝘁: 𝟯 𝗦𝗲𝗰𝗿𝗲𝘁𝘀 𝘁𝗼 𝟯𝗫 𝗬𝗼𝘂𝗿 𝗦𝗮𝗹𝗲𝘀! 📈
+
+Are you running ads daily but struggling to see consistent, predictable sales? Most local businesses and e-commerce stores fail because they simply hit 'Boost Post' with zero funnel architecture.
+
+❝𝗔𝗱 𝗯𝘂𝗱𝗴𝗲𝘁 𝗶𝘀𝗻'𝘁 𝘁𝗵𝗲 𝗿𝗲𝗮𝗹 𝗯𝗼𝘁𝘁𝗹𝗲𝗻𝗲𝗰𝗸. 𝗬𝗼𝘂𝗿 𝗮𝘂𝗱𝗶𝗲𝗻𝗰𝗲 𝘁𝗮𝗿𝗴𝗲𝘁𝗶𝗻𝗴 𝗮𝗻𝗱 𝗰𝗼𝗻𝘃𝗲𝗿𝘀𝗶𝗼𝗻 𝗳𝘂𝗻𝗻𝗲𝗹 𝗮𝗿𝗲.❞
+
+Fix these 𝟯 𝗰𝗿𝗶𝘁𝗶𝗰𝗮𝗹 𝗽𝗶𝗹𝗹𝗮𝗿𝘀 in your advertising today:
+✔ 𝗛𝘆𝗽𝗲𝗿-𝗧𝗮𝗿𝗴𝗲𝘁 𝗟𝗼𝗰𝗮𝗹 𝗕𝘂𝘆𝗲𝗿𝘀: Stop targeting broad demographics. Focus on high-intent in-market shoppers.
+✔ 𝗗𝗶𝘁𝗰𝗵 𝘁𝗵𝗲 𝗕𝗼𝗼𝘀𝘁 𝗕𝘂𝘁𝘁𝗼𝗻: Use Ads Manager to build customized multi-stage retargeting campaigns.
+✔ 𝗛𝗼𝗼𝗸-𝗥𝗮𝘁𝗲 𝗢𝗽𝘁𝗶𝗺𝗶𝘇𝗮𝘁𝗶𝗼𝗻: Test 3 new creative hooks every week to eliminate ad fatigue.
+
+Ready to turn your ad spend into predictable, profitable revenue?
+𝗧𝗮𝘂𝗵𝗶𝗱 𝗔𝗱𝘀 𝗟𝗮𝗯 𝗶𝘀 𝗼𝗳𝗳𝗲𝗿𝗶𝗻𝗴 𝗮 𝗙𝗥𝗘𝗘 𝟯𝟬-𝗠𝗶𝗻𝘂𝘁𝗲 𝗔𝗱 𝗦𝘁𝗿𝗮𝘁𝗲𝗴𝘆 & 𝗔𝘂𝗱𝗶𝘁 𝗦𝗲𝘀𝘀𝗶𝗼𝗻! 🚀
+
+📅 𝗕𝗼𝗼𝗸 𝗬𝗼𝘂𝗿 𝗙𝗿𝗲𝗲 𝗖𝗼𝗻𝘀𝘂𝗹𝘁𝗮𝘁𝗶𝗼𝗻 𝗖𝗮𝗹𝗹:
+👉 https://calendly.com/tauhidadslab/30min
+
+🌐 𝗘𝘅𝗽𝗹𝗼𝗿𝗲 𝗢𝘂𝗿 𝗔𝗴𝗲𝗻𝗰𝘆 𝗪𝗲𝗯𝘀𝗶𝘁𝗲:
+👉 http://tauhidadslab.com/
+
+📞 𝗗𝗶𝗿𝗲𝗰𝘁 𝗖𝗮𝗹𝗹 / 𝗪𝗵𝗮𝘁𝘀𝗔𝗽𝗽: +8801624608468
+
+#TauhidAdsLab #FacebookAds #LocalBusinessGrowth #EcommerceMarketing #PaidTraffic</div>
+    </div>
+
+    <!-- Column 2: LinkedIn -->
+    <div class="platform-col">
+      <div class="platform-badge li-badge">💼 LinkedIn (B2B Executive English Copy)</div>
+      
+      <!-- LinkedIn Graphic Preview -->
+      <div class="preview-box">
+        <div class="li-graphic">
+          <div class="top-bar">
+            <span style="font-weight:900; font-size:15px;">⚡ TAUHID ADS LAB</span>
+            <span style="font-size:12px; color:#93c5fd; font-weight:bold;">🌐 tauhidadslab.com</span>
+          </div>
+          <div class="content">
+            <div class="cat-badge">PERFORMANCE FRAMEWORK</div>
+            <div class="subhead">HOW TO SCALE REVENUE</div>
+            <div class="mainhead">LOWER CPA & MAXIMIZE ROAS</div>
+            <div class="grid-cards">
+              <div class="m-card"><span>#01</span> Creative Hook Testing</div>
+              <div class="m-card"><span>#02</span> Full-Funnel Attribution</div>
+              <div class="m-card"><span>#03</span> Audience Segmentation</div>
+              <div class="m-card"><span>#04</span> Budget Scaling with LTV</div>
+            </div>
+            <div class="strategy-callout">
+              <h4>LOOKING TO SCALE YOUR BUSINESS?</h4>
+              <p>Book a 30-min strategy session or visit tauhidadslab.com</p>
+            </div>
+          </div>
+          <div class="footer">
+            <span style="font-size:13px; font-weight:800;">TAUHID ADS LAB</span>
+            <span style="font-size:13px; font-weight:800;">Direct: +8801624608468</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- LinkedIn Caption Preview -->
+      <div class="caption-title">📝 Generated LinkedIn Caption:</div>
+      <div class="caption-box">𝗠𝗼𝘀𝘁 𝗯𝗿𝗮𝗻𝗱𝘀 𝗱𝗼𝗻'𝘁 𝗵𝗮𝘃𝗲 𝗮 𝘁𝗿𝗮𝗳𝗳𝗶𝗰 𝗽𝗿𝗼𝗯𝗹𝗲𝗺. 𝗧𝗵𝗲𝘆 𝗵𝗮𝘃𝗲 𝗮 𝗰𝗼𝗻𝘃𝗲𝗿𝘀𝗶𝗼𝗻 & 𝗱𝗮𝘁𝗮-𝘁𝗿𝗮𝗰𝗸𝗶𝗻𝗴 𝗽𝗿𝗼𝗯𝗹𝗲𝗺. 📊
+
+In performance marketing, running paid media without a validated funnel is simply burning capital. When our team at 𝗧𝗮𝘂𝗵𝗶𝗱 𝗔𝗱𝘀 𝗟𝗮𝗯 audits underperforming ad accounts, 𝟴𝟱% 𝗼𝗳 𝗯𝘂𝗱𝗴𝗲𝘁 𝘄𝗮𝘀𝘁𝗲 stems from three critical areas:
+
+1. 𝗟𝗮𝗰𝗸 𝗼𝗳 𝗙𝘂𝗹𝗹-𝗙𝘂𝗻𝗻𝗲𝗹 𝗔𝗿𝗰𝗵𝗶𝘁𝗲𝗰𝘁𝘂𝗿𝗲: Over-indexing on cold top-of-funnel traffic with zero structured retargeting.
+2. 𝗖𝗿𝗲𝗮𝘁𝗶𝘃𝗲 𝗙𝗮𝘁𝗶𝗴𝘂𝗲: Not rotating dynamic angles, hooks, and proof points on a weekly basis.
+3. 𝗔𝘁𝘁𝗿𝗶𝗯𝘂𝘁𝗶𝗼𝗻 𝗕𝗹𝗶𝗻𝗱𝗻𝗲𝘀𝘀: Missing Conversions API (CAPI) and custom event parameter tracking.
+
+If your objective is sustainable, profitable scaling, prioritize 𝗹𝗼𝘄𝗲𝗿𝗶𝗻𝗴 𝗖𝘂𝘀𝘁𝗼𝗺𝗲𝗿 𝗔𝗰𝗾𝘂𝗶𝘀𝗶𝘁𝗶𝗼𝗻 𝗖𝗼𝘀𝘁 (𝗖𝗔𝗖) while 𝗺𝗮𝘅𝗶𝗺𝗶𝘇𝗶𝗻𝗴 𝗖𝘂𝘀𝘁𝗼𝗺𝗲𝗿 𝗟𝗶𝗳𝗲𝘁𝗶𝗺𝗲 𝗩𝗮𝗹𝘂𝗲 (𝗟𝗧𝗩).
+
+💡 𝗪𝗮𝗻𝘁 𝗮𝗻 𝗼𝗯𝗷𝗲𝗰𝘁𝗶𝘃𝗲, 𝗱𝗮𝘁𝗮-𝗯𝗮𝗰𝗸𝗲𝗱 𝗮𝘂𝗱𝗶𝘁 𝗼𝗳 𝘆𝗼𝘂𝗿 𝗰𝘂𝗿𝗿𝗲𝗻𝘁 𝗮𝗱 𝗰𝗮𝗺𝗽𝗮𝗶𝗴𝗻𝘀?
+Book a direct 30-minute performance review with our senior growth team:
+
+📅 𝗦𝗰𝗵𝗲𝗱𝘂𝗹𝗲 𝗬𝗼𝘂𝗿 𝗦𝗲𝘀𝘀𝗶𝗼𝗻: https://calendly.com/tauhidadslab/30min
+🌐 𝗖𝗮𝘀𝗲 𝗦𝘁𝘂𝗱𝗶𝗲𝘀 & 𝗦𝗲𝗿𝘃𝗶𝗰𝗲𝘀: http://tauhidadslab.com/
+📞 𝗗𝗶𝗿𝗲𝗰𝘁 𝗖𝗼𝗻𝘁𝗮𝗰𝘁 / 𝗪𝗵𝗮𝘁𝘀𝗔𝗽𝗽: +8801624608468
+
+#PerformanceMarketing #GrowthMarketing #DigitalStrategy #B2B #PaidAds #TauhidAdsLab</div>
+    </div>
+
+  </div>
+
+</body>
+</html>
