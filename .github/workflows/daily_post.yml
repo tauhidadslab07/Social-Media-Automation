@@ -1,17 +1,17 @@
 name: Tauhid Ads Lab - Daily Automated Social Media Poster
 
+# ==============================================================================
+# AUTOMATIC POSTING IS TEMPORARILY PAUSED
+# Waiting for user custom topics. Only manual trigger (workflow_dispatch) is active.
+# ==============================================================================
 on:
-  push:
-    branches:
-      - master
-      - main
-  schedule:
-    # Runs 4 times a day:
-    # 03:00 UTC = 09:00 AM BST (Bangladesh Time)
-    # 07:00 UTC = 01:00 PM BST
-    # 11:00 UTC = 05:00 PM BST
-    # 15:00 UTC = 09:00 PM BST
-    - cron: '0 3,7,11,15 * * *'
+  # push:
+  #   branches:
+  #     - master
+  #     - main
+  # schedule:
+  #   # Runs 4 times a day (BST 9 AM, 1 PM, 5 PM, 9 PM):
+  #   - cron: '0 3,7,11,15 * * *'
   
   # Allows you to run this workflow manually anytime for testing
   workflow_dispatch:

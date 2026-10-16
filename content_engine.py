@@ -94,6 +94,17 @@ def format_markdown_bold(text):
         return to_unicode_bold(inner_text)
     return re.sub(r'\*\*(.+?)\*\*', replacer, text)
 
+def get_active_topics():
+    topics_file = os.path.join(os.path.dirname(__file__), "topics.json")
+    if os.path.exists(topics_file):
+        try:
+            with open(topics_file, "r", encoding="utf-8") as f:
+                data = json.load(f)
+                return data
+        except Exception:
+            pass
+    return None
+
 def generate_dual_social_post():
     """
     Generates high-converting, 100% ENGLISH social media posts strictly separated into:
@@ -101,8 +112,18 @@ def generate_dual_social_post():
     or
     - 100% PURE CONVERSION TRACKING & ANALYTICS (GTM, GA4, CAPI)
     """
+    custom_data = get_active_topics()
     selected_pillar = random.choice(PILLARS)
-    selected_topic = random.choice(selected_pillar["topics"])
+    
+    if custom_data:
+        if selected_pillar["id"] == "GOOGLE_ADS" and custom_data.get("google_ads_topics"):
+            selected_topic = random.choice(custom_data["google_ads_topics"])
+        elif selected_pillar["id"] == "CONVERSION_TRACKING" and custom_data.get("tracking_topics"):
+            selected_topic = random.choice(custom_data["tracking_topics"])
+        else:
+            selected_topic = random.choice(selected_pillar["topics"])
+    else:
+        selected_topic = random.choice(selected_pillar["topics"])
     
     if not GEMINI_API_KEY:
         print("[Content Engine] No GEMINI_API_KEY found, using curated fallback.")
