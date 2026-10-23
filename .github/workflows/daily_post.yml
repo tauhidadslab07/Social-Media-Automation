@@ -2,8 +2,8 @@ name: Tauhid Ads Lab - Daily Automated Social Media Poster
 
 on:
   schedule:
-    # 1. Day 1: Tonight at 8:00 PM BST (14:00 UTC, 23 Oct 2026):
-    - cron: '0 14 23 10 *'
+    # 1. Day 1: Tonight at 8:45 PM BST (14:45 UTC, 23 Oct 2026):
+    - cron: '45 14 23 10 *'
     # 2. Day 2 onwards: Daily at 7:00 PM BST (13:00 UTC):
     - cron: '0 13 * * *'
   
@@ -48,8 +48,10 @@ jobs:
           BRAND_CALENDLY: ${{ secrets.BRAND_CALENDLY || 'https://calendly.com/tauhidadslab/30min' }}
           BRAND_HANDLE: ${{ secrets.BRAND_HANDLE || '@tauhidadslab' }}
           NICHE_TOPIC: ${{ secrets.NICHE_TOPIC || 'Google Ads, Server-Side Tracking, GA4, Meta CAPI' }}
-          FACEBOOK_PAGE_ID: ${{ secrets.FACEBOOK_PAGE_ID }}
+          FACEBOOK_PAGE_ID: ${{ secrets.FACEBOOK_PAGE_ID || '1325501797313655' }}
           FACEBOOK_PAGE_ACCESS_TOKEN: ${{ secrets.FACEBOOK_PAGE_ACCESS_TOKEN }}
+          INSTAGRAM_ACCOUNT_ID: ${{ secrets.INSTAGRAM_ACCOUNT_ID || '17841435015705100' }}
+          ENABLE_INSTAGRAM: 'True'
           LINKEDIN_ACCESS_TOKEN: ${{ secrets.LINKEDIN_ACCESS_TOKEN }}
           LINKEDIN_AUTHOR_URN: ${{ secrets.LINKEDIN_AUTHOR_URN }}
           TOPIC_DAY: ${{ inputs.day_number }}

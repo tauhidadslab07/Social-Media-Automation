@@ -6,6 +6,7 @@ from content_engine import generate_dual_social_post
 from image_engine import create_facebook_graphic, create_linkedin_graphic
 from social_poster import (
     post_to_facebook,
+    post_to_instagram,
     post_to_linkedin
 )
 
@@ -13,24 +14,24 @@ load_dotenv()
 
 def run_automation():
     print("=" * 70)
-    print("🚀 Tauhid Ads Lab - Platform-Specific Dual Social Media Automation")
-    print("🎯 Target Platforms: Facebook Page (Engaging) & LinkedIn (B2B Authority)")
+    print("🚀 Tauhid Ads Lab - Multi-Channel Social Media Automation Engine")
+    print("🎯 Target Platforms: Facebook Page, Instagram (@tauhidadslab), LinkedIn Profile")
     print("=" * 70)
 
     # 1. Generate Dual-Platform Content via AI
-    print("\n[1/3] Generating Tailored Content for Facebook & LinkedIn...")
+    print("\n[1/3] Generating Tailored Content for Social Channels...")
     post = generate_dual_social_post()
     
     fb_caption = f"{post.get('facebook_caption', '')}\n\n{post.get('facebook_hashtags', '')}".strip()
     li_caption = f"{post.get('linkedin_caption', '')}\n\n{post.get('linkedin_hashtags', '')}".strip()
     
-    print("-> Facebook Caption ready (Orbit Media High-Engagement format)")
+    print("-> Facebook & Instagram Caption ready (Orbit Media High-Engagement format)")
     print("-> LinkedIn Caption ready (Executive B2B Thought-Leadership format)")
 
     # 2. Design Platform-Specific Branded Graphics
     print("\n[2/3] Designing Tailored 1080x1080 Branded Graphics...")
     
-    # Facebook Graphic: Vibrant, Promotional, High-Energy
+    # Facebook & Instagram Graphic: Vibrant, Promotional, High-Energy
     fb_image = "fb_graphic.png"
     create_facebook_graphic(post, output_path=fb_image)
     
@@ -45,6 +46,12 @@ def run_automation():
     # Publish to Facebook Page
     print("\n--- 🔵 Publishing to Facebook Page ---")
     results["Facebook Page"] = post_to_facebook(fb_image, fb_caption)
+
+    # Publish to Instagram
+    enable_ig = os.getenv("ENABLE_INSTAGRAM", "True").lower() in ("true", "1", "yes")
+    if enable_ig:
+        print("\n--- 📸 Publishing to Instagram (@tauhidadslab) ---")
+        results["Instagram"] = post_to_instagram(fb_image, fb_caption)
     
     # Publish to LinkedIn
     print("\n--- 💼 Publishing to LinkedIn ---")
