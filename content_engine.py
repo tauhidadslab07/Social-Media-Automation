@@ -3,6 +3,7 @@ import re
 import json
 import random
 import requests
+from datetime import datetime, timezone, timedelta
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -12,59 +13,6 @@ BRAND_NAME = os.getenv("BRAND_NAME", "Tauhid Ads Lab")
 BRAND_PHONE = os.getenv("BRAND_PHONE", "+8801624608468")
 BRAND_WEBSITE = os.getenv("BRAND_WEBSITE", "http://tauhidadslab.com/")
 BRAND_CALENDLY = os.getenv("BRAND_CALENDLY", "https://calendly.com/tauhidadslab/30min")
-
-# ============================================================================
-# DEDICATED PILLARS: 100% SEPARATED GOOGLE ADS vs CONVERSION TRACKING
-# ============================================================================
-
-PILLARS = [
-    {
-        "id": "GOOGLE_ADS",
-        "badge": "GOOGLE ADS SPECIALIST",
-        "cta": "BOOK FREE ADS AUDIT",
-        "niche_focus": "Local Business Google Ads, Search Ads, Call-Only Campaigns, High-Intent Keywords",
-        "graphic_default_title1": "LOCAL GOOGLE ADS",
-        "graphic_default_title2": "GET HIGH-VALUE CLIENTS",
-        "graphic_default_sub": "Target ready-to-buy customers searching on Google right now.",
-        "graphic_default_bullets": [
-            "Top #1 Position on Google Search",
-            "High-Intent Inbound Phone Calls",
-            "Zero Wasted Negative Keywords",
-            "Transparent ROAS & Lead Reporting"
-        ],
-        "topics": [
-            "Why Local Businesses (Dentists, Lawyers, Clinics, Home Services) Get 5x Better Leads on Google Search vs Social Media",
-            "How Google Call-Only Ads Drive Direct Phone Inquiries Without Needing a Complex Website",
-            "Negative Keywords: How Stopping Junk Clicks Saves 35% of Your Google Ad Spend Every Month",
-            "Dominating 'Near Me' Searches in Your City: The Google Local Campaign Blueprint",
-            "Quality Score Secrets: How to Pay 40% Less Cost-Per-Click Than Your Local Competitors on Google",
-            "Maximizing Inbound Patient & Client Bookings with Google Search & Performance Max Campaigns"
-        ]
-    },
-    {
-        "id": "CONVERSION_TRACKING",
-        "badge": "SERVER-SIDE TRACKING & GA4",
-        "cta": "FIX YOUR TRACKING TODAY",
-        "niche_focus": "Server-Side Tracking, Google Tag Manager (GTM), GA4, Meta Conversions API (CAPI), Enhanced Conversions",
-        "graphic_default_title1": "FIX BROKEN TRACKING",
-        "graphic_default_title2": "GTM, GA4 & META CAPI",
-        "graphic_default_sub": "Stop data loss from iOS updates. Feed ad algorithms with 100% accurate data.",
-        "graphic_default_bullets": [
-            "Server-Side GTM & Cloud Container",
-            "Meta CAPI 9+/10 Event Match Quality",
-            "GA4 E-Commerce & Lead Events",
-            "Google Ads Enhanced Conversions"
-        ],
-        "topics": [
-            "Why Browser-Only Pixels Lose 40%+ of Ad Conversions (And How Server-Side GTM Recovers Them)",
-            "How iOS 14.5+ Blinds Ad Algorithms: Meta Conversions API (CAPI) and Stape.io First-Party Tracking",
-            "Google Analytics 4 (GA4) Custom E-commerce & Lead Event Tracking for 100% True ROAS Attribution",
-            "Enhanced Conversions in Google Ads: The Single Setting That Recovers Lost Sales and Drops CPA",
-            "Event Deduplication: How to Prevent Double-Counting Conversions in Pixel & CAPI",
-            "Full Tracking Audit Checklist: Fixing Broken Pixels Across Shopify, WordPress, WooCommerce, and Web Apps"
-        ]
-    }
-]
 
 def to_unicode_bold(text):
     """
@@ -94,105 +42,140 @@ def format_markdown_bold(text):
         return to_unicode_bold(inner_text)
     return re.sub(r'\*\*(.+?)\*\*', replacer, text)
 
-def get_active_topics():
+def get_current_day_config():
+    """
+    Loads topics.json and determines the active day (1 to 10).
+    Checks TOPIC_DAY env var first, otherwise computes from 2026-10-23 in BST (UTC+6).
+    """
     topics_file = os.path.join(os.path.dirname(__file__), "topics.json")
-    if os.path.exists(topics_file):
-        try:
-            with open(topics_file, "r", encoding="utf-8") as f:
-                data = json.load(f)
-                return data
-        except Exception:
-            pass
-    return None
+    if not os.path.exists(topics_file):
+        return None
+
+    try:
+        with open(topics_file, "r", encoding="utf-8") as f:
+            data = json.load(f)
+    except Exception as e:
+        print(f"[Content Engine] Error reading topics.json: {e}")
+        return None
+
+    days = data.get("days", [])
+    if not days:
+        return None
+
+    # Check override from env var
+    env_day = os.getenv("TOPIC_DAY")
+    if env_day and env_day.isdigit():
+        target_day = int(env_day)
+        for d in days:
+            if d.get("day") == target_day:
+                return d
+
+    # Calculate from start_date in BST (Bangladesh Time = UTC+6)
+    try:
+        start_str = data.get("start_date", "2026-10-23")
+        start_date = datetime.strptime(start_str, "%Y-%m-%d").date()
+        bst_now = datetime.now(timezone.utc) + timedelta(hours=6)
+        current_date = bst_now.date()
+        diff = (current_date - start_date).days
+        day_num = (diff % len(days)) + 1
+        for d in days:
+            if d.get("day") == day_num:
+                return d
+    except Exception as e:
+        print(f"[Content Engine] Date calculation fallback: {e}")
+
+    return days[0]
 
 def generate_dual_social_post():
     """
-    Generates high-converting, 100% ENGLISH social media posts strictly separated into:
-    - 100% PURE GOOGLE ADS FOR LOCAL BUSINESS
-    or
-    - 100% PURE CONVERSION TRACKING & ANALYTICS (GTM, GA4, CAPI)
+    Generates high-converting, 100% ENGLISH social media posts strictly matching
+    the curated 10-day calendar (Google Ads vs Conversion Tracking).
     """
-    custom_data = get_active_topics()
-    selected_pillar = random.choice(PILLARS)
-    
-    if custom_data:
-        if selected_pillar["id"] == "GOOGLE_ADS" and custom_data.get("google_ads_topics"):
-            selected_topic = random.choice(custom_data["google_ads_topics"])
-        elif selected_pillar["id"] == "CONVERSION_TRACKING" and custom_data.get("tracking_topics"):
-            selected_topic = random.choice(custom_data["tracking_topics"])
-        else:
-            selected_topic = random.choice(selected_pillar["topics"])
-    else:
-        selected_topic = random.choice(selected_pillar["topics"])
+    day_cfg = get_current_day_config()
+    if not day_cfg:
+        # Emergency fallback config
+        day_cfg = {
+            "day": 1,
+            "pillar": "GOOGLE_ADS",
+            "title": "Stop Boosting Posts. Start Capturing Buyers Who Are Already Searching.",
+            "badge": "GOOGLE ADS · AWARENESS",
+            "core_concept": "Facebook boosting vs Google Search Ads. Urgent local intent vs social scrolling.",
+            "target_audience": "Local Business Owners (Clinics, Dentists, Plumbers, HVAC, Lawyers, Home Services)",
+            "goal": "Capture local business owners' attention and shift mindset to high-intent Google Search.",
+            "graphic_title_line1": "STOP BOOSTING POSTS",
+            "graphic_title_line2": "CAPTURE ACTIVE BUYERS",
+            "graphic_subtitle": "Why Google Search ads beat Facebook boosting for local businesses every time.",
+            "bullet_points": [
+                "Zero-Interruption Buyer Intent",
+                "Direct Inbound Phone Calls",
+                "Target Exact Local Geo-Radius",
+                "Stop Paying for Casual Likes"
+            ],
+            "cta_text": "BOOK FREE ADS AUDIT"
+        }
+
+    pillar = day_cfg.get("pillar", "GOOGLE_ADS")
     
     if not GEMINI_API_KEY:
-        print("[Content Engine] No GEMINI_API_KEY found, using curated fallback.")
-        return get_dual_fallback(selected_pillar, selected_topic)
+        print("[Content Engine] No GEMINI_API_KEY found, using curated fallback for Day", day_cfg.get("day", 1))
+        return get_day_fallback(day_cfg)
 
     models_to_try = ["gemini-3.5-flash", "gemini-3-flash-preview", "gemini-flash-latest"]
     
-    if selected_pillar["id"] == "GOOGLE_ADS":
+    if pillar == "GOOGLE_ADS":
         strict_instruction = f"""
 STRICT NICHE MANDATE: This post must be 100% STRICTLY ABOUT GOOGLE ADS FOR LOCAL BUSINESSES (Doctors, Dentists, Lawyers, Clinics, Home Services, Real Estate, Local Stores).
-- Do NOT talk about Facebook or Instagram ads.
-- Focus purely on Google Search Ads, Call-Only Campaigns, High-Intent Keywords, Negative Keywords, Quality Score, and capturing ready-to-buy local searchers.
+- Do NOT talk about Facebook or Instagram ads as a good option. Contrast Facebook boosting (interruption, tire-kickers) with Google Search Ads (urgent high-intent buyers ready with credit cards).
+- Focus on: {day_cfg.get('core_concept')}.
 - Tone: High-authority, practical, showing local business owners how to stop burning cash on useless clicks and start getting inbound phone calls and booked appointments.
 """
     else:
         strict_instruction = f"""
 STRICT NICHE MANDATE: This post must be 100% STRICTLY ABOUT ADVANCED CONVERSION TRACKING & WEB ANALYTICS (GTM, GA4, Server-Side Tracking, Meta Conversions API / CAPI, Enhanced Conversions across all niches: Shopify, WordPress, WooCommerce, Lead Gen).
-- Do NOT give generic marketing fluff. Focus on accurate data attribution, fixing tracking leaks, iOS 14+ data loss, Event Match Quality (EMQ), and server container setup.
+- Focus on: {day_cfg.get('core_concept')}.
 - Tone: Highly technical yet accessible, expert data architect, demonstrating that running ads with broken tracking is like pouring water into a leaky bucket.
 """
 
     prompt = f"""
-You are the Chief Growth Strategist & Technical Lead at '{BRAND_NAME}', an elite performance marketing and tracking agency.
+You are the Chief Growth Strategist & Technical Lead at '{BRAND_NAME}', an elite performance marketing and tracking agency led by Md. Tauhidul Islam Bhuian.
 Agency Contact Details:
 - Website: {BRAND_WEBSITE}
 - Free 30-Min Strategy Call (Calendly): {BRAND_CALENDLY}
 - Phone / WhatsApp: {BRAND_PHONE}
 
+TODAY IS DAY {day_cfg.get('day')} OF OUR 10-DAY CAMPAIGN.
+STAGE: {day_cfg.get('badge')}
+TOPIC TITLE: "{day_cfg.get('title')}"
+TARGET AUDIENCE: {day_cfg.get('target_audience')}
+CORE GOAL: {day_cfg.get('goal')}
+
 {strict_instruction}
 
-Topic for today's post: {selected_topic}.
-
-CRITICAL REQUIREMENTS:
+CRITICAL COPYWRITING ARCHITECTURE:
 1. LANGUAGE: 100% ENGLISH ONLY. Flawless, punchy, persuasive American/International English.
-2. BOLDING: Use **double asterisks** around critical headlines, key stats, bullet point titles, and call-to-actions so our system converts them to TRUE BOLD on Facebook and LinkedIn.
-3. MANDATORY LINKS in both posts:
+2. HOOK: First sentence must be a bold, scroll-stopping contrarian hook in **bold**.
+3. REAL BOTTLENECK: Explain clearly why common methods fail and burn budget.
+4. ACTIONABLE FRAMEWORK: Break down the solution into 2 to 3 bullet points with emojis (✔, 🚀, 💡, 📞, 🎯) and **bold titles**.
+5. THE AHA MOMENT: Contrast interruption vs intent (e.g. scrolling sofa vs urgent emergency search / paying customers vs cheap form-fills).
+6. ENGAGEMENT QUESTION: End with a direct question to Founders, Local Business Owners, or Agency Heads.
+7. CALL TO ACTION & LINKS:
    - Free 30-Min Consultation: {BRAND_CALENDLY}
    - Website: {BRAND_WEBSITE}
    - Phone / WhatsApp: {BRAND_PHONE}
-
-Platform Guidelines:
-1. FACEBOOK VERSION:
-- Follow Orbit Media's 'Anatomy of the Perfect Post':
-  - **Hook**: First line must be a powerful headline with numbers/benefits in **bold**.
-  - **Secondary Headline**: Expand curiosity.
-  - **Line Breaks**: Clean double spacing between paragraphs.
-  - **Quote**: Memorable quote in quotation marks ("...").
-  - **Bullet Points**: Actionable takeaways with emojis (✔, 🚀, 💡, 📞, 🎯) and **bold titles**.
-  - **Call to Action**: Direct invite to book a free 30-min audit or message on WhatsApp.
-
-2. LINKEDIN VERSION:
-- High-level B2B Thought-Leadership:
-  - Professional, data-driven, analytical tone for Founders, CEOs, Clinic Owners, and Marketing Directors.
-  - Focus on Cost-Per-Acquisition, High-Intent Search, Attribution Quality, and ROAS.
-  - Bold key insights and metrics.
-  - Professional CTA to schedule on Calendly, visit the website, or contact directly.
+8. BOLDING: Use **double asterisks** around critical headlines and bullet points so our system converts them to TRUE BOLD on Facebook and LinkedIn.
 
 The response MUST be valid JSON with the following exact keys:
 {{
-  "category": "{selected_pillar['badge']}",
-  "graphic_title_line1": "{selected_pillar['graphic_default_title1']}",
-  "graphic_title_line2": "{selected_pillar['graphic_default_title2']}",
-  "graphic_subtitle": "{selected_pillar['graphic_default_sub']}",
-  "bullet_points": ["4 punchy, high-impact bullet points related strictly to {selected_pillar['id']}"],
-  "cta_text": "{selected_pillar['cta']}",
+  "category": "{day_cfg.get('badge')}",
+  "graphic_title_line1": "{day_cfg.get('graphic_title_line1')}",
+  "graphic_title_line2": "{day_cfg.get('graphic_title_line2')}",
+  "graphic_subtitle": "{day_cfg.get('graphic_subtitle')}",
+  "bullet_points": {json.dumps(day_cfg.get('bullet_points', []))},
+  "cta_text": "{day_cfg.get('cta_text', 'BOOK FREE AUDIT')}",
   "facebook_caption": "Complete formatted 100% English Facebook post using **bold** markers...",
-  "facebook_hashtags": "#TauhidAdsLab #{selected_pillar['id'].replace('_', '')} #GoogleAds #LocalBusiness #Tracking",
+  "facebook_hashtags": "#TauhidAdsLab #GoogleAds #LocalBusiness #Tracking #Day{day_cfg.get('day')}",
   "linkedin_caption": "Complete formatted 100% English LinkedIn post using **bold** markers...",
-  "linkedin_hashtags": "#PerformanceMarketing #{selected_pillar['id'].replace('_', '')} #WebAnalytics #TauhidAdsLab"
+  "linkedin_hashtags": "#PerformanceMarketing #GoogleAds #LocalSEO #TauhidAdsLab #Day{day_cfg.get('day')}"
 }}
 
 Output ONLY valid raw JSON without markdown code fences or backticks.
@@ -223,48 +206,64 @@ Output ONLY valid raw JSON without markdown code fences or backticks.
         except Exception as e:
             continue
 
-    print("[Content Engine] All Gemini model endpoints busy/failed. Using curated fallback.")
-    return get_dual_fallback(selected_pillar, selected_topic)
+    print(f"[Content Engine] Gemini busy. Using curated fallback for Day {day_cfg.get('day', 1)}.")
+    return get_day_fallback(day_cfg)
 
-def get_dual_fallback(pillar=None, topic=None):
-    """Provides curated 100% English fallback with true Unicode bolding for each specific pillar."""
-    pillar = pillar or PILLARS[0]
-    topic = topic or pillar["topics"][0]
+def get_day_fallback(day_cfg):
+    """Provides curated 100% English fallback tailored to the specific day."""
+    day_num = day_cfg.get("day", 1)
     
-    if pillar["id"] == "GOOGLE_ADS":
-        fb_raw = f"""**Stop Wasting Budget on Casual Scrollers: Why Local Businesses Win on Google Search! 🎯**
+    # Specific master fallback for Day 1
+    if day_num == 1:
+        fb_raw = f"""**Stop Wasting Budget Boosting Posts: Why Local Businesses Win On Google Search! 🎯**
 
-If you run a local service business (clinic, dental practice, law firm, real estate, or home services), social media ads often flood your inbox with casual questions like 'Price please?'. 
+If you run a local service business (clinic, dental practice, law firm, real estate, or home services), hitting the 'Boost Post' button on Facebook is the fastest way to burn your marketing budget.
 
-Google Search is fundamentally different: when someone types **'Emergency Dentist Near Me'** or **'Best Commercial Real Estate Agent'**, they already have their credit card in hand and are ready to hire.
+Here is why:
+When someone is scrolling Facebook or Instagram at 11 PM, they are looking at memes and travel videos. They are not looking to hire a professional.
 
-❝**People scroll social media to kill time. People search on Google to solve an urgent problem immediately.**❞
+When their air conditioner breaks down in 38°C heat, or their tooth starts aching uncontrollably, where do they go?
+👉 They open Google.
+👉 They search: **"Emergency Dentist Near Me"** or **"Emergency AC Repair"**.
+👉 They click the top phone number and call immediately.
 
-Here are **3 Google Ads pillars** that get local businesses high-paying clients:
-✔ **High-Intent Search Campaigns:** Bid strictly on high-commercial-intent search queries instead of broad informational keywords.
-✔ **Negative Keyword Fortress:** Exclude words like 'free', 'cheap', 'jobs', and 'course' to save 30%+ of your daily ad spend from junk clicks.
-✔ **Direct Call-Only Ads:** Connect high-intent searchers directly to your office front desk with a single tap on their smartphone.
+That is the difference between **Interruption Marketing** and **High-Intent Search Marketing**.
 
-Ready to dominate local search results and get consistent, high-paying clients?
-**{BRAND_NAME} is offering a FREE 30-Minute Google Ads Local Audit!** 🚀
+As a Google Ads Specialist for Local Businesses, here is the **3-step blueprint** we use at **{BRAND_NAME}** to fill appointment calendars:
 
-📅 **Book Your Free Strategy Call:**
-👉 {BRAND_CALENDLY}
+✔ **Hyper-Local Geo-Radius Bidding:** We don't waste budget targeting entire states. We pinpoint a strict 5 to 10-mile radius around your office where your actual paying clients live.
+✔ **Direct "Call-Only" Campaigns:** Most local businesses don't need a complicated website to get clients. We run ads designed for mobile smartphones where a prospect taps the ad and their phone instantly dials your front desk.
+✔ **The Negative Keyword Fortress:** We install aggressive negative keyword lists blocking junk searches like "free clinic", "dentist salary", or "DIY pipe repair", saving 35%+ of your budget before it costs a dime.
 
-🌐 **Explore Our Agency Website:**
-👉 {BRAND_WEBSITE}
+**The Result?**
+You don't get "Price please?" messages in your inbox.
+You get qualified local homeowners and patients calling your office ready to book.
 
-📞 **Direct Call / WhatsApp:** {BRAND_PHONE}"""
+---
+
+👇 **Local Business Owners:** Is your phone ringing with qualified clients from Google, or are you still relying on word-of-mouth?
+
+⚡ Ready to dominate Google Search in your local city?
+**{BRAND_NAME} is offering a FREE 30-Minute Local Google Ads Strategy Session:**
+📅 **Book Your Strategy Call:** {BRAND_CALENDLY}
+🌐 **Official Agency Portal:** {BRAND_WEBSITE}
+📞 **Direct Line / WhatsApp:** {BRAND_PHONE}"""
 
         li_raw = f"""**For local businesses and high-ticket service providers, intent always beats interruption. 📈**
 
-At **{BRAND_NAME}**, when we analyze underperforming advertising budgets for local practices, law firms, and service agencies, the primary mistake is over-allocating capital to social media interruption ads while ignoring **high-intent Google Search volume**.
+At **{BRAND_NAME}**, when we analyze underperforming advertising budgets for local practices, law firms, and service agencies, the primary mistake is over-allocating capital to social media boosting while ignoring **high-intent Google Search volume**.
 
 When a prospective client searches for a solution on Google, they are already at the bottom of the decision funnel. Capturing this demand requires three non-negotiables:
 
-1. **Granular Exact & Phrase Match Architecture:** Isolating top-tier buyer keywords with dedicated landing pages.
+1. **Granular Exact & Phrase Match Architecture:** Isolating top-tier buyer keywords ("emergency dentist near me", "commercial litigation attorney") with dedicated landing pages.
 2. **Aggressive Negative Keyword Management:** Eliminating low-intent, informational queries to preserve ad budget.
 3. **Quality Score Optimization:** Aligning ad copy with landing page relevance to achieve top ad rank at a 40% lower Cost-Per-Click (CPC).
+
+Now, you aren't paying to interrupt someone watching videos on their sofa.
+You are paying to be the first phone number a homeowner taps when they have an urgent problem to solve.
+
+Your cost per click might be higher than a cheap Facebook boost.
+**But your cost per booked appointment drops by 35% to 45%.**
 
 💡 **Want an objective, data-backed audit of your local Google Ads campaigns?**
 Book a direct 30-minute performance review with our senior growth team:
@@ -273,62 +272,57 @@ Book a direct 30-minute performance review with our senior growth team:
 🌐 **Case Studies & Services:** {BRAND_WEBSITE}
 📞 **Direct Contact / WhatsApp:** {BRAND_PHONE}"""
 
-    else: # CONVERSION_TRACKING
-        fb_raw = f"""**Running Ads Without Server-Side Tracking Is Like Pouring Water Into a Leaky Bucket! 📊**
+    else:
+        # Generic structured fallback for other days
+        fb_raw = f"""**{day_cfg.get('title')} 📊**
 
-Are your Facebook or Google Ads reporting 20 conversions, but your actual bank account or CRM only shows 5? Or did your Cost-Per-Acquisition suddenly double after recent iOS updates?
+Are you running paid ads without a validated, data-driven framework? Most businesses waste 30%+ of their ad capital because they treat advertising and tracking as separate silos.
 
-You don't have a traffic problem. **You have an attribution and data-tracking leak.**
+At **{BRAND_NAME}**, we focus on one single metric: **Profitable, Predictable Revenue Growth**.
 
-❝**Ad algorithms can only optimize for the data they can see. If your tracking is blind, your ad budget is blind.**❞
+Key Pillars:
+✔ **{day_cfg.get('bullet_points', ['Laser Targeted Campaigns'])[0]}**
+✔ **{day_cfg.get('bullet_points', ['Conversion Funnel Optimization'])[1] if len(day_cfg.get('bullet_points', [])) > 1 else 'Conversion Funnels'}**
+✔ **{day_cfg.get('bullet_points', ['Accurate Attribution Tracking'])[2] if len(day_cfg.get('bullet_points', [])) > 2 else 'Full Tracking'}**
 
-Here is how modern **Server-Side Tracking** fixes your ad performance:
-✔ **Google Tag Manager (GTM) Server Container:** Bypasses ad-blockers and Safari ITP restrictions by routing data through your own custom first-party subdomain.
-✔ **Meta Conversions API (CAPI) with 9+/10 EMQ:** Feeds Meta's AI with hashed user data for laser-accurate retargeting and deduplication.
-✔ **Google Ads Enhanced Conversions:** Recovers up to 20% of lost conversion data directly into Google Analytics 4 (GA4).
-✔ **Zero Double-Counting:** Clean event deduplication ensures your ad platforms never report false numbers.
+Stop treating ads like an afterthought. It is the engine that powers modern client acquisition.
 
-Ready to plug your tracking leaks and feed ad algorithms with 100% accurate data?
-**{BRAND_NAME} is offering a FREE Full-Stack Tracking & Pixel Audit!** 🚀
-
-📅 **Book Your Free Strategy Call:**
-👉 {BRAND_CALENDLY}
-
-🌐 **Explore Our Agency Website:**
-👉 {BRAND_WEBSITE}
-
+📅 **Book Your Free 30-Minute Consultation:** {BRAND_CALENDLY}
+🌐 **Agency Website:** {BRAND_WEBSITE}
 📞 **Direct Call / WhatsApp:** {BRAND_PHONE}"""
 
-        li_raw = f"""**The single biggest factor separating high-ROAS advertisers from failing campaigns is Data Quality. 📉**
+        li_raw = f"""**{day_cfg.get('title')} 📈**
 
-Since the rollout of privacy restrictions, browser-based client-side cookies lose up to **35% to 45% of critical conversion data**. When ad network algorithms lack complete conversion signals, your Cost-Per-Acquisition (CPA) spikes inevitably.
+In performance marketing and digital acquisition, data integrity separates market leaders from failing campaigns.
 
-At **{BRAND_NAME}**, we implement enterprise-grade **Server-Side Tracking Architecture** across all e-commerce and lead generation ecosystems:
+At **{BRAND_NAME}**, we architect full-funnel systems that combine high-intent Google Ads with enterprise-grade Server-Side Tracking.
 
-1. **Server-Side GTM via First-Party Subdomain:** Eliminates 3rd-party cookie dependency and resists browser ad-blockers.
-2. **Meta Conversions API (CAPI) Integration:** Achieving an Event Match Quality (EMQ) score of 9.0+ with reliable event deduplication.
-3. **Google Analytics 4 (GA4) & Enhanced Conversions:** Full-funnel event attribution from initial touchpoint to final purchase.
+Core Insights:
+1. **Strategic Targeting:** Eliminating waste before scaling ad spend.
+2. **Server-Side Data Routing:** Ensuring 100% accurate conversion attribution.
+3. **Closed-Won Revenue Focus:** Optimizing ad networks for paying customers, not empty form-fills.
 
-Stop feeding your ad algorithms degraded data. Build a rock-solid, privacy-compliant tracking foundation.
-
-💡 **Want a full technical audit of your GTM, GA4, and CAPI setup?**
-Book a direct 30-minute tracking review with our technical architects:
-
+💡 **Want an objective audit of your advertising or tracking architecture?**
 📅 **Schedule Your Session:** {BRAND_CALENDLY}
 🌐 **Case Studies & Services:** {BRAND_WEBSITE}
 📞 **Direct Contact / WhatsApp:** {BRAND_PHONE}"""
 
     return {
-        "category": pillar["badge"],
-        "graphic_title_line1": pillar["graphic_default_title1"],
-        "graphic_title_line2": pillar["graphic_default_title2"],
-        "graphic_subtitle": pillar["graphic_default_sub"],
-        "bullet_points": pillar["graphic_default_bullets"],
-        "cta_text": pillar["cta"],
+        "category": day_cfg.get("badge", "GOOGLE ADS"),
+        "graphic_title_line1": day_cfg.get("graphic_title_line1", "LOCAL GOOGLE ADS"),
+        "graphic_title_line2": day_cfg.get("graphic_title_line2", "GET HIGH-VALUE CLIENTS"),
+        "graphic_subtitle": day_cfg.get("graphic_subtitle", f"Visit {BRAND_WEBSITE} to scale your business."),
+        "bullet_points": day_cfg.get("bullet_points", [
+            "Top #1 Position on Google",
+            "High-Intent Inbound Phone Calls",
+            "Zero Wasted Negative Keywords",
+            "Transparent ROAS Reporting"
+        ]),
+        "cta_text": day_cfg.get("cta_text", "BOOK FREE AUDIT"),
         "facebook_caption": format_markdown_bold(fb_raw),
-        "facebook_hashtags": f"#TauhidAdsLab #{pillar['id'].replace('_', '')} #GoogleAds #LocalBusiness #Tracking",
+        "facebook_hashtags": f"#TauhidAdsLab #GoogleAds #LocalBusiness #Tracking #Day{day_num}",
         "linkedin_caption": format_markdown_bold(li_raw),
-        "linkedin_hashtags": f"#PerformanceMarketing #{pillar['id'].replace('_', '')} #WebAnalytics #TauhidAdsLab"
+        "linkedin_hashtags": f"#PerformanceMarketing #GoogleAds #LocalSEO #TauhidAdsLab #Day{day_num}"
     }
 
 if __name__ == "__main__":

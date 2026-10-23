@@ -1,20 +1,19 @@
 name: Tauhid Ads Lab - Daily Automated Social Media Poster
 
-# ==============================================================================
-# AUTOMATIC POSTING IS TEMPORARILY PAUSED
-# Waiting for user custom topics. Only manual trigger (workflow_dispatch) is active.
-# ==============================================================================
 on:
-  # push:
-  #   branches:
-  #     - master
-  #     - main
-  # schedule:
-  #   # Runs 4 times a day (BST 9 AM, 1 PM, 5 PM, 9 PM):
-  #   - cron: '0 3,7,11,15 * * *'
+  schedule:
+    # 1. Day 1: Tonight at 8:00 PM BST (14:00 UTC, 23 Oct 2026):
+    - cron: '0 14 23 10 *'
+    # 2. Day 2 onwards: Daily at 7:00 PM BST (13:00 UTC):
+    - cron: '0 13 * * *'
   
-  # Allows you to run this workflow manually anytime for testing
+  # Allows manual triggering anytime for testing or selecting a specific day
   workflow_dispatch:
+    inputs:
+      day_number:
+        description: 'Specific day to run (1-10) or leave blank for auto-calendar'
+        required: false
+        default: ''
 
 jobs:
   post-to-social-media:
@@ -48,10 +47,11 @@ jobs:
           BRAND_WEBSITE: ${{ secrets.BRAND_WEBSITE || 'http://tauhidadslab.com/' }}
           BRAND_CALENDLY: ${{ secrets.BRAND_CALENDLY || 'https://calendly.com/tauhidadslab/30min' }}
           BRAND_HANDLE: ${{ secrets.BRAND_HANDLE || '@tauhidadslab' }}
-          NICHE_TOPIC: ${{ secrets.NICHE_TOPIC || 'Facebook Ads, Google Ads, E-commerce Scaling, Lead Generation' }}
+          NICHE_TOPIC: ${{ secrets.NICHE_TOPIC || 'Google Ads, Server-Side Tracking, GA4, Meta CAPI' }}
           FACEBOOK_PAGE_ID: ${{ secrets.FACEBOOK_PAGE_ID }}
           FACEBOOK_PAGE_ACCESS_TOKEN: ${{ secrets.FACEBOOK_PAGE_ACCESS_TOKEN }}
           LINKEDIN_ACCESS_TOKEN: ${{ secrets.LINKEDIN_ACCESS_TOKEN }}
           LINKEDIN_AUTHOR_URN: ${{ secrets.LINKEDIN_AUTHOR_URN }}
+          TOPIC_DAY: ${{ inputs.day_number }}
         run: |
           python main.py

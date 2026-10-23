@@ -1,5 +1,209 @@
 {
-  "status": "waiting_for_user_topics",
-  "google_ads_topics": [],
-  "tracking_topics": []
+  "start_date": "2026-10-23",
+  "schedule_info": {
+    "day_1_time": "8:00 PM BST (Today, 2026-10-23)",
+    "daily_time": "7:00 PM BST (From 2026-10-24 onwards)"
+  },
+  "days": [
+    {
+      "day": 1,
+      "pillar": "GOOGLE_ADS",
+      "stage": "Awareness",
+      "title": "Stop Boosting Posts. Start Capturing Buyers Who Are Already Searching.",
+      "badge": "GOOGLE ADS · AWARENESS",
+      "core_concept": "Difference between Facebook post boosting and Google Search Ads. Why searching 'emergency plumber near me' or 'dentist near me' on Google indicates an urgent, high-intent ready-to-buy prospect.",
+      "target_audience": "Local Business Owners (Clinics, Dentists, Plumbers, HVAC, Lawyers, Home Services)",
+      "goal": "Capture local business owners' attention and shift mindset from social interruption to high-intent search.",
+      "graphic_title_line1": "STOP BOOSTING POSTS",
+      "graphic_title_line2": "CAPTURE ACTIVE BUYERS",
+      "graphic_subtitle": "Why Google Search ads beat Facebook boosting for local businesses every time.",
+      "bullet_points": [
+        "Zero-Interruption Buyer Intent",
+        "Direct Inbound Phone Calls",
+        "Target Exact Local Geo-Radius",
+        "Stop Paying for Casual Likes"
+      ],
+      "cta_text": "BOOK FREE ADS AUDIT"
+    },
+    {
+      "day": 2,
+      "pillar": "GOOGLE_ADS",
+      "stage": "Cost Control",
+      "title": "Your Google Ads Budget Is Leaking Through These 5 Search Terms.",
+      "badge": "GOOGLE ADS · COST CONTROL",
+      "core_concept": "Negative keywords, search terms report analysis, and blocking irrelevant junk clicks. For example: stopping a paid plumbing service ad from triggering on 'plumbing jobs' or 'free plumbing course'.",
+      "target_audience": "Local Business Owners & In-house Marketers burning ad spend",
+      "goal": "Demonstrate deep technical expertise, negative keyword fortress, and instant cost savings.",
+      "graphic_title_line1": "STOP BUDGET LEAKS",
+      "graphic_title_line2": "5 JUNK SEARCH TERMS",
+      "graphic_subtitle": "How negative keywords save local businesses 35%+ of ad budget.",
+      "bullet_points": [
+        "Negative Keyword Fortress",
+        "Search Terms Report Audit",
+        "Block Free / Job Seekers",
+        "Lower Cost Per Acquisition"
+      ],
+      "cta_text": "AUDIT YOUR SEARCH TERMS"
+    },
+    {
+      "day": 3,
+      "pillar": "CONVERSION_TRACKING",
+      "stage": "Awareness",
+      "title": "Your Ads May Be Generating Leads That Your Tracking Cannot See.",
+      "badge": "TRACKING · AWARENESS",
+      "core_concept": "Broken conversion tags, missing form submissions, untracked phone calls, and how distorted conversion data ruins Google/Meta smart bidding algorithm optimization.",
+      "target_audience": "Founders, Agency Owners & Service Businesses with poor ad results",
+      "goal": "Generate qualified inbound inquiries for a Full Tracking Audit.",
+      "graphic_title_line1": "BLIND AD ALGORITHMS",
+      "graphic_title_line2": "UNTRACKED LEADS & SALES",
+      "graphic_subtitle": "When your pixel misses conversions, your ad networks start guessing.",
+      "bullet_points": [
+        "Broken Conversion Tags",
+        "Missing Form Submissions",
+        "Untracked Call Conversions",
+        "Fix Algorithm Misalignment"
+      ],
+      "cta_text": "BOOK TRACKING AUDIT"
+    },
+    {
+      "day": 4,
+      "pillar": "CONVERSION_TRACKING",
+      "stage": "Education",
+      "title": "Browser Pixels Alone Are No Longer the Whole Tracking Strategy.",
+      "badge": "SERVER-SIDE TRACKING",
+      "core_concept": "Browser-side vs server-side tracking, how sGTM handles secure data routing, bypassing Safari ITP and ad-blockers, and where common implementation mistakes happen.",
+      "target_audience": "Agencies, SaaS Founders & E-commerce Brands",
+      "goal": "Establish advanced technical authority in Server-Side Google Tag Manager (sGTM).",
+      "graphic_title_line1": "BROWSER PIXELS ARE DEAD",
+      "graphic_title_line2": "SERVER-SIDE GTM UPGRADE",
+      "graphic_subtitle": "Recover 30%+ lost conversions blocked by Safari ITP and ad blockers.",
+      "bullet_points": [
+        "First-Party Server Cookies",
+        "Immune to Browser Wiping",
+        "Bypass Ad-Blocker Shields",
+        "40% Faster Page Speed"
+      ],
+      "cta_text": "UPGRADE TO SGTM"
+    },
+    {
+      "day": 5,
+      "pillar": "CONVERSION_TRACKING",
+      "stage": "Technical Authority",
+      "title": "Installing Meta Pixel Is Easy. Building Reliable Conversion Tracking Is Not.",
+      "badge": "META CAPI · AUTHORITY",
+      "core_concept": "Dual tracking with Meta Pixel and Conversions API (CAPI), proper event deduplication using event_id, customer information parameters, and achieving 9.0+ Event Match Quality (EMQ).",
+      "target_audience": "E-commerce Brands, Shopify Merchants & Marketing Agencies",
+      "goal": "Attract high-ticket e-commerce brands needing flawless CAPI architecture.",
+      "graphic_title_line1": "META PIXEL IS NOT ENOUGH",
+      "graphic_title_line2": "RELIABLE CAPI SETUP",
+      "graphic_subtitle": "Achieve 9+/10 Event Match Quality with bulletproof deduplication.",
+      "bullet_points": [
+        "Browser + CAPI Hybrid Setup",
+        "Event Deduplication via ID",
+        "9+/10 Match Quality Score",
+        "Accurate ROAS Attribution"
+      ],
+      "cta_text": "FIX YOUR META CAPI"
+    },
+    {
+      "day": 6,
+      "pillar": "CONVERSION_TRACKING",
+      "stage": "E-commerce Analytics",
+      "title": "If GA4 Reports Purchases Incorrectly, Your ROAS May Be Misleading.",
+      "badge": "GA4 · E-COMMERCE",
+      "core_concept": "Validating the e-commerce funnel (view_item, add_to_cart, begin_checkout, purchase), eliminating duplicate transaction IDs, and ensuring GA4 matches bank revenue.",
+      "target_audience": "Shopify & WooCommerce Store Owners",
+      "goal": "Build deep credibility with e-commerce owners making scaling decisions on bad data.",
+      "graphic_title_line1": "GA4 E-COMMERCE AUDIT",
+      "graphic_title_line2": "STOP FAKE ROAS NUMBERS",
+      "graphic_subtitle": "Ensure your Google Analytics 4 purchase revenue matches your bank account.",
+      "bullet_points": [
+        "Full Funnel E-Com Events",
+        "Eliminate Duplicate Sales",
+        "True ROAS Attribution",
+        "Shopify & Woo Integration"
+      ],
+      "cta_text": "AUDIT YOUR GA4"
+    },
+    {
+      "day": 7,
+      "pillar": "GOOGLE_ADS",
+      "stage": "Lead Quality",
+      "title": "More Leads Won't Fix Your Business If They Never Become Customers.",
+      "badge": "GOOGLE ADS · LEAD QUALITY",
+      "core_concept": "Lead volume vs lead quality. Call tracking, CRM synchronization, and optimizing Google Ads for qualified consults instead of tire-kickers.",
+      "target_audience": "Dentists, Clinics, Law Firms, High-Ticket Service Businesses",
+      "goal": "Target high-ticket local businesses tired of low-quality lead forms.",
+      "graphic_title_line1": "STOP CHEAP LEADS",
+      "graphic_title_line2": "MEASURE PAYING CLIENTS",
+      "graphic_subtitle": "Optimize Google Ads for booked consults, not empty form-fills.",
+      "bullet_points": [
+        "Inbound Phone Call Tracking",
+        "Lead Quality Scoring",
+        "CRM Integration Sync",
+        "High-Ticket Client Acquisition"
+      ],
+      "cta_text": "GET QUALIFIED CLIENTS"
+    },
+    {
+      "day": 8,
+      "pillar": "CONVERSION_TRACKING",
+      "stage": "Revenue Analytics",
+      "title": "Stop Optimizing for Cheap Leads. Start Measuring Revenue.",
+      "badge": "OFFLINE CONVERSIONS",
+      "core_concept": "Offline Conversion Import (OCI) from CRM into Google Ads. Passing closed-won deal values so Google Smart Bidding targets clients who actually spend money.",
+      "target_audience": "Agency Owners, B2B Founders & High-Ticket Lead Gen",
+      "goal": "Position Tauhid Ads Lab as an enterprise-grade revenue analytics partner.",
+      "graphic_title_line1": "OFFLINE REVENUE SYNC",
+      "graphic_title_line2": "FEED SMART BIDDING",
+      "graphic_subtitle": "Train Google Ads AI to bid on leads who write checks, not form spammers.",
+      "bullet_points": [
+        "CRM Offline Event Import",
+        "Closed-Won Revenue Sync",
+        "Smart Bidding on Value",
+        "Lower Cost Per Closed Deal"
+      ],
+      "cta_text": "SYNC OFFLINE SALES"
+    },
+    {
+      "day": 9,
+      "pillar": "GOOGLE_ADS",
+      "stage": "Optimization",
+      "title": "A Bigger Google Ads Budget Won't Fix a Broken Campaign.",
+      "badge": "GOOGLE ADS · OPTIMIZATION",
+      "core_concept": "Auditing Quality Score, keyword intent, landing page conversion rate, tracking, and location targeting before pouring more ad budget into Google Ads.",
+      "target_audience": "Business Owners spending over $1,000/mo on Google Ads with mediocre returns",
+      "goal": "Show strategic problem-solving and attract scaling accounts.",
+      "graphic_title_line1": "DON'T INCREASE BUDGET",
+      "graphic_title_line2": "FIX THE FOUNDATION FIRST",
+      "graphic_subtitle": "5 things you must optimize before spending another dollar on Google Ads.",
+      "bullet_points": [
+        "Quality Score Breakdown",
+        "Landing Page Relevance",
+        "High-Intent Keyword Match",
+        "Geo-Radius Bid Audits"
+      ],
+      "cta_text": "FIX YOUR CAMPAIGN"
+    },
+    {
+      "day": 10,
+      "pillar": "FOUNDER_AUTHORITY",
+      "stage": "Conversion Checklist",
+      "title": "Before You Spend Another Dollar on Ads, Audit These 7 Things.",
+      "badge": "FOUNDER AUDIT · DAY 10",
+      "core_concept": "The ultimate comprehensive 7-point audit checklist: conversion tracking, negative keywords, landing pages, call tracking, lead quality, attribution, and revenue reporting.",
+      "target_audience": "All Founders, Local Business Owners, and E-commerce Directors",
+      "goal": "Drive maximum bookings for the Free 30-Minute 1-on-1 Strategy Session with Tauhid Ads Lab.",
+      "graphic_title_line1": "7-POINT AUDIT CHECKLIST",
+      "graphic_title_line2": "TAUHID ADS LAB BLUEPRINT",
+      "graphic_subtitle": "Audit your entire advertising and tracking engine in 30 minutes.",
+      "bullet_points": [
+        "Server-Side GTM Health",
+        "Negative Keyword Shield",
+        "Phone Call Attribution",
+        "CRM Revenue Loop"
+      ],
+      "cta_text": "CLAIM FREE AUDIT CALL"
+    }
+  ]
 }
