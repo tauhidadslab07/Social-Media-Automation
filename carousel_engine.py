@@ -204,6 +204,46 @@ def render_swiss_outro_slide(width=1080, height=1080):
 
     return img.convert("RGB")
 
+def render_swiss_cover_slide(line1, line2, badge_text, subtitle, width=1080, height=1080, total_slides=7):
+    """Slide 1: High-impact Minimalist Swiss Cover Slide."""
+    img = create_swiss_slide_base(width, height, 1, total_slides, is_dark=False)
+    draw = ImageDraw.Draw(img)
+
+    # Category badge pill
+    badge_w = 300
+    badge_h = 36
+    draw.rounded_rectangle([70, 150, 70 + badge_w, 150 + badge_h], radius=18, fill=(254, 226, 226), outline=PALETTE["text_red"], width=1)
+    draw.text((88, 158), badge_text.upper()[:30], fill=PALETTE["text_red"], font=get_font(14, bold=True))
+
+    # Big Swiss Typography
+    y = 205
+    draw.text((70, y), line1.upper()[:26], fill=PALETTE["text_black"], font=get_font(46, bold=True))
+    y += 58
+    draw.text((70, y), line2.upper()[:26], fill=PALETTE["text_red"], font=get_font(50, bold=True))
+    y += 70
+
+    # Subhead
+    draw.text((70, y), textwrap.fill(subtitle, width=46), fill=PALETTE["text_charcoal"], font=get_font(21, bold=False), spacing=6)
+    y += 85
+
+    # Two floating cards (Before / After or Problem / Solution)
+    card_w = width - 140
+    card_h = 160
+    draw.rounded_rectangle([70, y, 70 + card_w, y + card_h], radius=16, fill=PALETTE["bg_card"], outline=PALETTE["card_border"], width=1)
+    draw.rounded_rectangle([95, y + 25, 145, y + 75], radius=12, fill=PALETTE["text_red"])
+    draw.text((112, y + 36), "!", fill=(255, 255, 255), font=get_font(24, bold=True))
+    draw.text((165, y + 25), "The Client-Side Vulnerability", fill=PALETTE["text_black"], font=get_font(20, bold=True))
+    draw.text((165, y + 55), textwrap.fill("Browsers silently block third-party analytics scripts, wiping up to 30% of conversions.", width=46), fill=PALETTE["text_charcoal"], font=get_font(16, bold=False), spacing=4)
+
+    y += card_h + 30
+    draw.rounded_rectangle([70, y, 70 + card_w, y + card_h], radius=16, fill=PALETTE["bg_card"], outline=PALETTE["card_border"], width=1)
+    draw.rounded_rectangle([95, y + 25, 145, y + 75], radius=12, fill=PALETTE["accent_green"])
+    draw.text((110, y + 36), "✓", fill=(255, 255, 255), font=get_font(24, bold=True))
+    draw.text((165, y + 25), "The First-Party Server Remedy", fill=PALETTE["text_black"], font=get_font(20, bold=True))
+    draw.text((165, y + 55), textwrap.fill("Direct server-to-server HTTP streams deliver 100% telemetry, bypass ad-blockers, and lower CPA.", width=46), fill=PALETTE["text_charcoal"], font=get_font(16, bold=False), spacing=4)
+
+    return img.convert("RGB")
+
 def build_shopify_ga4_carousel(output_dir="carousel_output"):
     """
     Builds the complete 7-slide Minimalist Swiss Carousel:
@@ -369,6 +409,174 @@ def build_shopify_ga4_carousel(output_dir="carousel_output"):
 
     # Compile PDF for LinkedIn
     pdf_path = os.path.join(output_dir, "shopify_ga4_tracking_carousel.pdf")
+    slides[0].save(
+        pdf_path,
+        "PDF",
+        resolution=100.0,
+        save_all=True,
+        append_images=slides[1:]
+    )
+    print(f"[Carousel Engine] Compiled LinkedIn PDF Carousel: {pdf_path}")
+
+    return image_paths, pdf_path
+
+def build_daily_carousel(day_cfg=None, output_dir="carousel_output"):
+    """
+    Builds a complete 7-slide Minimalist Swiss Carousel for any day in the 30-day calendar.
+    If day_cfg is Day 1 or None, seamlessly uses the master Shopify vs GA4 reconciliation blueprint.
+    """
+    os.makedirs(output_dir, exist_ok=True)
+    if not day_cfg or day_cfg.get("day", 1) == 1:
+        return build_shopify_ga4_carousel(output_dir)
+
+    day_num = day_cfg.get("day", 2)
+    title_l1 = day_cfg.get("graphic_title_line1", "SERVER-SIDE TRACKING")
+    title_l2 = day_cfg.get("graphic_title_line2", "FIRST-PARTY ARCHITECTURE")
+    badge = day_cfg.get("badge", "SERVER-SIDE · SGTM")
+    subtitle = day_cfg.get("graphic_subtitle", day_cfg.get("core_concept", ""))
+    bullets = day_cfg.get("bullet_points", [
+        "First-Party Data Infrastructure",
+        "Ad-Blocker & iOS Privacy Bypass",
+        "1:1 Order Deduplication Handshake",
+        "Higher ROAS & Lower CPA"
+    ])
+
+    slides = []
+
+    # Slide 1: Cover
+    s1 = render_swiss_cover_slide(title_l1, title_l2, badge, subtitle)
+    slides.append(s1)
+
+    # Slide 2: The Core Problem / Breakdown
+    s2 = render_swiss_step_slide(
+        slide_num=2,
+        total_slides=7,
+        line1="The Attribution Gap",
+        line2="Why Signals Break",
+        subhead=f"Client-side scripts fail to capture modern multi-device journeys: {bullets[0]}.",
+        cards=[
+            {
+                "badge": "01",
+                "badge_bg": PALETTE["text_red"],
+                "title": "Fragile Client-Side Pixels",
+                "desc": "Ad blockers, Brave browser, and Safari ITP delete or block tracking requests before they ever reach ad platforms."
+            },
+            {
+                "badge": "02",
+                "badge_bg": (30, 41, 59),
+                "title": "Distorted AI Bidding",
+                "desc": "When Meta and Google receive incomplete conversion signals, their Smart Bidding algorithms inflate CPA."
+            }
+        ]
+    )
+    slides.append(s2)
+
+    # Slide 3: The Root Causes
+    b1 = bullets[0] if len(bullets) > 0 else "Client-side cookie drops"
+    b2 = bullets[1] if len(bullets) > 1 else "Third-party script blocks"
+    b3 = bullets[2] if len(bullets) > 2 else "Browser timeout disconnects"
+    s3 = render_swiss_step_slide(
+        slide_num=3,
+        total_slides=7,
+        line1="The 3 Invisible",
+        line2="Attribution Leaks",
+        subhead="Where your real paying customers disappear from ad analytics.",
+        cards=[
+            {"badge": "01", "badge_bg": PALETTE["text_red"], "title": b1, "desc": "Wipes customer attribution windows before checkout is finalized."},
+            {"badge": "02", "badge_bg": (30, 41, 59), "title": b2, "desc": "Blocks network requests to vendor analytics domains completely."},
+            {"badge": "03", "badge_bg": (30, 41, 59), "title": b3, "desc": "Causes offline or cross-device transactions to appear as Direct/None."}
+        ]
+    )
+    slides.append(s3)
+
+    # Slide 4: Contrast Dark Slide (Server-Side Cloud Container)
+    s4 = render_swiss_step_slide(
+        slide_num=4,
+        total_slides=7,
+        line1="Server-Side Cloud,",
+        line2="Direct Data Pipeline.",
+        subhead="Route raw data streams directly from your cloud server to ad network APIs.",
+        cards=[
+            {
+                "badge": "⚡",
+                "badge_bg": PALETTE["text_red"],
+                "title": "First-Party DNS Subdomain",
+                "desc": "Requests route through data.yourbrand.com, making tracking trusted, first-party, and immune to ad blockers."
+            },
+            {
+                "badge": "🛡️",
+                "badge_bg": (37, 99, 235),
+                "title": "100% Delivery Reliability",
+                "desc": "Direct server-to-server APIs ensure every single purchase and lead arrives safely at ad algorithms."
+            }
+        ],
+        is_dark=True
+    )
+    slides.append(s4)
+
+    # Slide 5: Data Integrity & Deduplication
+    b4 = bullets[3] if len(bullets) > 3 else "Pristine ROAS reporting"
+    s5 = render_swiss_step_slide(
+        slide_num=5,
+        total_slides=7,
+        line1="Data Integrity",
+        line2="Precision Shield",
+        subhead="Eliminate double-counting and phantom conversions across all ad dashboards.",
+        cards=[
+            {
+                "badge": "🔑",
+                "badge_bg": PALETTE["text_red"],
+                "title": "Unique Event ID Handshake",
+                "desc": "Every conversion is locked with a unique identifier to ensure zero phantom sales and auditable numbers."
+            },
+            {
+                "badge": "📊",
+                "badge_bg": (30, 41, 59),
+                "title": b4,
+                "desc": "Your analytics match bank deposits 1:1, giving your media buyers complete confidence to scale."
+            }
+        ]
+    )
+    slides.append(s5)
+
+    # Slide 6: The Outcome & ROI
+    s6 = render_swiss_step_slide(
+        slide_num=6,
+        total_slides=7,
+        line1="The Outcome",
+        line2="Lower Ad CPA & High ROAS",
+        subhead="What happens when your ad networks see 100% of your real cash revenue.",
+        cards=[
+            {
+                "badge": "📈",
+                "badge_bg": PALETTE["text_red"],
+                "title": "8.8+ Event Match Quality",
+                "desc": "Enriched server payloads maximize attribution match rate and reduce auction CPM costs."
+            },
+            {
+                "badge": "🎯",
+                "badge_bg": (30, 41, 59),
+                "title": "Faster AI Learning Phase",
+                "desc": "Ad algorithms optimize for your actual high-margin paying buyers instead of generic traffic."
+            }
+        ]
+    )
+    slides.append(s6)
+
+    # Slide 7: Outro / CTA
+    s7 = render_swiss_outro_slide()
+    slides.append(s7)
+
+    # Save individual slide images
+    image_paths = []
+    for idx, slide in enumerate(slides):
+        p = os.path.join(output_dir, f"slide_{idx + 1}.png")
+        slide.save(p, "PNG", quality=98)
+        image_paths.append(p)
+        print(f"[Carousel Engine] Generated Slide {idx + 1}: {p}")
+
+    # Compile PDF for LinkedIn
+    pdf_path = os.path.join(output_dir, f"tracking_carousel_day_{day_num}.pdf")
     slides[0].save(
         pdf_path,
         "PDF",
