@@ -264,7 +264,11 @@ def build_shopify_ga4_carousel(output_dir="carousel_output"):
     slides = []
 
     # Slide 1: Cover
-    s1 = render_cover_slide()
+    cover_path = os.path.join(os.path.dirname(__file__), "cover_slide.jpg")
+    if os.path.exists(cover_path):
+        s1 = Image.open(cover_path).convert("RGB")
+    else:
+        s1 = render_cover_slide()
     slides.append(s1)
 
     # Slide 2: The Discrepancy
