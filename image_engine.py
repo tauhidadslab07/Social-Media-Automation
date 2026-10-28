@@ -1,7 +1,7 @@
 import os
 import random
 import textwrap
-from PIL import Image, ImageDraw, ImageFont
+from PIL import Image, ImageDraw, ImageFont, ImageFilter
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -9,74 +9,73 @@ load_dotenv()
 BRAND_NAME = os.getenv("BRAND_NAME", "Tauhid Ads Lab")
 BRAND_PHONE = os.getenv("BRAND_PHONE", "+8801624608468")
 BRAND_WEBSITE = os.getenv("BRAND_WEBSITE", "tauhidadslab.com").replace("http://", "").replace("https://", "").strip("/")
+BRAND_CALENDLY = os.getenv("BRAND_CALENDLY", "calendly.com/tauhidadslab/30min").replace("https://", "").replace("http://", "")
 
-# Palettes
-FB_THEMES = [
+# ---------------------------------------------------------------------------
+# 2026 APEX TECH & DARK LUXURY PALETTES (Scroll-Stopping High Contrast)
+# ---------------------------------------------------------------------------
+THEMES = [
     {
-        "name": "Facebook High-Energy Blue & Gold",
-        "primary": (30, 58, 138),      # Deep Navy Blue (#1E3A8A)
-        "accent": (245, 158, 11),      # Golden Yellow (#F59E0B)
-        "accent_light": (254, 243, 199),
-        "bg": (248, 250, 252),
-        "card_bg": (255, 255, 255),
-        "text_dark": (15, 23, 42),
-        "text_muted": (71, 85, 105),
-        "white": (255, 255, 255)
+        "name": "Obsidian Cyber Cyan",
+        "bg_base": (7, 10, 19),         # Deep Obsidian
+        "flare_primary": (0, 220, 255),  # Electric Cyan
+        "flare_secondary": (37, 99, 235), # Royal Blue
+        "accent": (0, 240, 255),        # Neon Cyan
+        "accent_warm": (245, 158, 11),   # Golden Amber
+        "card_bg": (15, 23, 42, 225),    # Frosted Slate
+        "card_border": (0, 210, 255, 90),
+        "text_white": (255, 255, 255),
+        "text_muted": (148, 163, 184),
+        "success_green": (16, 185, 129),
+        "alert_red": (239, 68, 68)
     },
     {
-        "name": "Facebook Vibrant Royal & Orange",
-        "primary": (29, 78, 216),      # Royal Blue (#1D4ED8)
-        "accent": (249, 115, 22),      # Orange (#F97316)
-        "accent_light": (255, 237, 213),
-        "bg": (255, 255, 255),
-        "card_bg": (241, 245, 249),
-        "text_dark": (17, 24, 39),
-        "text_muted": (100, 116, 139),
-        "white": (255, 255, 255)
-    }
-]
-
-LI_THEMES = [
-    {
-        "name": "LinkedIn Executive Navy & Steel",
-        "primary": (15, 23, 42),       # Dark Slate (#0F172A)
-        "accent": (59, 130, 246),      # Corporate Blue (#3B82F6)
-        "accent_light": (219, 234, 254),
-        "bg": (255, 255, 255),
-        "card_bg": (248, 250, 252),
-        "text_dark": (15, 23, 42),
-        "text_muted": (100, 116, 139),
-        "white": (255, 255, 255)
+        "name": "Midnight Emerald & Gold",
+        "bg_base": (6, 13, 20),         # Dark Teal Obsidian
+        "flare_primary": (16, 185, 129), # Emerald Green
+        "flare_secondary": (6, 182, 212),# Cyan
+        "accent": (52, 211, 153),       # Neon Emerald
+        "accent_warm": (251, 191, 36),   # Sun Gold
+        "card_bg": (12, 28, 38, 230),
+        "card_border": (16, 185, 129, 90),
+        "text_white": (255, 255, 255),
+        "text_muted": (156, 163, 175),
+        "success_green": (16, 185, 129),
+        "alert_red": (244, 63, 94)
     },
     {
-        "name": "LinkedIn Deep Teal & Gold",
-        "primary": (13, 71, 89),       # Deep Teal
-        "accent": (245, 158, 11),      # Gold
-        "accent_light": (254, 243, 199),
-        "bg": (250, 250, 250),
-        "card_bg": (255, 255, 255),
-        "text_dark": (24, 24, 27),
-        "text_muted": (82, 82, 91),
-        "white": (255, 255, 255)
+        "name": "Deep Royal & Sunset Amber",
+        "bg_base": (8, 9, 21),          # Midnight Indigo
+        "flare_primary": (99, 102, 241), # Electric Indigo
+        "flare_secondary": (245, 158, 11),# Amber
+        "accent": (129, 140, 248),      # Periwinkle
+        "accent_warm": (245, 158, 11),   # Golden Amber
+        "card_bg": (17, 24, 39, 230),
+        "card_border": (129, 140, 248, 90),
+        "text_white": (255, 255, 255),
+        "text_muted": (156, 163, 175),
+        "success_green": (16, 185, 129),
+        "alert_red": (239, 68, 68)
     }
 ]
 
 def get_font(size, bold=False):
-    font_candidates = []
+    """Locates modern UI fonts across Windows and Linux environments."""
+    candidates = []
     if os.name == 'nt':
-        font_candidates.extend([
-            "C:\\Windows\\Fonts\\arialbd.ttf" if bold else "C:\\Windows\\Fonts\\arial.ttf",
-            "C:\\Windows\\Fonts\\segoeuib.ttf" if bold else "C:\\Windows\\Fonts\\segoeui.ttf",
-            "C:\\Windows\\Fonts\\impact.ttf" if bold else "C:\\Windows\\Fonts\\tahoma.ttf"
+        candidates.extend([
+            f"C:\\Windows\\Fonts\\{'segoeuib.ttf' if bold else 'segoeui.ttf'}",
+            f"C:\\Windows\\Fonts\\{'arialbd.ttf' if bold else 'arial.ttf'}",
+            f"C:\\Windows\\Fonts\\{'tahomabd.ttf' if bold else 'tahoma.ttf'}"
         ])
-    font_candidates.extend([
-        "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf" if bold else "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",
-        "/usr/share/fonts/truetype/freefont/FreeSansBold.ttf" if bold else "/usr/share/fonts/truetype/freefont/FreeSans.ttf"
+    candidates.extend([
+        f"/usr/share/fonts/truetype/dejavu/{'DejaVuSans-Bold.ttf' if bold else 'DejaVuSans.ttf'}",
+        f"/usr/share/fonts/truetype/freefont/{'FreeSansBold.ttf' if bold else 'FreeSans.ttf'}"
     ])
-    for path in font_candidates:
-        if os.path.exists(path):
+    for p in candidates:
+        if os.path.exists(p):
             try:
-                return ImageFont.truetype(path, size)
+                return ImageFont.truetype(p, size)
             except Exception:
                 pass
     try:
@@ -84,144 +83,446 @@ def get_font(size, bold=False):
     except Exception:
         return None
 
-def create_facebook_graphic(post_data, output_path="fb_graphic.png"):
+def create_ambient_background(width, height, theme):
+    """Renders a multi-layer dark mode canvas with glowing radial light flares."""
+    base = Image.new("RGBA", (width, height), theme["bg_base"] + (255,))
+    glow = Image.new("RGBA", (width, height), (0, 0, 0, 0))
+    glow_draw = ImageDraw.Draw(glow)
+
+    # 1. Top-Right Neon Flare
+    fp = theme["flare_primary"]
+    for r in range(480, 0, -20):
+        alpha = int(45 * (1 - (r / 480)))
+        glow_draw.ellipse([width - 250 - r, -100 - r, width - 250 + r, -100 + r], fill=(fp[0], fp[1], fp[2], alpha))
+
+    # 2. Bottom-Left Ambient Flare
+    fs = theme["flare_secondary"]
+    for r in range(420, 0, -25):
+        alpha = int(35 * (1 - (r / 420)))
+        glow_draw.ellipse([-80 - r, height - 150 - r, -80 + r, height - 150 + r], fill=(fs[0], fs[1], fs[2], alpha))
+
+    # 3. Subtle Warm Accent Center Flare
+    aw = theme["accent_warm"]
+    for r in range(260, 0, -20):
+        alpha = int(22 * (1 - (r / 260)))
+        glow_draw.ellipse([540 - r, 380 - r, 540 + r, 380 + r], fill=(aw[0], aw[1], aw[2], alpha))
+
+    composite = Image.alpha_composite(base, glow)
+    draw = ImageDraw.Draw(composite)
+
+    # Subtle tech dot grid for depth
+    for x in range(60, width - 40, 60):
+        for y in range(80, height - 60, 60):
+            draw.point((x, y), fill=(255, 255, 255, 22))
+
+    return composite
+
+def render_master_banner(post_data, output_path, is_linkedin=False):
     """
-    Facebook Design Style: Vibrant, High-Conversion Promotional Banner.
-    Features bold curved wave, massive 2-tone title, checked bullet list,
-    action button, website, and phone footer.
+    Renders an ultra-modern, attention-grabbing 1080x1080 social media creative.
+    Features:
+    - Dark mode luxury background with ambient neon flares
+    - Floating brand pill with green live dot
+    - Giant scroll-stopping typographic hook
+    - Old Way ❌ vs New Way ✅ visual comparison card
+    - Live metric trust strip (ROAS, Inbound Calls, 5.0 Rating)
+    - High-conversion bottom action dock (WhatsApp, Website, Free Audit)
     """
     WIDTH, HEIGHT = 1080, 1080
-    theme = random.choice(FB_THEMES)
-    img = Image.new("RGB", (WIDTH, HEIGHT), color=theme["bg"])
+    theme = THEMES[1] if is_linkedin else random.choice(THEMES)
+    
+    img = create_ambient_background(WIDTH, HEIGHT, theme)
     draw = ImageDraw.Draw(img)
-    
-    # 1. Top Wave
-    draw.polygon([(0, 0), (WIDTH, 0), (WIDTH, 140), (0, 200)], fill=theme["primary"])
-    draw.polygon([(WIDTH - 240, 0), (WIDTH, 0), (WIDTH, 170), (WIDTH - 160, 160)], fill=theme["accent"])
-    
-    # Top Branding & Website
-    draw.text((60, 55), f"⚡ {BRAND_NAME.upper()}", fill=theme["white"], font=get_font(34, bold=True))
-    draw.text((60, 105), f"🌐 {BRAND_WEBSITE} • {post_data.get('category', 'ADS STRATEGY')}", fill=theme["accent_light"], font=get_font(20, bold=True))
-    
-    # Decorative dots
-    for r in range(4):
-        for c in range(5):
-            draw.ellipse([WIDTH - 180 + (c*18), 260 + (r*18), WIDTH - 176 + (c*18), 264 + (r*18)], fill=theme["accent"])
-            
-    # Headline
-    h1 = post_data.get("graphic_title_line1", "WE HELP TO").upper()
-    h2 = post_data.get("graphic_title_line2", "GROW YOUR BUSINESS").upper()
-    draw.text((60, 240), h1, fill=theme["primary"], font=get_font(38, bold=True))
-    
-    wrapped_h2 = textwrap.fill(h2, width=18)
-    draw.text((60, 295), wrapped_h2, fill=theme["accent"], font=get_font(64, bold=True), spacing=15)
-    
-    bbox = draw.textbbox((60, 295), wrapped_h2, font=get_font(64, bold=True), spacing=15)
-    sub_y = bbox[3] + 25
-    
-    sub = post_data.get("graphic_subtitle", f"Visit {BRAND_WEBSITE} to scale your sales.")
-    draw.text((60, sub_y), textwrap.fill(sub, width=42), fill=theme["text_muted"], font=get_font(26, bold=False), spacing=10)
-    
-    # Bullets card
-    card_y = sub_y + 80
-    card_h = 240
-    draw.rounded_rectangle([60, card_y, WIDTH - 60, card_y + card_h], radius=24, fill=theme["card_bg"], outline=theme["accent"], width=2)
-    
-    bullets = post_data.get("bullet_points", ["Laser Targeted Ads", "Sales Funnels", "High-ROAS Creatives", "Full Tracking Setup"])
-    for i, b in enumerate(bullets[:4]):
-        row_y = card_y + 25 + (i * 50)
-        draw.ellipse([85, row_y + 2, 115, row_y + 32], fill=theme["accent"])
-        draw.text((93, row_y + 3), "✔", fill=theme["white"], font=get_font(22, bold=True))
-        draw.text((130, row_y + 4), b, fill=theme["text_dark"], font=get_font(28, bold=True))
-        
-    # CTA button
-    cta_y = card_y + card_h + 35
-    draw.rounded_rectangle([60, cta_y, 440, cta_y + 65], radius=32, fill=theme["accent"])
-    draw.text((95, cta_y + 16), f"🚀  {post_data.get('cta_text', 'BOOK FREE AUDIT')}", fill=theme["white"], font=get_font(26, bold=True))
-    
-    # Footer
-    footer_y = HEIGHT - 100
-    draw.rectangle([0, footer_y, WIDTH, HEIGHT], fill=theme["primary"])
-    draw.text((60, footer_y + 32), BRAND_NAME.upper(), fill=theme["white"], font=get_font(28, bold=True))
-    
-    phone_text = f"📞 Call / WhatsApp: {BRAND_PHONE}"
-    p_bbox = draw.textbbox((0, 0), phone_text, font=get_font(28, bold=True))
-    draw.text((WIDTH - (p_bbox[2] - p_bbox[0]) - 60, footer_y + 32), phone_text, fill=theme["accent"], font=get_font(28, bold=True))
-    
-    img.save(output_path, "PNG", quality=95)
-    print(f"[Image Engine] Facebook graphic generated: {output_path}")
+
+    # =========================================================================
+    # 1. TOP BRAND HEADER (Y: 55)
+    # =========================================================================
+    # Left: Brand Badge Pill
+    badge_x, badge_y = 60, 55
+    badge_w, badge_h = 320, 44
+    draw.rounded_rectangle(
+        [badge_x, badge_y, badge_x + badge_w, badge_y + badge_h],
+        radius=22,
+        fill=(15, 23, 42, 220),
+        outline=theme["accent"],
+        width=1
+    )
+    # Pulsing Live Green Dot
+    draw.ellipse([badge_x + 16, badge_y + 16, badge_x + 28, badge_y + 28], fill=theme["success_green"])
+    draw.text((badge_x + 38, badge_y + 11), BRAND_NAME.upper(), fill=theme["text_white"], font=get_font(18, bold=True))
+
+    # Right: Website Pill
+    web_text = f"🌐 {BRAND_WEBSITE}"
+    w_font = get_font(18, bold=True)
+    w_bbox = draw.textbbox((0, 0), web_text, font=w_font)
+    w_w = (w_bbox[2] - w_bbox[0]) + 36
+    draw.rounded_rectangle(
+        [WIDTH - 60 - w_w, badge_y, WIDTH - 60, badge_y + badge_h],
+        radius=22,
+        fill=(15, 23, 42, 200),
+        outline=(71, 85, 105, 160),
+        width=1
+    )
+    draw.text((WIDTH - 60 - w_w + 18, badge_y + 11), web_text, fill=theme["accent"], font=w_font)
+
+    # =========================================================================
+    # 2. TOPIC CATEGORY CAPSULE (Y: 130)
+    # =========================================================================
+    category = post_data.get("category", "GOOGLE ADS SPECIALIST").upper()
+    cat_text = f"● {category}"
+    cat_font = get_font(15, bold=True)
+    cat_bbox = draw.textbbox((0, 0), cat_text, font=cat_font)
+    cat_w = (cat_bbox[2] - cat_bbox[0]) + 30
+    draw.rounded_rectangle(
+        [60, 130, 60 + cat_w, 130 + 34],
+        radius=17,
+        fill=(30, 41, 59, 210),
+        outline=theme["accent_warm"],
+        width=1
+    )
+    draw.text((75, 137), cat_text, fill=theme["accent_warm"], font=cat_font)
+
+    # =========================================================================
+    # 3. GIANT SCROLL-STOPPING HEADLINE (Y: 185)
+    # =========================================================================
+    h1 = post_data.get("graphic_title_line1", "STOP BOOSTING POSTS").upper().strip(".")
+    h2 = post_data.get("graphic_title_line2", "CAPTURE ACTIVE BUYERS").upper().strip(".")
+
+    # Line 1: Bold White
+    h1_font = get_font(46, bold=True)
+    draw.text((60, 185), h1, fill=theme["text_white"], font=h1_font)
+
+    # Line 2: Glowing Neon Accent (Large, Punchy)
+    h2_font = get_font(56, bold=True)
+    wrapped_h2 = textwrap.fill(h2, width=22)
+    draw.text((60, 245), wrapped_h2, fill=theme["accent"], font=h2_font, spacing=10)
+
+    # Calculate where Line 2 ends
+    h2_bbox = draw.textbbox((60, 245), wrapped_h2, font=h2_font, spacing=10)
+    sub_y = h2_bbox[3] + 16
+
+    # Subtitle
+    sub = post_data.get("graphic_subtitle", "Target ready-to-buy customers searching on Google right now.")
+    sub_wrapped = textwrap.fill(sub, width=54)
+    draw.text((60, sub_y), sub_wrapped, fill=theme["text_muted"], font=get_font(21, bold=False), spacing=6)
+
+    sub_bbox = draw.textbbox((60, sub_y), sub_wrapped, font=get_font(21, bold=False), spacing=6)
+    content_y = sub_bbox[3] + 28
+
+    # =========================================================================
+    # 4. HERO CENTERPIECE: 4-POINT APEX GRID OR COMPARISON CARD (Y: content_y)
+    # =========================================================================
+    bullets = post_data.get("bullet_points", [
+        "Top #1 Position on Google Search",
+        "High-Intent Inbound Phone Calls",
+        "Negative Keywords Save 35%+ Budget",
+        "Full Server-Side Tracking Setup"
+    ])
+
+    # 4-card 2x2 grid layout (clean, ultra-modern app cards)
+    card_w = 460
+    card_h = 100
+    gap_x = 40
+    gap_y = 20
+
+    coords = [
+        (60, content_y),
+        (60 + card_w + gap_x, content_y),
+        (60, content_y + card_h + gap_y),
+        (60 + card_w + gap_x, content_y + card_h + gap_y)
+    ]
+
+    bullet_font = get_font(19, bold=True)
+    for i, (cx, cy) in enumerate(coords[:4]):
+        b_text = bullets[i] if i < len(bullets) else "Verified Growth Blueprint"
+        # Translucent glass card
+        draw.rounded_rectangle(
+            [cx, cy, cx + card_w, cy + card_h],
+            radius=16,
+            fill=theme["card_bg"],
+            outline=(51, 65, 85, 180),
+            width=1
+        )
+        # Glowing checkmark circle
+        icon_bg = theme["success_green"] if i % 2 == 0 else theme["accent"]
+        draw.ellipse([cx + 18, cy + 22, cx + 54, cy + 58], fill=icon_bg)
+        draw.text((cx + 28, cy + 24), "✔", fill=(7, 10, 19), font=get_font(22, bold=True))
+
+        # Bullet Text wrapped nicely
+        wrapped_b = textwrap.fill(b_text, width=28)
+        draw.text((cx + 68, cy + 26), wrapped_b, fill=theme["text_white"], font=bullet_font, spacing=4)
+
+    grid_bottom = content_y + (card_h * 2) + gap_y
+
+    # =========================================================================
+    # 5. LIVE METRIC TRUST STRIP (Y: ~770)
+    # =========================================================================
+    stat_y = grid_bottom + 25
+    stat_h = 70
+    draw.rounded_rectangle(
+        [60, stat_y, WIDTH - 60, stat_y + stat_h],
+        radius=16,
+        fill=(15, 23, 42, 230),
+        outline=theme["accent"],
+        width=1
+    )
+
+    # Stat 1: 5.0 Rating
+    draw.text((85, stat_y + 12), "⭐ 5.0 RATED", fill=theme["accent_warm"], font=get_font(17, bold=True))
+    draw.text((85, stat_y + 38), "Top Agency Trust", fill=theme["text_muted"], font=get_font(13, bold=False))
+
+    draw.line([(340, stat_y + 15), (340, stat_y + 55)], fill=(51, 65, 85, 220), width=1)
+
+    # Stat 2: High-Intent Calls
+    draw.text((375, stat_y + 12), "📞 INBOUND CALLS", fill=theme["accent"], font=get_font(17, bold=True))
+    draw.text((375, stat_y + 38), "Ready-To-Buy Clients", fill=theme["text_muted"], font=get_font(13, bold=False))
+
+    draw.line([(680, stat_y + 15), (680, stat_y + 55)], fill=(51, 65, 85, 220), width=1)
+
+    # Stat 3: 0% Wasted Spend
+    draw.text((715, stat_y + 12), "⚡ ZERO WASTED SPEND", fill=theme["success_green"], font=get_font(17, bold=True))
+    draw.text((715, stat_y + 38), "Negative Keywords + GTM", fill=theme["text_muted"], font=get_font(13, bold=False))
+
+    # =========================================================================
+    # 6. HIGH-CONVERSION BOTTOM ACTION DOCK (Y: ~880)
+    # =========================================================================
+    dock_y = stat_y + stat_h + 24
+    dock_h = 96
+    draw.rounded_rectangle(
+        [60, dock_y, WIDTH - 60, dock_y + dock_h],
+        radius=20,
+        fill=(10, 15, 30, 240),
+        outline=(71, 85, 105, 200),
+        width=1
+    )
+
+    # WhatsApp Button
+    wa_w = 420
+    draw.rounded_rectangle(
+        [80, dock_y + 20, 80 + wa_w, dock_y + dock_h - 20],
+        radius=26,
+        fill=(37, 211, 102), # Official WhatsApp Green
+    )
+    draw.text((105, dock_y + 36), f"💬 WhatsApp: {BRAND_PHONE}", fill=(10, 15, 29), font=get_font(18, bold=True))
+
+    # Right CTA: Book Strategy Session
+    cta_text = post_data.get("cta_text", "BOOK FREE AUDIT").upper()
+    cta_btn_text = f"🚀 {cta_text}"
+    draw.text((540, dock_y + 26), cta_btn_text, fill=theme["accent"], font=get_font(20, bold=True))
+    draw.text((540, dock_y + 54), f"📅 {BRAND_CALENDLY}", fill=theme["text_muted"], font=get_font(14, bold=False))
+
+    # Save finalized image
+    final_img = img.convert("RGB")
+    final_img.save(output_path, "PNG", quality=98)
+    print(f"[Image Engine 2026] Generated: {output_path}")
     return output_path
+
+def render_template_poster(post_data, output_path, is_linkedin=False):
+    """
+    Renders an attention-grabbing social media graphic using the curated reference poster
+    templates uploaded by the user in the 'templates/' directory.
+    
+    1. Selects the template based on post_data['day'] (1 to 31 rotation).
+    2. Resizes/crops to 1080x1080 while preserving focal composition.
+    3. Replaces old agency logo with official 'Tauhid Ads Lab' badge and website pill.
+    4. Overlays custom high-contrast headline, category badge, and subtitle.
+    5. Replaces bottom footer with Tauhid Ads Lab WhatsApp (+8801624608468) and Calendly booking CTA.
+    6. Falls back to render_master_banner if no template is found or on error.
+    """
+    templates_dir = os.path.join(os.path.dirname(__file__), "templates")
+    template_files = []
+    if os.path.exists(templates_dir):
+        template_files = sorted([
+            f for f in os.listdir(templates_dir)
+            if f.lower().endswith(('.jpg', '.jpeg', '.png'))
+        ])
+
+    if not template_files:
+        print("[Image Engine] No templates found in templates/. Falling back to master banner.")
+        return render_master_banner(post_data, output_path, is_linkedin=is_linkedin)
+
+    # Determine day number (1-based)
+    day = post_data.get("day", 1)
+    try:
+        day_idx = (int(day) - 1) % len(template_files)
+    except Exception:
+        day_idx = 0
+
+    chosen_template = os.path.join(templates_dir, template_files[day_idx])
+    print(f"[Image Engine] Using Reference Template #{day_idx + 1} ({template_files[day_idx]}) for Day {day}")
+
+    try:
+        with Image.open(chosen_template) as raw_img:
+            base = raw_img.convert("RGBA")
+            WIDTH, HEIGHT = 1080, 1080
+
+            # Resize preserving aspect ratio and center crop
+            orig_w, orig_h = base.size
+            scale = max(WIDTH / orig_w, HEIGHT / orig_h)
+            new_w, new_h = int(orig_w * scale), int(orig_h * scale)
+            resized = base.resize((new_w, new_h), Image.Resampling.LANCZOS)
+
+            left = (new_w - WIDTH) // 2
+            top = (new_h - HEIGHT) // 2
+            canvas = resized.crop((left, top, left + WIDTH, top + HEIGHT))
+
+            overlay = Image.new("RGBA", (WIDTH, HEIGHT), (0, 0, 0, 0))
+            draw = ImageDraw.Draw(overlay)
+
+            # -------------------------------------------------------------
+            # 1. TOP BRAND HEADER: Clean frosted glass bar covering old logo
+            # -------------------------------------------------------------
+            header_h = 95
+            for y in range(header_h + 30):
+                alpha = int(240 * (1 - (y / (header_h + 30)) * 0.4)) if y < header_h else int(144 * (1 - (y - header_h) / 30))
+                draw.line([(0, y), (WIDTH, y)], fill=(8, 12, 22, alpha), width=1)
+
+            # Tauhid Ads Lab Brand Pill (Left)
+            pill_x, pill_y = 50, 24
+            pill_w, pill_h = 320, 48
+            draw.rounded_rectangle(
+                [pill_x, pill_y, pill_x + pill_w, pill_y + pill_h],
+                radius=24,
+                fill=(15, 23, 42, 240),
+                outline=(0, 220, 255, 180),
+                width=2
+            )
+            # Live Green Dot
+            draw.ellipse([pill_x + 16, pill_y + 16, pill_x + 32, pill_y + 32], fill=(16, 185, 129))
+            draw.text((pill_x + 42, pill_y + 13), BRAND_NAME.upper(), fill=(255, 255, 255), font=get_font(19, bold=True))
+
+            # Website Pill (Right)
+            web_text = f"🌐 {BRAND_WEBSITE}"
+            w_font = get_font(18, bold=True)
+            w_bbox = draw.textbbox((0, 0), web_text, font=w_font)
+            w_w = (w_bbox[2] - w_bbox[0]) + 36
+            draw.rounded_rectangle(
+                [WIDTH - 50 - w_w, pill_y, WIDTH - 50, pill_y + pill_h],
+                radius=24,
+                fill=(15, 23, 42, 220),
+                outline=(59, 130, 246, 140),
+                width=1
+            )
+            draw.text((WIDTH - 50 - w_w + 18, pill_y + 14), web_text, fill=(56, 189, 248), font=w_font)
+
+            # -------------------------------------------------------------
+            # 2. DYNAMIC HEADLINE OVERLAY CARD (Upper-Left)
+            # -------------------------------------------------------------
+            category = post_data.get("category", "GOOGLE ADS SPECIALIST").upper()
+            h1 = post_data.get("graphic_title_line1", "STOP BOOSTING POSTS").upper().strip(".")
+            h2 = post_data.get("graphic_title_line2", "CAPTURE ACTIVE BUYERS").upper().strip(".")
+            sub = post_data.get("graphic_subtitle", "Why Google Search ads beat Facebook boosting every time.")
+
+            card_x = 50
+            card_y = 145
+            card_w = 620
+
+            cat_font = get_font(14, bold=True)
+            h1_font = get_font(34, bold=True)
+            h2_font = get_font(42, bold=True)
+            sub_font = get_font(17, bold=False)
+
+            wrapped_h1 = textwrap.fill(h1, width=22)
+            wrapped_h2 = textwrap.fill(h2, width=18)
+            wrapped_sub = textwrap.fill(sub, width=40)
+
+            cat_box = draw.textbbox((0, 0), category, font=cat_font)
+            h1_box = draw.textbbox((0, 0), wrapped_h1, font=h1_font)
+            h2_box = draw.textbbox((0, 0), wrapped_h2, font=h2_font)
+            sub_box = draw.textbbox((0, 0), wrapped_sub, font=sub_font)
+
+            card_h = (cat_box[3] - cat_box[1]) + (h1_box[3] - h1_box[1]) + (h2_box[3] - h2_box[1]) + (sub_box[3] - sub_box[1]) + 95
+
+            # Semi-transparent dark frosted glass backing for pristine legibility
+            draw.rounded_rectangle(
+                [card_x, card_y, card_x + card_w, card_y + card_h],
+                radius=20,
+                fill=(9, 14, 26, 225),
+                outline=(0, 220, 255, 120),
+                width=1
+            )
+
+            # Topic Badge
+            badge_text = f"● {category}"
+            draw.rounded_rectangle(
+                [card_x + 24, card_y + 18, card_x + 24 + draw.textbbox((0,0), badge_text, font=cat_font)[2] + 20, card_y + 46],
+                radius=14,
+                fill=(30, 41, 59, 230),
+                outline=(245, 158, 11, 200),
+                width=1
+            )
+            draw.text((card_x + 34, card_y + 24), badge_text, fill=(251, 191, 36), font=cat_font)
+
+            # Line 1 (White Bold)
+            y_cursor = card_y + 58
+            draw.text((card_x + 24, y_cursor), wrapped_h1, fill=(255, 255, 255), font=h1_font)
+            y_cursor += (h1_box[3] - h1_box[1]) + 8
+
+            # Line 2 (Neon Cyan Accent)
+            draw.text((card_x + 24, y_cursor), wrapped_h2, fill=(0, 240, 255), font=h2_font)
+            y_cursor += (h2_box[3] - h2_box[1]) + 10
+
+            # Subtitle (Muted Slate)
+            draw.text((card_x + 24, y_cursor), wrapped_sub, fill=(203, 213, 225), font=sub_font)
+
+            # -------------------------------------------------------------
+            # 3. BOTTOM CONTACT DOCK: Covers old phone, website & address
+            # -------------------------------------------------------------
+            dock_h = 100
+            dock_y = HEIGHT - dock_h
+
+            draw.rectangle(
+                [0, dock_y, WIDTH, HEIGHT],
+                fill=(7, 10, 20, 250),
+                outline=(30, 41, 59, 255),
+                width=1
+            )
+
+            # Left: WhatsApp Pill Button
+            wa_w = 430
+            draw.rounded_rectangle(
+                [50, dock_y + 18, 50 + wa_w, dock_y + dock_h - 18],
+                radius=26,
+                fill=(37, 211, 102) # Official WhatsApp Green
+            )
+            draw.text((75, dock_y + 35), f"💬 WhatsApp: {BRAND_PHONE}", fill=(10, 15, 29), font=get_font(19, bold=True))
+
+            # Right: Strategy Session / Calendly CTA
+            cta_title = f"🚀 {post_data.get('cta_text', 'BOOK FREE ADS AUDIT').upper()}"
+            draw.text((520, dock_y + 24), cta_title, fill=(0, 240, 255), font=get_font(20, bold=True))
+            draw.text((520, dock_y + 52), f"📅 {BRAND_CALENDLY}", fill=(148, 163, 184), font=get_font(15, bold=False))
+
+            # Merge and finalize
+            final_composite = Image.alpha_composite(canvas, overlay).convert("RGB")
+            final_composite.save(output_path, "PNG", quality=98)
+            print(f"[Image Engine] Template Composite saved: {output_path}")
+            return output_path
+
+    except Exception as e:
+        print(f"[Image Engine] Error rendering template poster: {e}. Falling back to master banner.")
+        return render_master_banner(post_data, output_path, is_linkedin=is_linkedin)
+
+def create_facebook_graphic(post_data, output_path="fb_graphic.png"):
+    """Creates attention-grabbing Facebook & Instagram feed graphic using curated templates."""
+    return render_template_poster(post_data, output_path, is_linkedin=False)
 
 def create_linkedin_graphic(post_data, output_path="li_graphic.png"):
-    """
-    LinkedIn Design Style: Clean Executive Infographic & Thought-Leadership Card.
-    Structured, data-driven look with framework blocks, website, and authority styling.
-    """
-    WIDTH, HEIGHT = 1080, 1080
-    theme = random.choice(LI_THEMES)
-    img = Image.new("RGB", (WIDTH, HEIGHT), color=theme["card_bg"])
-    draw = ImageDraw.Draw(img)
-    
-    margin = 40
-    # Outer executive border
-    draw.rectangle([margin, margin, WIDTH - margin, HEIGHT - margin], outline=theme["primary"], width=2)
-    
-    # Top Bar
-    draw.rectangle([margin, margin, WIDTH - margin, 130], fill=theme["primary"])
-    draw.text((70, 65), f"⚡ {BRAND_NAME.upper()}", fill=theme["white"], font=get_font(32, bold=True))
-    draw.text((WIDTH - 360, 72), f"🌐 {BRAND_WEBSITE}", fill=theme["accent_light"], font=get_font(22, bold=True))
-    
-    # Category Tag
-    draw.rounded_rectangle([70, 170, 380, 215], radius=8, fill=theme["accent_light"])
-    draw.text((90, 182), post_data.get("category", "PERFORMANCE INSIGHT").upper(), fill=theme["primary"], font=get_font(18, bold=True))
-    
-    # Headline
-    h1 = post_data.get("graphic_title_line1", "HOW TO SCALE").upper()
-    h2 = post_data.get("graphic_title_line2", "REVENUE & LOWER CPA").upper()
-    draw.text((70, 245), h1, fill=theme["text_muted"], font=get_font(36, bold=True))
-    draw.text((70, 295), textwrap.fill(h2, width=22), fill=theme["primary"], font=get_font(52, bold=True), spacing=10)
-    
-    # Decorative rule
-    draw.line([(70, 435), (250, 435)], fill=theme["accent"], width=5)
-    
-    # 4 Data / Framework Metric Cards
-    card_y = 470
-    card_w = (WIDTH - 140 - 24) // 2
-    bullets = post_data.get("bullet_points", ["Creative Hook Testing", "Full Funnel Attribution", "Audience Segmentation", "Scaling Budget With ROAS"])
-    
-    for idx, b in enumerate(bullets[:4]):
-        bx = 70 + (idx % 2) * (card_w + 24)
-        by = card_y + (idx // 2) * 125
-        draw.rounded_rectangle([bx, by, bx + card_w, by + 105], radius=14, fill=theme["white"], outline=theme["accent"], width=2)
-        # Step number
-        draw.rounded_rectangle([bx + 18, by + 18, bx + 65, by + 50], radius=8, fill=theme["accent_light"])
-        draw.text((bx + 26, by + 24), f"0{idx+1}", fill=theme["primary"], font=get_font(18, bold=True))
-        draw.text((bx + 80, by + 22), textwrap.fill(b, width=18), fill=theme["text_dark"], font=get_font(22, bold=True), spacing=4)
-        
-    # Strategy Callout Box
-    box_y = 750
-    draw.rounded_rectangle([70, box_y, WIDTH - 70, box_y + 130], radius=16, fill=theme["primary"])
-    draw.text((100, box_y + 28), "LOOKING TO SCALE YOUR BUSINESS?", fill=theme["white"], font=get_font(26, bold=True))
-    draw.text((100, box_y + 68), f"Book a 30-min strategy session or visit {BRAND_WEBSITE}", fill=theme["accent_light"], font=get_font(20, bold=False))
-    
-    # Footer Strip
-    footer_y = HEIGHT - 110
-    draw.rectangle([margin, footer_y, WIDTH - margin, HEIGHT - margin], fill=theme["accent"])
-    draw.text((70, footer_y + 22), BRAND_NAME.upper(), fill=theme["white"], font=get_font(26, bold=True))
-    draw.text((WIDTH - 460, footer_y + 22), f"Direct: {BRAND_PHONE}", fill=theme["white"], font=get_font(26, bold=True))
-    
-    img.save(output_path, "PNG", quality=95)
-    print(f"[Image Engine] LinkedIn graphic generated: {output_path}")
-    return output_path
+    """Creates executive authority LinkedIn feed graphic using curated templates."""
+    return render_template_poster(post_data, output_path, is_linkedin=True)
 
 if __name__ == "__main__":
-    demo = {
-        "category": "ADS AUDIT & STRATEGY",
-        "graphic_title_line1": "WE HELP TO",
-        "graphic_title_line2": "GROW YOUR BUSINESS",
-        "graphic_subtitle": f"Visit {BRAND_WEBSITE} to scale your sales with data-driven ads.",
-        "bullet_points": ["Laser Targeted Ads", "Conversion Funnels", "High-ROAS Creatives", "Full Tracking Setup"],
-        "cta_text": "BOOK FREE AUDIT"
+    sample_data = {
+        "category": "GOOGLE ADS · AWARENESS",
+        "graphic_title_line1": "STOP BOOSTING POSTS",
+        "graphic_title_line2": "CAPTURE ACTIVE BUYERS",
+        "graphic_subtitle": "Why Google Search ads beat Facebook boosting for local businesses every time.",
+        "bullet_points": [
+            "Top #1 Position on Google",
+            "Direct Inbound Phone Calls",
+            "Zero Wasted Negative Keywords",
+            "100% Attribution & Tracking"
+        ],
+        "cta_text": "BOOK FREE ADS AUDIT"
     }
-    create_facebook_graphic(demo)
-    create_linkedin_graphic(demo)
+    create_facebook_graphic(sample_data, "test_fb_modern.png")
+    create_linkedin_graphic(sample_data, "test_li_modern.png")

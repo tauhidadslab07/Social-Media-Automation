@@ -96,22 +96,22 @@ def generate_dual_social_post():
         # Emergency fallback config
         day_cfg = {
             "day": 1,
-            "pillar": "GOOGLE_ADS",
-            "title": "Stop Boosting Posts. Start Capturing Buyers Who Are Already Searching.",
-            "badge": "GOOGLE ADS · AWARENESS",
-            "core_concept": "Facebook boosting vs Google Search Ads. Urgent local intent vs social scrolling.",
-            "target_audience": "Local Business Owners (Clinics, Dentists, Plumbers, HVAC, Lawyers, Home Services)",
-            "goal": "Capture local business owners' attention and shift mindset to high-intent Google Search.",
-            "graphic_title_line1": "STOP BOOSTING POSTS",
-            "graphic_title_line2": "CAPTURE ACTIVE BUYERS",
-            "graphic_subtitle": "Why Google Search ads beat Facebook boosting for local businesses every time.",
+            "pillar": "SERVER_SIDE_TRACKING",
+            "title": "Why Browser Pixels Miss 30% of Your Real Conversions",
+            "badge": "SERVER-SIDE · BASICS",
+            "core_concept": "Browser pixels losing conversions due to ad blockers, Safari ITP, and third-party cookie restrictions.",
+            "target_audience": "E-Commerce Founders, DTC Brands & Marketing Agencies",
+            "goal": "Educate on invisible data loss and position Server-Side Tracking as the essential solution.",
+            "graphic_title_line1": "BROWSER PIXELS ARE DEAD",
+            "graphic_title_line2": "SWITCH TO SERVER-SIDE",
+            "graphic_subtitle": "Recover 25-35% of lost conversions blocked by browser shields.",
             "bullet_points": [
-                "Zero-Interruption Buyer Intent",
-                "Direct Inbound Phone Calls",
-                "Target Exact Local Geo-Radius",
-                "Stop Paying for Casual Likes"
+                "Ad-Blocker Immune Tracking",
+                "Bypass iOS 14.5+ Shielding",
+                "First-Party Server Routing",
+                "Recover Hidden Purchases"
             ],
-            "cta_text": "BOOK FREE ADS AUDIT"
+            "cta_text": "UPGRADE TO SGTM"
         }
 
     pillar = day_cfg.get("pillar", "GOOGLE_ADS")
@@ -143,7 +143,7 @@ Agency Contact Details:
 - Free 30-Min Strategy Call (Calendly): {BRAND_CALENDLY}
 - Phone / WhatsApp: {BRAND_PHONE}
 
-TODAY IS DAY {day_cfg.get('day')} OF OUR 10-DAY CAMPAIGN.
+TODAY IS DAY {day_cfg.get('day')} OF OUR 30-DAY CAMPAIGN.
 STAGE: {day_cfg.get('badge')}
 TOPIC TITLE: "{day_cfg.get('title')}"
 TARGET AUDIENCE: {day_cfg.get('target_audience')}
@@ -215,58 +215,57 @@ def get_day_fallback(day_cfg):
     
     # Specific master fallback for Day 1
     if day_num == 1:
-        fb_raw = f"""**Stop Wasting Budget Boosting Posts: Why Local Businesses Win On Google Search! 🎯**
+        fb_raw = f"""**Why Your Browser Pixels Are Missing 30% of Real Conversions! 🚨**
 
-If you run a local service business (clinic, dental practice, law firm, real estate, or home services), hitting the 'Boost Post' button on Facebook is the fastest way to burn your marketing budget.
+If you run an e-commerce brand or lead gen business, relying solely on standard browser pixels (Meta Pixel, Google Tag) is costing you 20% to 35% of your recorded sales.
 
-Here is why:
-When someone is scrolling Facebook or Instagram at 11 PM, they are looking at memes and travel videos. They are not looking to hire a professional.
+Here is the invisible breakdown happening right now:
+👉 **Ad Blockers:** Over 30% of desktop and mobile users run uBlock, Brave, or AdGuard, which block `connect.facebook.net` and `google-analytics.com` scripts completely.
+👉 **Apple Safari ITP:** iOS and Mac Safari cap JavaScript cookies to 7 days or 24 hours, wiping out your 30-day attribution and making retargeting audiences disappear.
+👉 **Network Timeouts & Script Dropping:** Heavy page loads cause browser tracking scripts to fail before checkout fires.
 
-When their air conditioner breaks down in 38°C heat, or their tooth starts aching uncontrollably, where do they go?
-👉 They open Google.
-👉 They search: **"Emergency Dentist Near Me"** or **"Emergency AC Repair"**.
-👉 They click the top phone number and call immediately.
+When Meta and Google algorithms miss 30% of your conversions, their AI starts guessing—bidding on the wrong prospects and driving your Cost Per Acquisition (CPA) through the roof.
 
-That is the difference between **Interruption Marketing** and **High-Intent Search Marketing**.
+**The Solution? Server-Side Tracking (sGTM & Conversions API)**
+At **{BRAND_NAME}**, we move tracking out of the vulnerable browser into a private, first-party cloud server:
 
-As a Google Ads Specialist for Local Businesses, here is the **3-step blueprint** we use at **{BRAND_NAME}** to fill appointment calendars:
+✔ **Immune to Ad Blockers:** Events are routed through your own custom domain (`data.yourbrand.com`), bypassing browser blacklists completely.
+✔ **First-Party Cookie Armor:** Extends cookie lifetime up to 1-2 years, restoring pristine multi-touch attribution and deep retargeting pools.
+✔ **Flawless AI Bidding:** Feeds 100% complete purchase signals to Meta Advantage+ and Google Smart Bidding, accelerating the learning phase and slashing CPA.
 
-✔ **Hyper-Local Geo-Radius Bidding:** We don't waste budget targeting entire states. We pinpoint a strict 5 to 10-mile radius around your office where your actual paying clients live.
-✔ **Direct "Call-Only" Campaigns:** Most local businesses don't need a complicated website to get clients. We run ads designed for mobile smartphones where a prospect taps the ad and their phone instantly dials your front desk.
-✔ **The Negative Keyword Fortress:** We install aggressive negative keyword lists blocking junk searches like "free clinic", "dentist salary", or "DIY pipe repair", saving 35%+ of your budget before it costs a dime.
-
-**The Result?**
-You don't get "Price please?" messages in your inbox.
-You get qualified local homeowners and patients calling your office ready to book.
+Stop leaving your revenue attribution to the mercy of browser privacy settings.
 
 ---
 
-👇 **Local Business Owners:** Is your phone ringing with qualified clients from Google, or are you still relying on word-of-mouth?
+👇 **E-Commerce & Agency Founders:** Have you noticed a discrepancy between your Shopify/Stripe sales and what your ad dashboards report?
 
-⚡ Ready to dominate Google Search in your local city?
-**{BRAND_NAME} is offering a FREE 30-Minute Local Google Ads Strategy Session:**
+⚡ Ready to recover your lost conversions?
+**{BRAND_NAME} is offering a FREE 30-Minute Server-Side Tracking Audit:**
 📅 **Book Your Strategy Call:** {BRAND_CALENDLY}
 🌐 **Official Agency Portal:** {BRAND_WEBSITE}
 📞 **Direct Line / WhatsApp:** {BRAND_PHONE}"""
 
-        li_raw = f"""**For local businesses and high-ticket service providers, intent always beats interruption. 📈**
+        li_raw = f"""**In 2026, browser-based tracking pixels are technically obsolete. 📈**
 
-At **{BRAND_NAME}**, when we analyze underperforming advertising budgets for local practices, law firms, and service agencies, the primary mistake is over-allocating capital to social media boosting while ignoring **high-intent Google Search volume**.
+At **{BRAND_NAME}**, when we audit underperforming ad accounts spending $10k to $100k/month, the root cause is rarely the ad creative—it is **signal degradation**.
 
-When a prospective client searches for a solution on Google, they are already at the bottom of the decision funnel. Capturing this demand requires three non-negotiables:
+Standard client-side pixels are losing 25% to 35% of conversion events due to three compounding technical barriers:
+1. **Aggressive Client-Side Filtering:** Privacy browsers (Brave, Safari) and DNS blockers terminate ad network scripts before they ever execute.
+2. **Safari Intelligent Tracking Prevention (ITP):** Capping client-side cookies to 7 days, blinding your multi-touch attribution models.
+3. **Algorithm Misalignment:** When Meta and Google bidding engines receive incomplete data, their smart bidding models optimize for cheap tire-kickers rather than high-LTV buyers.
 
-1. **Granular Exact & Phrase Match Architecture:** Isolating top-tier buyer keywords ("emergency dentist near me", "commercial litigation attorney") with dedicated landing pages.
-2. **Aggressive Negative Keyword Management:** Eliminating low-intent, informational queries to preserve ad budget.
-3. **Quality Score Optimization:** Aligning ad copy with landing page relevance to achieve top ad rank at a 40% lower Cost-Per-Click (CPC).
+**The Modern Solution: Server-Side Google Tag Manager (sGTM) + Meta CAPI.**
 
-Now, you aren't paying to interrupt someone watching videos on their sofa.
-You are paying to be the first phone number a homeowner taps when they have an urgent problem to solve.
+By routing all event telemetry through a first-party cloud container hosted on your own subdomain:
+- You own the data pipeline.
+- You bypass client-side blockers.
+- You achieve 8.5+ Event Match Quality (EMQ) on Meta.
+- You supply AI bidding algorithms with 100% verified conversion telemetry.
 
-Your cost per click might be higher than a cheap Facebook boost.
-**But your cost per booked appointment drops by 35% to 45%.**
+When your ad networks see 100% of your revenue, your blended acquisition cost drops predictably.
 
-💡 **Want an objective, data-backed audit of your local Google Ads campaigns?**
-Book a direct 30-minute performance review with our senior growth team:
+💡 **Want an objective, technical audit of your tracking and attribution architecture?**
+Schedule a direct 30-minute review with our engineering team:
 
 📅 **Schedule Your Session:** {BRAND_CALENDLY}
 🌐 **Case Studies & Services:** {BRAND_WEBSITE}
@@ -308,6 +307,7 @@ Core Insights:
 📞 **Direct Contact / WhatsApp:** {BRAND_PHONE}"""
 
     return {
+        "day": day_num,
         "category": day_cfg.get("badge", "GOOGLE ADS"),
         "graphic_title_line1": day_cfg.get("graphic_title_line1", "LOCAL GOOGLE ADS"),
         "graphic_title_line2": day_cfg.get("graphic_title_line2", "GET HIGH-VALUE CLIENTS"),
