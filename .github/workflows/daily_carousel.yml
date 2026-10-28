@@ -1,0 +1,57 @@
+name: Tauhid Ads Lab - Daily Carousel Post (7:00 PM BST)
+
+on:
+  schedule:
+    # Daily at 7:00 PM BST (13:00 UTC)
+    - cron: '0 13 * * *'
+
+  # Allows manual triggering anytime for testing or selecting a specific day
+  workflow_dispatch:
+    inputs:
+      day_number:
+        description: 'Specific day to run (1-30) or leave blank for auto-calendar'
+        required: false
+        default: ''
+
+jobs:
+  post-carousel:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install System Fonts (for Pillow graphics)
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y fonts-dejavu-core fonts-freefont-ttf
+
+      - name: Install Python Dependencies
+        run: |
+          pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Generate Carousel & Publish to Social Media
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          BRAND_NAME: ${{ secrets.BRAND_NAME || 'Tauhid Ads Lab' }}
+          BRAND_PHONE: ${{ secrets.BRAND_PHONE || '+8801624608468' }}
+          BRAND_WEBSITE: ${{ secrets.BRAND_WEBSITE || 'http://tauhidadslab.com/' }}
+          BRAND_CALENDLY: ${{ secrets.BRAND_CALENDLY || 'https://calendly.com/tauhidadslab/30min' }}
+          BRAND_HANDLE: ${{ secrets.BRAND_HANDLE || '@tauhidadslab' }}
+          NICHE_TOPIC: ${{ secrets.NICHE_TOPIC || 'Google Ads, Server-Side Tracking, GA4, Meta CAPI' }}
+          FACEBOOK_PAGE_ID: ${{ secrets.FACEBOOK_PAGE_ID || '1325501797313655' }}
+          FACEBOOK_PAGE_ACCESS_TOKEN: ${{ secrets.FACEBOOK_PAGE_ACCESS_TOKEN }}
+          INSTAGRAM_ACCOUNT_ID: ${{ secrets.INSTAGRAM_ACCOUNT_ID || '17841435015705100' }}
+          ENABLE_INSTAGRAM: 'True'
+          LINKEDIN_ACCESS_TOKEN: ${{ secrets.LINKEDIN_ACCESS_TOKEN }}
+          LINKEDIN_AUTHOR_URN: ${{ secrets.LINKEDIN_AUTHOR_URN }}
+          TOPIC_DAY: ${{ inputs.day_number }}
+        run: |
+          python publish_carousel.py

@@ -1,12 +1,10 @@
-name: Tauhid Ads Lab - Daily Automated Social Media Poster
+name: Tauhid Ads Lab - Daily Single Post (3:00 PM BST)
 
 on:
   schedule:
-    # 1. Day 1: Tonight at 8:45 PM BST (14:45 UTC, 23 Oct 2026):
-    - cron: '45 14 23 10 *'
-    # 2. Day 2 onwards: Daily at 7:00 PM BST (13:00 UTC):
-    - cron: '0 13 * * *'
-  
+    # Daily at 3:00 PM BST (09:00 UTC)
+    - cron: '0 9 * * *'
+
   # Allows manual triggering anytime for testing or selecting a specific day
   workflow_dispatch:
     inputs:
@@ -14,17 +12,9 @@ on:
         description: 'Specific day to run (1-30) or leave blank for auto-calendar'
         required: false
         default: ''
-      post_type:
-        description: 'Post Type: "daily" (Standard 1-Image Post) or "carousel" (7-Slide Multi-Image + LinkedIn PDF)'
-        required: false
-        default: 'daily'
-        type: choice
-        options:
-          - daily
-          - carousel
 
 jobs:
-  post-to-social-media:
+  post-single-image:
     runs-on: ubuntu-latest
 
     steps:
@@ -47,7 +37,7 @@ jobs:
           pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Generate Graphic and Publish to Social Media
+      - name: Generate Graphic and Publish Single Post
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           BRAND_NAME: ${{ secrets.BRAND_NAME || 'Tauhid Ads Lab' }}
@@ -64,8 +54,4 @@ jobs:
           LINKEDIN_AUTHOR_URN: ${{ secrets.LINKEDIN_AUTHOR_URN }}
           TOPIC_DAY: ${{ inputs.day_number }}
         run: |
-          if [ "${{ inputs.post_type }}" = "carousel" ]; then
-            python publish_carousel.py
-          else
-            python main.py
-          fi
+          python main.py
