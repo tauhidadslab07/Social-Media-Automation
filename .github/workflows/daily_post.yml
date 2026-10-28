@@ -11,9 +11,17 @@ on:
   workflow_dispatch:
     inputs:
       day_number:
-        description: 'Specific day to run (1-10) or leave blank for auto-calendar'
+        description: 'Specific day to run (1-30) or leave blank for auto-calendar'
         required: false
         default: ''
+      post_type:
+        description: 'Post Type: "daily" (Standard 1-Image Post) or "carousel" (7-Slide Multi-Image + LinkedIn PDF)'
+        required: false
+        default: 'daily'
+        type: choice
+        options:
+          - daily
+          - carousel
 
 jobs:
   post-to-social-media:
@@ -56,4 +64,8 @@ jobs:
           LINKEDIN_AUTHOR_URN: ${{ secrets.LINKEDIN_AUTHOR_URN }}
           TOPIC_DAY: ${{ inputs.day_number }}
         run: |
-          python main.py
+          if [ "${{ inputs.post_type }}" = "carousel" ]; then
+            python publish_carousel.py
+          else
+            python main.py
+          fi
