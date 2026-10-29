@@ -354,9 +354,9 @@ def render_template_poster(post_data, output_path, is_linkedin=False):
     try:
         with Image.open(chosen_template) as raw_img:
             base = raw_img.convert("RGBA")
-            WIDTH, HEIGHT = 1080, 1080
+            WIDTH, HEIGHT = 2160, 2160
 
-            # Resize preserving aspect ratio and center crop
+            # Resize preserving aspect ratio, center crop, and apply anti-aliasing sharpen
             orig_w, orig_h = base.size
             scale = max(WIDTH / orig_w, HEIGHT / orig_h)
             new_w, new_h = int(orig_w * scale), int(orig_h * scale)
@@ -365,6 +365,8 @@ def render_template_poster(post_data, output_path, is_linkedin=False):
             left = (new_w - WIDTH) // 2
             top = (new_h - HEIGHT) // 2
             canvas = resized.crop((left, top, left + WIDTH, top + HEIGHT))
+            # Sharpen background template to eliminate resize blurriness
+            canvas = canvas.filter(ImageFilter.UnsharpMask(radius=2, percent=135, threshold=2))
 
             overlay = Image.new("RGBA", (WIDTH, HEIGHT), (0, 0, 0, 0))
             draw = ImageDraw.Draw(overlay)
@@ -372,129 +374,139 @@ def render_template_poster(post_data, output_path, is_linkedin=False):
             # -------------------------------------------------------------
             # 1. TOP BRAND HEADER: Clean frosted glass bar covering old logo
             # -------------------------------------------------------------
-            header_h = 95
-            for y in range(header_h + 30):
-                alpha = int(240 * (1 - (y / (header_h + 30)) * 0.4)) if y < header_h else int(144 * (1 - (y - header_h) / 30))
+            header_h = 190
+            for y in range(header_h + 60):
+                alpha = int(245 * (1 - (y / (header_h + 60)) * 0.4)) if y < header_h else int(150 * (1 - (y - header_h) / 60))
                 draw.line([(0, y), (WIDTH, y)], fill=(8, 12, 22, alpha), width=1)
 
             # Tauhid Ads Lab Brand Pill (Left)
-            pill_x, pill_y = 50, 24
-            pill_w, pill_h = 320, 48
+            pill_x, pill_y = 100, 48
+            pill_w, pill_h = 640, 96
             draw.rounded_rectangle(
                 [pill_x, pill_y, pill_x + pill_w, pill_y + pill_h],
-                radius=24,
+                radius=48,
                 fill=(15, 23, 42, 240),
                 outline=(0, 220, 255, 180),
-                width=2
+                width=3
             )
             # Live Green Dot
-            draw.ellipse([pill_x + 16, pill_y + 16, pill_x + 32, pill_y + 32], fill=(16, 185, 129))
-            draw.text((pill_x + 42, pill_y + 13), BRAND_NAME.upper(), fill=(255, 255, 255), font=get_font(19, bold=True))
+            draw.ellipse([pill_x + 32, pill_y + 32, pill_x + 64, pill_y + 64], fill=(16, 185, 129))
+            draw.text((pill_x + 84, pill_y + 26), BRAND_NAME.upper(), fill=(255, 255, 255), font=get_font(38, bold=True))
 
             # Website Pill (Right)
             web_text = f"🌐 {BRAND_WEBSITE}"
-            w_font = get_font(18, bold=True)
+            w_font = get_font(36, bold=True)
             w_bbox = draw.textbbox((0, 0), web_text, font=w_font)
-            w_w = (w_bbox[2] - w_bbox[0]) + 36
+            w_w = (w_bbox[2] - w_bbox[0]) + 72
             draw.rounded_rectangle(
-                [WIDTH - 50 - w_w, pill_y, WIDTH - 50, pill_y + pill_h],
-                radius=24,
-                fill=(15, 23, 42, 220),
+                [WIDTH - 100 - w_w, pill_y, WIDTH - 100, pill_y + pill_h],
+                radius=48,
+                fill=(15, 23, 42, 225),
                 outline=(59, 130, 246, 140),
-                width=1
+                width=2
             )
-            draw.text((WIDTH - 50 - w_w + 18, pill_y + 14), web_text, fill=(56, 189, 248), font=w_font)
+            draw.text((WIDTH - 100 - w_w + 36, pill_y + 28), web_text, fill=(56, 189, 248), font=w_font)
 
             # -------------------------------------------------------------
             # 2. DYNAMIC HEADLINE OVERLAY CARD (Upper-Left)
             # -------------------------------------------------------------
-            category = post_data.get("category", "GOOGLE ADS SPECIALIST").upper()
-            h1 = post_data.get("graphic_title_line1", "STOP BOOSTING POSTS").upper().strip(".")
-            h2 = post_data.get("graphic_title_line2", "CAPTURE ACTIVE BUYERS").upper().strip(".")
-            sub = post_data.get("graphic_subtitle", "Why Google Search ads beat Facebook boosting every time.")
+            category = post_data.get("badge", post_data.get("category", "SERVER-SIDE TRACKING")).upper()
+            h1 = post_data.get("graphic_title_line1", "STOP BLIND ATTRIBUTION").upper().strip(".")
+            h2 = post_data.get("graphic_title_line2", "UPGRADE TO SERVER-SIDE").upper().strip(".")
+            sub = post_data.get("graphic_subtitle", "Why browser pixels miss 30% of conversions and how sGTM fixes it.")
 
-            card_x = 50
-            card_y = 145
-            card_w = 620
+            card_x = 100
+            card_y = 290
+            card_w = 1240
 
-            cat_font = get_font(14, bold=True)
-            h1_font = get_font(34, bold=True)
-            h2_font = get_font(42, bold=True)
-            sub_font = get_font(17, bold=False)
+            cat_font = get_font(28, bold=True)
+            h1_font = get_font(68, bold=True)
+            h2_font = get_font(84, bold=True)
+            sub_font = get_font(34, bold=False)
 
             wrapped_h1 = textwrap.fill(h1, width=22)
             wrapped_h2 = textwrap.fill(h2, width=18)
-            wrapped_sub = textwrap.fill(sub, width=40)
+            wrapped_sub = textwrap.fill(sub, width=42)
 
             cat_box = draw.textbbox((0, 0), category, font=cat_font)
             h1_box = draw.textbbox((0, 0), wrapped_h1, font=h1_font)
             h2_box = draw.textbbox((0, 0), wrapped_h2, font=h2_font)
             sub_box = draw.textbbox((0, 0), wrapped_sub, font=sub_font)
 
-            card_h = (cat_box[3] - cat_box[1]) + (h1_box[3] - h1_box[1]) + (h2_box[3] - h2_box[1]) + (sub_box[3] - sub_box[1]) + 95
+            card_h = (cat_box[3] - cat_box[1]) + (h1_box[3] - h1_box[1]) + (h2_box[3] - h2_box[1]) + (sub_box[3] - sub_box[1]) + 190
 
-            # Semi-transparent dark frosted glass backing for pristine legibility
+            # Card Diffused Drop Shadow
+            shadow_layer = Image.new("RGBA", (WIDTH, HEIGHT), (0, 0, 0, 0))
+            s_draw = ImageDraw.Draw(shadow_layer)
+            s_draw.rounded_rectangle([card_x + 8, card_y + 20, card_x + card_w - 8, card_y + card_h + 24], radius=40, fill=(0, 0, 0, 80))
+            shadow_layer = shadow_layer.filter(ImageFilter.GaussianBlur(24))
+            overlay = Image.alpha_composite(shadow_layer, overlay)
+            draw = ImageDraw.Draw(overlay)
+
+            # Frosted glass card backing
             draw.rounded_rectangle(
                 [card_x, card_y, card_x + card_w, card_y + card_h],
-                radius=20,
-                fill=(9, 14, 26, 225),
-                outline=(0, 220, 255, 120),
-                width=1
+                radius=40,
+                fill=(9, 14, 26, 230),
+                outline=(0, 220, 255, 140),
+                width=2
             )
 
             # Topic Badge
             badge_text = f"● {category}"
             draw.rounded_rectangle(
-                [card_x + 24, card_y + 18, card_x + 24 + draw.textbbox((0,0), badge_text, font=cat_font)[2] + 20, card_y + 46],
-                radius=14,
-                fill=(30, 41, 59, 230),
+                [card_x + 48, card_y + 36, card_x + 48 + draw.textbbox((0,0), badge_text, font=cat_font)[2] + 40, card_y + 92],
+                radius=28,
+                fill=(30, 41, 59, 235),
                 outline=(245, 158, 11, 200),
-                width=1
+                width=2
             )
-            draw.text((card_x + 34, card_y + 24), badge_text, fill=(251, 191, 36), font=cat_font)
+            draw.text((card_x + 68, card_y + 48), badge_text, fill=(251, 191, 36), font=cat_font)
 
             # Line 1 (White Bold)
-            y_cursor = card_y + 58
-            draw.text((card_x + 24, y_cursor), wrapped_h1, fill=(255, 255, 255), font=h1_font)
-            y_cursor += (h1_box[3] - h1_box[1]) + 8
+            y_cursor = card_y + 116
+            draw.text((card_x + 48, y_cursor), wrapped_h1, fill=(255, 255, 255), font=h1_font)
+            y_cursor += (h1_box[3] - h1_box[1]) + 16
 
             # Line 2 (Neon Cyan Accent)
-            draw.text((card_x + 24, y_cursor), wrapped_h2, fill=(0, 240, 255), font=h2_font)
-            y_cursor += (h2_box[3] - h2_box[1]) + 10
+            draw.text((card_x + 48, y_cursor), wrapped_h2, fill=(0, 240, 255), font=h2_font)
+            y_cursor += (h2_box[3] - h2_box[1]) + 20
 
             # Subtitle (Muted Slate)
-            draw.text((card_x + 24, y_cursor), wrapped_sub, fill=(203, 213, 225), font=sub_font)
+            draw.text((card_x + 48, y_cursor), wrapped_sub, fill=(203, 213, 225), font=sub_font, spacing=8)
 
             # -------------------------------------------------------------
             # 3. BOTTOM CONTACT DOCK: Covers old phone, website & address
             # -------------------------------------------------------------
-            dock_h = 100
+            dock_h = 200
             dock_y = HEIGHT - dock_h
 
             draw.rectangle(
                 [0, dock_y, WIDTH, HEIGHT],
                 fill=(7, 10, 20, 250),
                 outline=(30, 41, 59, 255),
-                width=1
+                width=2
             )
 
             # Left: WhatsApp Pill Button
-            wa_w = 430
+            wa_w = 860
             draw.rounded_rectangle(
-                [50, dock_y + 18, 50 + wa_w, dock_y + dock_h - 18],
-                radius=26,
-                fill=(37, 211, 102) # Official WhatsApp Green
+                [100, dock_y + 36, 100 + wa_w, dock_y + dock_h - 36],
+                radius=52,
+                fill=(37, 211, 102)
             )
-            draw.text((75, dock_y + 35), f"💬 WhatsApp: {BRAND_PHONE}", fill=(10, 15, 29), font=get_font(19, bold=True))
+            draw.text((150, dock_y + 70), f"💬 WhatsApp: {BRAND_PHONE}", fill=(10, 15, 29), font=get_font(38, bold=True))
 
             # Right: Strategy Session / Calendly CTA
-            cta_title = f"🚀 {post_data.get('cta_text', 'BOOK FREE ADS AUDIT').upper()}"
-            draw.text((520, dock_y + 24), cta_title, fill=(0, 240, 255), font=get_font(20, bold=True))
-            draw.text((520, dock_y + 52), f"📅 {BRAND_CALENDLY}", fill=(148, 163, 184), font=get_font(15, bold=False))
+            cta_title = f"🚀 {post_data.get('cta_text', 'CLAIM FREE TRACKING AUDIT').upper()}"
+            draw.text((1040, dock_y + 48), cta_title, fill=(0, 240, 255), font=get_font(40, bold=True))
+            draw.text((1040, dock_y + 104), f"📅 {BRAND_CALENDLY}", fill=(148, 163, 184), font=get_font(30, bold=False))
 
-            # Merge and finalize
+            # Merge and finalize at 2K Ultra-HD
             final_composite = Image.alpha_composite(canvas, overlay).convert("RGB")
-            final_composite.save(output_path, "PNG", quality=98)
+            final_composite.save(output_path, "PNG", compress_level=1)
+            print(f"[Image Engine] Ultra-HD 2K Composite saved: {output_path}")
+            return output_path
             print(f"[Image Engine] Template Composite saved: {output_path}")
             return output_path
 

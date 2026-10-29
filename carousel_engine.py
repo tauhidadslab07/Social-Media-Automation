@@ -1,6 +1,6 @@
 import os
 import textwrap
-from PIL import Image, ImageDraw, ImageFont
+from PIL import Image, ImageDraw, ImageFont, ImageFilter
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -53,9 +53,34 @@ def get_font(size, bold=False):
     except Exception:
         return None
 
-def create_swiss_slide_base(width, height, slide_num, total_slides, is_dark=False):
+def draw_card_with_shadow(base_img, x1, y1, x2, y2, radius, fill, outline, outline_width=2, is_dark=False):
     """
-    Renders a pristine Minimalist Swiss canvas:
+    Renders realistic Gaussian-blurred diffused drop shadows under floating cards,
+    giving Apple / Swiss editorial depth.
+    """
+    w, h = base_img.size
+    shadow_layer = Image.new("RGBA", (w, h), (0, 0, 0, 0))
+    s_draw = ImageDraw.Draw(shadow_layer)
+    
+    # Diffused shadow placement
+    if not is_dark:
+        s_draw.rounded_rectangle([x1 + 4, y1 + 18, x2 - 4, y2 + 22], radius=radius, fill=(15, 23, 42, 22))
+        shadow_layer = shadow_layer.filter(ImageFilter.GaussianBlur(24))
+    else:
+        s_draw.rounded_rectangle([x1 + 2, y1 + 14, x2 - 2, y2 + 16], radius=radius, fill=(0, 0, 0, 60))
+        shadow_layer = shadow_layer.filter(ImageFilter.GaussianBlur(18))
+
+    base_img.alpha_composite(shadow_layer)
+
+    # Crisp card layer on top
+    card_layer = Image.new("RGBA", (w, h), (0, 0, 0, 0))
+    c_draw = ImageDraw.Draw(card_layer)
+    c_draw.rounded_rectangle([x1, y1, x2, y2], radius=radius, fill=fill, outline=outline, width=outline_width)
+    base_img.alpha_composite(card_layer)
+
+def create_swiss_slide_base(width=2160, height=2160, slide_num=1, total_slides=7, is_dark=False):
+    """
+    Renders an Ultra-HD 2K (2160x2160) Minimalist Swiss canvas:
     - Off-white paper background (or contrast obsidian for dark slides)
     - Top center minimalist agency mark with crimson red dot
     - Top right slide index: '02/07'
@@ -68,213 +93,327 @@ def create_swiss_slide_base(width, height, slide_num, total_slides, is_dark=Fals
 
     # 1. Top Center Minimalist Geometric Logo Mark
     center_x = width // 2
-    logo_y = 50
-    # Minimalist bracket / node icon
+    logo_y = 100
     logo_color = (255, 255, 255) if is_dark else PALETTE["text_black"]
     draw.polygon([
-        (center_x - 14, logo_y),
-        (center_x, logo_y - 12),
-        (center_x + 14, logo_y),
-        (center_x + 7, logo_y + 16),
-        (center_x - 7, logo_y + 16)
+        (center_x - 26, logo_y),
+        (center_x, logo_y - 24),
+        (center_x + 26, logo_y),
+        (center_x + 13, logo_y + 30),
+        (center_x - 13, logo_y + 30)
     ], fill=logo_color)
     # Crimson red accent dot
-    draw.ellipse([center_x + 10, logo_y - 14, center_x + 18, logo_y - 6], fill=PALETTE["text_red"])
+    draw.ellipse([center_x + 18, logo_y - 26, center_x + 34, logo_y - 10], fill=PALETTE["text_red"])
 
     # 2. Top Right Slide Index (e.g. 02/07)
     index_text = f"{slide_num:02d}/{total_slides:02d}"
     index_color = (148, 163, 184) if is_dark else PALETTE["text_charcoal"]
-    draw.text((width - 120, logo_y - 5), index_text, fill=index_color, font=get_font(20, bold=False))
+    draw.text((width - 240, logo_y - 10), index_text, fill=index_color, font=get_font(38, bold=False))
 
     # 3. Bottom Accents
-    bottom_y = height - 55
+    bottom_y = height - 110
     # Red accent dash (Bottom Left)
-    draw.rounded_rectangle([70, bottom_y, 110, bottom_y + 6], radius=3, fill=PALETTE["text_red"])
+    draw.rounded_rectangle([140, bottom_y, 220, bottom_y + 12], radius=6, fill=PALETTE["text_red"])
 
     # Bottom Right Cue
     if slide_num < total_slides:
         cue_color = (148, 163, 184) if is_dark else PALETTE["text_charcoal"]
-        draw.text((width - 160, bottom_y - 8), "SWIPE ➔", fill=cue_color, font=get_font(18, bold=True))
+        draw.text((width - 320, bottom_y - 16), "SWIPE ➔", fill=cue_color, font=get_font(36, bold=True))
     else:
         web_color = (0, 220, 255) if is_dark else PALETTE["text_red"]
-        draw.text((width - 240, bottom_y - 8), f"🌐 {BRAND_WEBSITE}", fill=web_color, font=get_font(16, bold=True))
+        draw.text((width - 480, bottom_y - 16), f"🌐 {BRAND_WEBSITE}", fill=web_color, font=get_font(32, bold=True))
 
     return img
 
-def render_swiss_step_slide(slide_num, total_slides, line1, line2, subhead, cards, is_dark=False, width=1080, height=1080):
+def render_swiss_step_slide(slide_num, total_slides, line1, line2, subhead, cards, is_dark=False, width=2160, height=2160):
     """
     Renders structured Minimalist Swiss slides with bold two-tone typography
-    and clean floating white cards with generous breathing room.
+    and clean floating white cards with generous breathing room and soft drop shadows.
     """
     img = create_swiss_slide_base(width, height, slide_num, total_slides, is_dark=is_dark)
-    draw = ImageDraw.Draw(img)
 
     # 1. Dominant Swiss Headline
-    y = 150
+    y = 300
     h1_color = (255, 255, 255) if is_dark else PALETTE["text_black"]
     h2_color = PALETTE["text_red"]
     
-    draw.text((70, y), line1.upper(), fill=h1_color, font=get_font(44, bold=True))
-    y += 58
-    draw.text((70, y), line2.upper(), fill=h2_color, font=get_font(48, bold=True))
-    y += 68
+    draw = ImageDraw.Draw(img)
+    draw.text((140, y), line1.upper(), fill=h1_color, font=get_font(84, bold=True))
+    y += 112
+    draw.text((140, y), line2.upper(), fill=h2_color, font=get_font(92, bold=True))
+    y += 130
 
     # 2. Refined Subhead
     sub_color = (203, 213, 225) if is_dark else PALETTE["text_charcoal"]
-    draw.text((70, y), textwrap.fill(subhead, width=48), fill=sub_color, font=get_font(21, bold=False), spacing=6)
-    y += 75
+    draw.text((140, y), textwrap.fill(subhead, width=50), fill=sub_color, font=get_font(40, bold=False), spacing=12)
+    y += 150
 
-    # 3. Floating Content Cards
+    # 3. Floating Content Cards with Soft Shadows
     card_bg = PALETTE["dark_card"] if is_dark else PALETTE["bg_card"]
     card_border = PALETTE["dark_border"] if is_dark else PALETTE["card_border"]
     title_color = (255, 255, 255) if is_dark else PALETTE["text_black"]
     desc_color = (148, 163, 184) if is_dark else PALETTE["text_charcoal"]
 
-    card_h = 135
-    gap = 22
+    card_h = 270
+    gap = 42
     for i, c in enumerate(cards):
         cy = y + (i * (card_h + gap))
         
-        # Crisp card with subtle shadow / border
-        draw.rounded_rectangle(
-            [70, cy, width - 70, cy + card_h],
-            radius=16,
+        # Floating card with diffused Gaussian drop shadow
+        draw_card_with_shadow(
+            img,
+            140, cy, width - 140, cy + card_h,
+            radius=32,
             fill=card_bg,
             outline=card_border,
-            width=1
+            outline_width=2,
+            is_dark=is_dark
         )
+
+        # Drawing content on the card
+        c_draw = ImageDraw.Draw(img)
 
         # Number Badge or Icon
         badge_bg = c.get("badge_bg", PALETTE["text_red"] if i == 0 else (30, 41, 59))
-        draw.ellipse([95, cy + 26, 145, cy + 76], fill=badge_bg)
-        draw.text((112, cy + 36), str(c.get("badge", i + 1)), fill=(255, 255, 255), font=get_font(22, bold=True))
+        c_draw.ellipse([190, cy + 55, 290, cy + 155], fill=badge_bg)
+        c_draw.text((225, cy + 74), str(c.get("badge", i + 1)), fill=(255, 255, 255), font=get_font(44, bold=True))
 
         # Title & Description
-        draw.text((170, cy + 24), c["title"], fill=title_color, font=get_font(22, bold=True))
-        desc_wrapped = textwrap.fill(c["desc"], width=44)
-        draw.text((170, cy + 62), desc_wrapped, fill=desc_color, font=get_font(17, bold=False), spacing=4)
+        c_draw.text((340, cy + 50), c["title"], fill=title_color, font=get_font(44, bold=True))
+        desc_wrapped = textwrap.fill(c["desc"], width=46)
+        c_draw.text((340, cy + 120), desc_wrapped, fill=desc_color, font=get_font(34, bold=False), spacing=8)
 
     return img.convert("RGB")
 
-def render_swiss_outro_slide(width=1080, height=1080):
-    """Slide 7: Minimalist Swiss Outro & High-Converting CTA."""
+def render_swiss_outro_slide(width=2160, height=2160):
+    """Slide 7: Minimalist Swiss Outro & High-Converting CTA in 2K Ultra-HD."""
     img = create_swiss_slide_base(width, height, 7, 7, is_dark=False)
-    draw = ImageDraw.Draw(img)
 
-    y = 150
-    draw.text((70, y), "SCALE WITH CONFIDENCE.", fill=PALETTE["text_black"], font=get_font(44, bold=True))
-    y += 58
-    draw.text((70, y), "FIX YOUR TRACKING TODAY.", fill=PALETTE["text_red"], font=get_font(48, bold=True))
-    y += 70
+    y = 300
+    draw = ImageDraw.Draw(img)
+    draw.text((140, y), "SCALE WITH CONFIDENCE.", fill=PALETTE["text_black"], font=get_font(84, bold=True))
+    y += 112
+    draw.text((140, y), "FIX YOUR TRACKING TODAY.", fill=PALETTE["text_red"], font=get_font(92, bold=True))
+    y += 135
 
     sub = "Stop scaling on broken client-side data. Reconcile your analytics 1:1 with bank deposits."
-    draw.text((70, y), textwrap.fill(sub, width=46), fill=PALETTE["text_charcoal"], font=get_font(21, bold=False), spacing=6)
-    y += 85
+    draw.text((140, y), textwrap.fill(sub, width=48), fill=PALETTE["text_charcoal"], font=get_font(40, bold=False), spacing=12)
+    y += 165
 
-    # Clean White Checklist Card
-    card_h = 220
-    draw.rounded_rectangle([70, y, width - 70, y + card_h], radius=18, fill=PALETTE["bg_card"], outline=PALETTE["card_border"], width=1)
+    # Clean White Checklist Card with Soft Shadow
+    card_h = 440
+    draw_card_with_shadow(
+        img,
+        140, y, width - 140, y + card_h,
+        radius=36,
+        fill=PALETTE["bg_card"],
+        outline=PALETTE["card_border"],
+        outline_width=2,
+        is_dark=False
+    )
     
-    draw.text((105, y + 25), "🎯 THE TAUHID ADS LAB RECONCILIATION", fill=PALETTE["text_black"], font=get_font(20, bold=True))
+    c_draw = ImageDraw.Draw(img)
+    c_draw.text((210, y + 50), "🎯 THE TAUHID ADS LAB RECONCILIATION", fill=PALETTE["text_black"], font=get_font(38, bold=True))
     points = [
         "1:1 Reconciliation between Shopify & GA4 revenue.",
         "Zero duplicate orders from thank-you page reloads.",
         "Immune to Safari ITP 7-day wipes and ad-blockers.",
         "Server-Side GTM + Webhook deduplication architecture."
     ]
-    py = y + 68
+    py = y + 135
     for p in points:
-        draw.text((105, py), f"✔ {p}", fill=PALETTE["text_charcoal"], font=get_font(18, bold=False))
-        py += 36
+        c_draw.text((210, py), f"✔ {p}", fill=PALETTE["text_charcoal"], font=get_font(34, bold=False))
+        py += 70
 
-    # Bottom Action Dock
-    action_y = y + 250
-    draw.rounded_rectangle([70, action_y, width - 70, action_y + 160], radius=18, fill=(17, 24, 39), outline=(30, 41, 59), width=1)
-    draw.text((100, action_y + 22), "🚀 CLAIM YOUR FREE 30-MIN TRACKING AUDIT", fill=(255, 255, 255), font=get_font(22, bold=True))
+    # Bottom Action Dock with Soft Shadow
+    action_y = y + 500
+    draw_card_with_shadow(
+        img,
+        140, action_y, width - 140, action_y + 320,
+        radius=36,
+        fill=(17, 24, 39),
+        outline=(30, 41, 59),
+        outline_width=2,
+        is_dark=True
+    )
+    
+    a_draw = ImageDraw.Draw(img)
+    a_draw.text((200, action_y + 45), "🚀 CLAIM YOUR FREE 30-MIN TRACKING AUDIT", fill=(255, 255, 255), font=get_font(42, bold=True))
 
     # WhatsApp Button
-    draw.rounded_rectangle([100, action_y + 65, 520, action_y + 118], radius=24, fill=(37, 211, 102))
-    draw.text((125, action_y + 80), f"💬 WhatsApp: {BRAND_PHONE}", fill=(10, 15, 29), font=get_font(18, bold=True))
+    a_draw.rounded_rectangle([200, action_y + 130, 1040, action_y + 235], radius=48, fill=(37, 211, 102))
+    a_draw.text((250, action_y + 160), f"💬 WhatsApp: {BRAND_PHONE}", fill=(10, 15, 29), font=get_font(36, bold=True))
 
     # Calendly Button
-    draw.rounded_rectangle([545, action_y + 65, width - 100, action_y + 118], radius=24, fill=(30, 41, 59), outline=(71, 85, 105), width=1)
-    draw.text((570, action_y + 80), "📅 Book Strategy Call", fill=(255, 255, 255), font=get_font(17, bold=True))
+    a_draw.rounded_rectangle([1090, action_y + 130, width - 200, action_y + 235], radius=48, fill=(30, 41, 59), outline=(71, 85, 105), width=2)
+    a_draw.text((1140, action_y + 160), "📅 Book Strategy Call", fill=(255, 255, 255), font=get_font(34, bold=True))
 
-    draw.text((100, action_y + 132), f"🌐 {BRAND_WEBSITE} | Led by Md. Tauhidul Islam Bhuian", fill=(148, 163, 184), font=get_font(14, bold=False))
+    a_draw.text((200, action_y + 265), f"🌐 {BRAND_WEBSITE} | Led by Md. Tauhidul Islam Bhuian", fill=(148, 163, 184), font=get_font(28, bold=False))
 
     return img.convert("RGB")
 
-def render_swiss_cover_slide(line1, line2, badge_text, subtitle, width=1080, height=1080, total_slides=7):
-    """Slide 1: High-impact Minimalist Swiss Cover Slide."""
-    img = create_swiss_slide_base(width, height, 1, total_slides, is_dark=False)
-    draw = ImageDraw.Draw(img)
+def render_shopify_ga4_master_cover(width=2160, height=2160):
+    """
+    Slide 1: Ultra-HD 2K (2160x2160) Swiss Minimalist Master Cover Slide.
+    Renders razor-sharp typography, floating comparison cards with realistic Gaussian shadows,
+    and process tracking cues matching Template a1c44fef.
+    """
+    img = create_swiss_slide_base(width, height, 1, 7, is_dark=False)
 
-    # Category badge pill
-    badge_w = 300
-    badge_h = 36
-    draw.rounded_rectangle([70, 150, 70 + badge_w, 150 + badge_h], radius=18, fill=(254, 226, 226), outline=PALETTE["text_red"], width=1)
-    draw.text((88, 158), badge_text.upper()[:30], fill=PALETTE["text_red"], font=get_font(14, bold=True))
+    # Category badge pill (Top Left)
+    badge_w = 580
+    badge_h = 72
+    b_draw = ImageDraw.Draw(img)
+    b_draw.rounded_rectangle([140, 290, 140 + badge_w, 290 + badge_h], radius=36, fill=(254, 226, 226), outline=PALETTE["text_red"], width=2)
+    b_draw.text((175, 308), "SHOPIFY & GA4 ATTRIBUTION", fill=PALETTE["text_red"], font=get_font(28, bold=True))
 
-    # Big Swiss Typography
-    y = 205
-    draw.text((70, y), line1.upper()[:26], fill=PALETTE["text_black"], font=get_font(46, bold=True))
-    y += 58
-    draw.text((70, y), line2.upper()[:26], fill=PALETTE["text_red"], font=get_font(50, bold=True))
-    y += 70
+    # Big Swiss Grotesk Headline
+    y = 400
+    b_draw.text((140, y), "WHY SHOPIFY & GA4", fill=PALETTE["text_black"], font=get_font(92, bold=True))
+    y += 115
+    b_draw.text((140, y), "NEVER MATCH.", fill=PALETTE["text_red"], font=get_font(96, bold=True))
+    y += 135
 
     # Subhead
-    draw.text((70, y), textwrap.fill(subtitle, width=46), fill=PALETTE["text_charcoal"], font=get_font(21, bold=False), spacing=6)
-    y += 85
+    sub = "Why client-side pixels silently leak 20%+ of your store's real revenue (And how we fix it 1:1)."
+    b_draw.text((140, y), textwrap.fill(sub, width=48), fill=PALETTE["text_charcoal"], font=get_font(40, bold=False), spacing=12)
+    y += 165
 
-    # Two floating cards (Before / After or Problem / Solution)
-    card_w = width - 140
-    card_h = 160
-    draw.rounded_rectangle([70, y, 70 + card_w, y + card_h], radius=16, fill=PALETTE["bg_card"], outline=PALETTE["card_border"], width=1)
-    draw.rounded_rectangle([95, y + 25, 145, y + 75], radius=12, fill=PALETTE["text_red"])
-    draw.text((112, y + 36), "!", fill=(255, 255, 255), font=get_font(24, bold=True))
-    draw.text((165, y + 25), "The Client-Side Vulnerability", fill=PALETTE["text_black"], font=get_font(20, bold=True))
-    draw.text((165, y + 55), textwrap.fill("Browsers silently block third-party analytics scripts, wiping up to 30% of conversions.", width=46), fill=PALETTE["text_charcoal"], font=get_font(16, bold=False), spacing=4)
+    # -------------------------------------------------------------
+    # FLOATING CARD 1: Shopify Revenue Dashboard (Green / Verified)
+    # -------------------------------------------------------------
+    card_h = 320
+    draw_card_with_shadow(
+        img,
+        140, y, width - 140, y + card_h,
+        radius=36,
+        fill=PALETTE["bg_card"],
+        outline=PALETTE["card_border"],
+        outline_width=2,
+        is_dark=False
+    )
+    c1 = ImageDraw.Draw(img)
+    # Status Dot & Label
+    c1.ellipse([190, y + 45, 214, y + 69], fill=PALETTE["accent_green"])
+    c1.text((230, y + 42), "SHOPIFY BACKEND REVENUE", fill=PALETTE["text_charcoal"], font=get_font(28, bold=True))
+    # Big Metric
+    c1.text((190, y + 90), "$52,400.00", fill=PALETTE["text_black"], font=get_font(80, bold=True))
+    # Context note
+    c1.text((190, y + 210), "✔ 100% Verified Stripe / Bank Deposit Cashflow (1,420 Completed Orders)", fill=PALETTE["text_charcoal"], font=get_font(32, bold=False))
 
-    y += card_h + 30
-    draw.rounded_rectangle([70, y, 70 + card_w, y + card_h], radius=16, fill=PALETTE["bg_card"], outline=PALETTE["card_border"], width=1)
-    draw.rounded_rectangle([95, y + 25, 145, y + 75], radius=12, fill=PALETTE["accent_green"])
-    draw.text((110, y + 36), "✓", fill=(255, 255, 255), font=get_font(24, bold=True))
-    draw.text((165, y + 25), "The First-Party Server Remedy", fill=PALETTE["text_black"], font=get_font(20, bold=True))
-    draw.text((165, y + 55), textwrap.fill("Direct server-to-server HTTP streams deliver 100% telemetry, bypass ad-blockers, and lower CPA.", width=46), fill=PALETTE["text_charcoal"], font=get_font(16, bold=False), spacing=4)
+    y += card_h + 50
+
+    # -------------------------------------------------------------
+    # FLOATING CARD 2: GA4 Attribution Bleed (Red Alert / Missing)
+    # -------------------------------------------------------------
+    draw_card_with_shadow(
+        img,
+        140, y, width - 140, y + card_h,
+        radius=36,
+        fill=PALETTE["bg_card"],
+        outline=(254, 202, 202),
+        outline_width=2,
+        is_dark=False
+    )
+    c2 = ImageDraw.Draw(img)
+    # Red Warning Dot & Label
+    c2.ellipse([190, y + 45, 214, y + 69], fill=PALETTE["text_red"])
+    c2.text((230, y + 42), "GA4 REPORTED PURCHASES", fill=PALETTE["text_red"], font=get_font(28, bold=True))
+    # Big Metric
+    c2.text((190, y + 90), "$38,900.00", fill=PALETTE["text_red"], font=get_font(80, bold=True))
+    # Gap Alert Pill (Right side)
+    pill_w = 420
+    pill_h = 60
+    c2.rounded_rectangle([width - 140 - pill_w - 50, y + 105, width - 140 - 50, y + 105 + pill_h], radius=30, fill=(254, 226, 226))
+    c2.text((width - 140 - pill_w - 20, y + 120), "⚠ -25.7% ATTRIBUTION GAP", fill=PALETTE["text_red"], font=get_font(26, bold=True))
+    # Context note
+    c2.text((190, y + 210), "✖ Missing 364 Orders dropped by Safari ITP, Ad-blockers & checkout reloads", fill=PALETTE["text_charcoal"], font=get_font(32, bold=False))
+
+    return img.convert("RGB")
+
+def render_swiss_cover_slide(line1, line2, badge_text, subtitle, width=2160, height=2160, total_slides=7):
+    """Dynamic Slide 1: High-impact Minimalist Swiss Cover Slide in 2K Ultra-HD."""
+    img = create_swiss_slide_base(width, height, 1, total_slides, is_dark=False)
+
+    # Category badge pill
+    badge_w = 600
+    badge_h = 72
+    b_draw = ImageDraw.Draw(img)
+    b_draw.rounded_rectangle([140, 290, 140 + badge_w, 290 + badge_h], radius=36, fill=(254, 226, 226), outline=PALETTE["text_red"], width=2)
+    b_draw.text((175, 308), badge_text.upper()[:34], fill=PALETTE["text_red"], font=get_font(28, bold=True))
+
+    # Big Swiss Typography
+    y = 400
+    b_draw.text((140, y), line1.upper()[:28], fill=PALETTE["text_black"], font=get_font(88, bold=True))
+    y += 115
+    b_draw.text((140, y), line2.upper()[:28], fill=PALETTE["text_red"], font=get_font(96, bold=True))
+    y += 135
+
+    # Subhead
+    b_draw.text((140, y), textwrap.fill(subtitle, width=48), fill=PALETTE["text_charcoal"], font=get_font(40, bold=False), spacing=12)
+    y += 165
+
+    # Two floating cards with soft shadows
+    card_h = 310
+    draw_card_with_shadow(
+        img,
+        140, y, width - 140, y + card_h,
+        radius=36,
+        fill=PALETTE["bg_card"],
+        outline=PALETTE["card_border"],
+        outline_width=2,
+        is_dark=False
+    )
+    c1 = ImageDraw.Draw(img)
+    c1.rounded_rectangle([190, y + 50, 290, y + 150], radius=24, fill=PALETTE["text_red"])
+    c1.text((225, y + 70), "!", fill=(255, 255, 255), font=get_font(48, bold=True))
+    c1.text((330, y + 50), "The Client-Side Vulnerability", fill=PALETTE["text_black"], font=get_font(42, bold=True))
+    c1.text((330, y + 115), textwrap.fill("Browsers silently block third-party analytics scripts, wiping up to 30% of conversions.", width=46), fill=PALETTE["text_charcoal"], font=get_font(32, bold=False), spacing=8)
+
+    y += card_h + 50
+    draw_card_with_shadow(
+        img,
+        140, y, width - 140, y + card_h,
+        radius=36,
+        fill=PALETTE["bg_card"],
+        outline=PALETTE["card_border"],
+        outline_width=2,
+        is_dark=False
+    )
+    c2 = ImageDraw.Draw(img)
+    c2.rounded_rectangle([190, y + 50, 290, y + 150], radius=24, fill=PALETTE["accent_green"])
+    c2.text((222, y + 70), "✓", fill=(255, 255, 255), font=get_font(48, bold=True))
+    c2.text((330, y + 50), "The First-Party Server Remedy", fill=PALETTE["text_black"], font=get_font(42, bold=True))
+    c2.text((330, y + 115), textwrap.fill("Direct server-to-server HTTP streams deliver 100% telemetry, bypass ad-blockers, and lower CPA.", width=46), fill=PALETTE["text_charcoal"], font=get_font(32, bold=False), spacing=8)
 
     return img.convert("RGB")
 
 def build_shopify_ga4_carousel(output_dir="carousel_output"):
     """
-    Builds the complete 7-slide Minimalist Swiss Carousel:
-    - Slide 1: Ultra-crisp cover_slide.jpg (Minimalist Swiss Red & Black)
+    Builds the complete 7-slide Minimalist Swiss Carousel in Ultra-HD 2K (2160x2160):
+    - Slide 1: Pristine 2K Master Cover (Shopify $52.4k vs GA4 $38.9k)
     - Slide 2: The 20% Revenue Gap (Off-white)
     - Slide 3: The 3 Hidden Attribution Killers (Off-white)
     - Slide 4: Server-Side GTM, Not Browser Pixels (Dark contrast slide)
     - Slide 5: Transaction ID Deduplication Handshake (Off-white)
     - Slide 6: 1:1 Revenue Reconciliation (Off-white)
     - Slide 7: Actionable Outro / Free Audit (Off-white)
-    Compiles into PDF for LinkedIn & individual PNGs for Facebook!
+    Compiles into 300 DPI PDF for LinkedIn & individual 2K PNGs for Facebook!
     """
     os.makedirs(output_dir, exist_ok=True)
     slides = []
 
-    # Slide 1: Master Cover Slide
-    cover_path = os.path.join(os.path.dirname(__file__), "cover_slide.jpg")
-    if os.path.exists(cover_path):
-        s1 = Image.open(cover_path).convert("RGB")
-    else:
-        # Fallback render if cover image missing
-        s1 = render_swiss_step_slide(1, 7, "Why Shopify & GA4", "Never Match.", "How a 20% tracking gap is quietly inflating your ad costs.", [])
+    # Slide 1: Ultra-HD 2K Master Cover
+    s1 = render_shopify_ga4_master_cover()
     slides.append(s1)
 
-    # Slide 2: The Discrepancy
+    # Slide 2: The 20% Gap Breakdown
     s2 = render_swiss_step_slide(
         slide_num=2,
         total_slides=7,
-        line1="The 20% Revenue Gap",
-        line2="Where Does It Go?",
-        subhead="Most e-commerce stores scale ad spend on completely distorted data.",
+        line1="The 20% Hidden",
+        line2="Revenue Bleed",
+        subhead="Why high-converting Shopify stores report conflicting numbers inside Google Analytics 4.",
         cards=[
             {
                 "badge": "1",
@@ -399,30 +538,31 @@ def build_shopify_ga4_carousel(output_dir="carousel_output"):
     s7 = render_swiss_outro_slide()
     slides.append(s7)
 
-    # Save individual slide images
+    # Save individual slide images at Ultra-HD 2K (2160x2160)
     image_paths = []
     for idx, slide in enumerate(slides):
         p = os.path.join(output_dir, f"slide_{idx + 1}.png")
-        slide.save(p, "PNG", quality=98)
+        slide.save(p, "PNG", compress_level=1)
         image_paths.append(p)
-        print(f"[Carousel Engine] Generated Slide {idx + 1}: {p}")
+        print(f"[Carousel Engine] Generated Ultra-HD Slide {idx + 1}: {p}")
 
-    # Compile PDF for LinkedIn
+    # Compile 300 DPI high-definition PDF for LinkedIn
     pdf_path = os.path.join(output_dir, "shopify_ga4_tracking_carousel.pdf")
     slides[0].save(
         pdf_path,
         "PDF",
-        resolution=100.0,
+        resolution=300.0,
+        quality=100,
         save_all=True,
         append_images=slides[1:]
     )
-    print(f"[Carousel Engine] Compiled LinkedIn PDF Carousel: {pdf_path}")
+    print(f"[Carousel Engine] Compiled 300 DPI LinkedIn PDF Carousel: {pdf_path}")
 
     return image_paths, pdf_path
 
 def build_daily_carousel(day_cfg=None, output_dir="carousel_output"):
     """
-    Builds a complete 7-slide Minimalist Swiss Carousel for any day in the 30-day calendar.
+    Builds a complete 7-slide Minimalist Swiss Carousel in Ultra-HD 2K (2160x2160) for any day in the calendar.
     If day_cfg is Day 1 or None, seamlessly uses the master Shopify vs GA4 reconciliation blueprint.
     """
     os.makedirs(output_dir, exist_ok=True)
@@ -567,24 +707,25 @@ def build_daily_carousel(day_cfg=None, output_dir="carousel_output"):
     s7 = render_swiss_outro_slide()
     slides.append(s7)
 
-    # Save individual slide images
+    # Save individual slide images in Ultra-HD 2K (2160x2160)
     image_paths = []
     for idx, slide in enumerate(slides):
         p = os.path.join(output_dir, f"slide_{idx + 1}.png")
-        slide.save(p, "PNG", quality=98)
+        slide.save(p, "PNG", compress_level=1)
         image_paths.append(p)
-        print(f"[Carousel Engine] Generated Slide {idx + 1}: {p}")
+        print(f"[Carousel Engine] Generated Ultra-HD Slide {idx + 1}: {p}")
 
-    # Compile PDF for LinkedIn
+    # Compile 300 DPI high-definition PDF for LinkedIn
     pdf_path = os.path.join(output_dir, f"tracking_carousel_day_{day_num}.pdf")
     slides[0].save(
         pdf_path,
         "PDF",
-        resolution=100.0,
+        resolution=300.0,
+        quality=100,
         save_all=True,
         append_images=slides[1:]
     )
-    print(f"[Carousel Engine] Compiled LinkedIn PDF Carousel: {pdf_path}")
+    print(f"[Carousel Engine] Compiled 300 DPI LinkedIn PDF Carousel: {pdf_path}")
 
     return image_paths, pdf_path
 
