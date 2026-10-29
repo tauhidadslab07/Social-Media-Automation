@@ -9,6 +9,7 @@ from carousel_engine import build_daily_carousel, build_shopify_ga4_carousel
 from social_poster import (
     post_carousel_to_facebook,
     post_carousel_to_instagram,
+    post_carousel_to_linkedin,
     post_document_to_linkedin
 )
 
@@ -105,13 +106,9 @@ def run_carousel_publish():
         print("\n--- 📸 Publishing Swipeable Carousel to Instagram (@tauhidadslab) ---")
         results["Instagram Carousel"] = post_carousel_to_instagram(image_paths, caption)
 
-    # LinkedIn Document Carousel (PDF)
-    print("\n--- 💼 Publishing Document Carousel (PDF) to LinkedIn ---")
-    results["LinkedIn PDF Carousel"] = post_document_to_linkedin(
-        pdf_path,
-        caption,
-        title=f"Tauhid Ads Lab Blueprint: {topic_title}"
-    )
+    # LinkedIn Carousel Post (Multi-Image Carousel)
+    print("\n--- 💼 Publishing Swipeable Multi-Image Carousel to LinkedIn ---")
+    results["LinkedIn Carousel"] = post_carousel_to_linkedin(image_paths, caption)
 
     # 4. Summary
     print("\n" + "=" * 70)

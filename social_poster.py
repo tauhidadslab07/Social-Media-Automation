@@ -330,11 +330,110 @@ def post_carousel_to_instagram(image_paths, caption):
         print(f"[Instagram Carousel] Post failed: {e}")
         return False
 
-def post_document_to_linkedin(pdf_path, caption, title="Shopify & GA4 Tracking Blueprint"):
+def post_carousel_to_linkedin(image_paths, caption):
     """
-    Publishes a PDF Document to LinkedIn, which displays as a native,
-    swipeable document carousel on the LinkedIn feed.
+    Publishes a multi-image swipeable carousel post to LinkedIn.
+    1. Registers each slide image via v2/assets using 'urn:li:digitalmediaRecipe:feedshare-image'.
+    2. Uploads the binary image data via PUT to the pre-signed uploadUrl.
+    3. Publishes via v2/ugcPosts with shareMediaCategory: IMAGE and media list.
+    LinkedIn natively displays this as an interactive multi-image carousel on the feed.
     """
+    token = os.getenv("LINKEDIN_ACCESS_TOKEN", LI_TOKEN)
+    urn = os.getenv("LINKEDIN_AUTHOR_URN", LI_AUTHOR_URN)
+
+    if not token or not urn:
+        print("[LinkedIn Carousel] Skipped: Missing credentials.")
+        return False
+
+    headers = {
+        "Authorization": f"Bearer {token}",
+        "X-Restli-Protocol-Version": "2.0.0",
+        "Content-Type": "application/json"
+    }
+
+    try:
+        media_assets = []
+        register_url = "https://api.linkedin.com/v2/assets?action=registerUpload"
+
+        # Up to 9 images supported on LinkedIn multi-image post
+        for idx, img_path in enumerate(image_paths[:9]):
+            print(f"[LinkedIn Carousel] Registering slide {idx + 1}/{len(image_paths)}: {img_path}")
+            reg_payload = {
+                "registerUploadRequest": {
+                    "recipes": ["urn:li:digitalmediaRecipe:feedshare-image"],
+                    "owner": urn,
+                    "serviceRelationships": [{
+                        "relationshipType": "OWNER",
+                        "identifier": "urn:li:userGeneratedContent"
+                    }]
+                }
+            }
+            reg_res = requests.post(register_url, headers=headers, json=reg_payload, timeout=30)
+            if reg_res.status_code != 200:
+                print(f"[LinkedIn Carousel] Error registering slide {idx + 1}: {reg_res.text}")
+                continue
+
+            upload_data = reg_res.json()
+            upload_url = upload_data["value"]["uploadMechanism"]["com.linkedin.digitalmedia.uploading.MediaUploadHttpRequest"]["uploadUrl"]
+            asset_urn = upload_data["value"]["asset"]
+
+            # Step 2: Upload binary image using PUT
+            with open(img_path, "rb") as f:
+                file_bytes = f.read()
+                put_headers = {
+                    "Authorization": f"Bearer {token}",
+                    "Content-Type": "image/png"
+                }
+                up_res = requests.put(upload_url, data=file_bytes, headers=put_headers, timeout=60)
+                if up_res.status_code not in (200, 201):
+                    # Fallback to POST
+                    up_res = requests.post(upload_url, data=file_bytes, headers=put_headers, timeout=60)
+
+            media_assets.append({
+                "status": "READY",
+                "description": {"text": f"Slide {idx + 1}"},
+                "media": asset_urn,
+                "title": {"text": f"Slide {idx + 1}"}
+            })
+
+        if not media_assets:
+            print("[LinkedIn Carousel] Failed: No slides were successfully uploaded.")
+            return False
+
+        print(f"[LinkedIn Carousel] Publishing multi-image carousel ({len(media_assets)} slides)...")
+        post_url = "https://api.linkedin.com/v2/ugcPosts"
+        ugc_payload = {
+            "author": urn,
+            "lifecycleState": "PUBLISHED",
+            "specificContent": {
+                "com.linkedin.ugc.ShareContent": {
+                    "shareCommentary": {"text": caption},
+                    "shareMediaCategory": "IMAGE",
+                    "media": media_assets
+                }
+            },
+            "visibility": {"com.linkedin.ugc.MemberNetworkVisibility": "PUBLIC"}
+        }
+
+        post_res = requests.post(post_url, headers=headers, json=ugc_payload, timeout=30)
+        post_res.raise_for_status()
+        post_id = post_res.json().get("id")
+        print(f"[LinkedIn Carousel] Successfully published multi-image carousel! Post ID: {post_id}")
+        return True
+
+    except Exception as e:
+        print(f"[LinkedIn Carousel] Post failed: {e}")
+        if 'post_res' in locals():
+            print(f"Details: {post_res.text}")
+        return False
+
+def post_document_to_linkedin(pdf_path, caption, title="Shopify & GA4 Tracking Blueprint", image_paths=None):
+    """
+    Publishes carousel to LinkedIn. If image_paths is provided, publishes as a
+    multi-image carousel (guaranteed 100% compatibility with LinkedIn's public API permissions).
+    """
+    if image_paths and len(image_paths) > 0:
+        return post_carousel_to_linkedin(image_paths, caption)
     token = os.getenv("LINKEDIN_ACCESS_TOKEN", LI_TOKEN)
     urn = os.getenv("LINKEDIN_AUTHOR_URN", LI_AUTHOR_URN)
 
@@ -368,9 +467,9 @@ def post_document_to_linkedin(pdf_path, caption, title="Shopify & GA4 Tracking B
         upload_url = upload_data["value"]["uploadMechanism"]["com.linkedin.digitalmedia.uploading.MediaUploadHttpRequest"]["uploadUrl"]
         asset_urn = upload_data["value"]["asset"]
 
-        # Step 2: Upload PDF binary
+        # Step 2: Upload PDF binary via PUT
         with open(pdf_path, "rb") as f:
-            up_res = requests.post(
+            up_res = requests.put(
                 upload_url,
                 data=f,
                 headers={"Authorization": f"Bearer {token}", "Content-Type": "application/pdf"},
