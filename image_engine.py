@@ -507,20 +507,193 @@ def render_template_poster(post_data, output_path, is_linkedin=False):
             final_composite.save(output_path, "PNG", compress_level=1)
             print(f"[Image Engine] Ultra-HD 2K Composite saved: {output_path}")
             return output_path
-            print(f"[Image Engine] Template Composite saved: {output_path}")
-            return output_path
 
     except Exception as e:
         print(f"[Image Engine] Error rendering template poster: {e}. Falling back to master banner.")
         return render_master_banner(post_data, output_path, is_linkedin=is_linkedin)
 
+def render_personal_brand_graphic(post_data, output_path, is_linkedin=False):
+    """
+    Renders high-converting Personal Branding Feed Post Graphic matching the creator style
+    requested by Md. Tauhidul Islam Bhuian (Warm minimalist beige + personal photo + bold typography + orange CTA dock).
+    """
+    WIDTH, HEIGHT = 1080, 1080
+    portrait_path = os.path.join(os.path.dirname(__file__), "tauhid_portrait.jpg")
+
+    if not os.path.exists(portrait_path):
+        print("[Personal Brand Engine] tauhid_portrait.jpg not found, falling back to template poster.")
+        return render_template_poster(post_data, output_path, is_linkedin=is_linkedin)
+
+    # 1. Warm Minimalist Cream Background (#FFFDF8)
+    base = Image.new("RGBA", (WIDTH, HEIGHT), (255, 253, 248, 255))
+    glow = Image.new("RGBA", (WIDTH, HEIGHT), (0, 0, 0, 0))
+    glow_draw = ImageDraw.Draw(glow)
+
+    # Ambient warm golden glow behind subject
+    glow_center_x, glow_center_y = WIDTH // 2, 650
+    for r in range(400, 0, -20):
+        alpha = int(35 * (1 - (r / 400)))
+        glow_draw.ellipse(
+            [glow_center_x - r, glow_center_y - r, glow_center_x + r, glow_center_y + r],
+            fill=(254, 215, 170, alpha)
+        )
+    base = Image.alpha_composite(base, glow)
+    draw = ImageDraw.Draw(base)
+
+    # -------------------------------------------------------------
+    # 2. TOP BRAND PILL (Vibrant Orange like 'Rasel Insights')
+    # -------------------------------------------------------------
+    brand_pill_x, brand_pill_y = 60, 48
+    brand_pill_h = 50
+    brand_font = get_font(19, bold=True)
+    brand_text = f"✦ {BRAND_NAME.upper()}"
+    bbox = draw.textbbox((0, 0), brand_text, font=brand_font)
+    brand_pill_w = (bbox[2] - bbox[0]) + 44
+
+    draw.rounded_rectangle(
+        [brand_pill_x, brand_pill_y, brand_pill_x + brand_pill_w, brand_pill_y + brand_pill_h],
+        radius=25,
+        fill=(255, 122, 0)
+    )
+    draw.text((brand_pill_x + 22, brand_pill_y + 14), brand_text, fill=(255, 255, 255), font=brand_font)
+
+    # -------------------------------------------------------------
+    # 3. CATEGORY PILL (Soft Butter Yellow like 'এআই প্রম্পট')
+    # -------------------------------------------------------------
+    cat_y = brand_pill_y + brand_pill_h + 16
+    cat_h = 38
+    cat_font = get_font(14, bold=True)
+    category = post_data.get("badge", post_data.get("category", "SERVER-SIDE TRACKING")).upper()
+    cat_text = f"● {category}"
+    c_bbox = draw.textbbox((0, 0), cat_text, font=cat_font)
+    cat_w = (c_bbox[2] - c_bbox[0]) + 32
+
+    draw.rounded_rectangle(
+        [brand_pill_x, cat_y, brand_pill_x + cat_w, cat_y + cat_h],
+        radius=19,
+        fill=(254, 243, 199),
+        outline=(245, 158, 11, 160),
+        width=1
+    )
+    draw.text((brand_pill_x + 16, cat_y + 10), cat_text, fill=(180, 83, 9), font=cat_font)
+
+    # -------------------------------------------------------------
+    # 4. DOMINANT HEADLINE (Bold High-Contrast Swiss Black)
+    # -------------------------------------------------------------
+    title_y = cat_y + cat_h + 18
+    h1 = post_data.get("graphic_title_line1", "").strip(".")
+    h2 = post_data.get("graphic_title_line2", "").strip(".")
+    full_title = post_data.get("title", f"{h1} {h2}").strip()
+    
+    title_font = get_font(38, bold=True)
+    wrapped_title = textwrap.fill(full_title, width=28)
+    draw.text((brand_pill_x, title_y), wrapped_title, fill=(17, 24, 39), font=title_font, spacing=8)
+
+    t_box = draw.textbbox((brand_pill_x, title_y), wrapped_title, font=title_font, spacing=8)
+    after_title_y = t_box[3] + 14
+
+    # Accent Underline Bar (Warm Amber/Yellow)
+    draw.rounded_rectangle(
+        [brand_pill_x, after_title_y, brand_pill_x + 130, after_title_y + 8],
+        radius=4,
+        fill=(245, 158, 11)
+    )
+
+    # Subtitle
+    sub_y = after_title_y + 16
+    sub_text = post_data.get("graphic_subtitle", post_data.get("core_concept", "Reconcile your revenue 1:1 with Server-Side GTM."))
+    sub_font = get_font(18, bold=False)
+    wrapped_sub = textwrap.fill(sub_text, width=44)
+    draw.text((brand_pill_x, sub_y), wrapped_sub, fill=(75, 85, 99), font=sub_font, spacing=6)
+
+    # -------------------------------------------------------------
+    # 5. PERSONAL PORTRAIT (Md. Tauhidul Islam Bhuian)
+    # -------------------------------------------------------------
+    try:
+        with Image.open(portrait_path) as p_img:
+            p_rgba = p_img.convert("RGBA")
+            
+            # Card dimensions for portrait arch / capsule
+            card_w = 680
+            card_h = 580
+            card_x = (WIDTH - card_w) // 2
+            card_y = HEIGHT - 110 - card_h + 30 # Sits right behind the bottom bar
+
+            # Scale and crop portrait to fill card
+            p_scaled = p_rgba.resize((card_w, int(card_w * (p_rgba.height / p_rgba.width))), Image.Resampling.LANCZOS)
+            
+            # Create rounded capsule mask with soft top corners
+            mask = Image.new("L", (card_w, card_h), 0)
+            m_draw = ImageDraw.Draw(mask)
+            m_draw.rounded_rectangle([0, 0, card_w, card_h], radius=44, fill=255)
+
+            # Soft drop shadow under the portrait capsule
+            shadow = Image.new("RGBA", (WIDTH, HEIGHT), (0, 0, 0, 0))
+            s_draw = ImageDraw.Draw(shadow)
+            s_draw.rounded_rectangle([card_x + 6, card_y + 16, card_x + card_w - 6, card_y + card_h + 18], radius=44, fill=(15, 23, 42, 35))
+            shadow = shadow.filter(ImageFilter.GaussianBlur(22))
+            base = Image.alpha_composite(base, shadow)
+
+            # Composite cropped portrait
+            p_crop = p_scaled.crop((0, 0, card_w, card_h))
+            base.paste(p_crop, (card_x, card_y), mask)
+
+            # Clean border outline around portrait card
+            c_overlay = Image.new("RGBA", (WIDTH, HEIGHT), (0, 0, 0, 0))
+            co_draw = ImageDraw.Draw(c_overlay)
+            co_draw.rounded_rectangle([card_x, card_y, card_x + card_w, card_y + card_h], radius=44, outline=(255, 255, 255, 220), width=3)
+            base = Image.alpha_composite(base, c_overlay)
+
+    except Exception as pe:
+        print(f"[Personal Brand Engine] Portrait rendering error: {pe}")
+
+    # -------------------------------------------------------------
+    # 6. SIGNATURE BOTTOM ACTION DOCK (Vivid Orange CTA Pill)
+    # -------------------------------------------------------------
+    draw = ImageDraw.Draw(base)
+    dock_x = 50
+    dock_y = HEIGHT - 100
+    dock_w = WIDTH - 100
+    dock_h = 74
+
+    # Diffused shadow under dock
+    d_shadow = Image.new("RGBA", (WIDTH, HEIGHT), (0, 0, 0, 0))
+    ds_draw = ImageDraw.Draw(d_shadow)
+    ds_draw.rounded_rectangle([dock_x + 4, dock_y + 10, dock_x + dock_w - 4, dock_y + dock_h + 12], radius=37, fill=(255, 122, 0, 50))
+    d_shadow = d_shadow.filter(ImageFilter.GaussianBlur(16))
+    base = Image.alpha_composite(base, d_shadow)
+
+    draw = ImageDraw.Draw(base)
+    draw.rounded_rectangle(
+        [dock_x, dock_y, dock_x + dock_w, dock_y + dock_h],
+        radius=37,
+        fill=(255, 122, 0)
+    )
+
+    # Dock Text: Website and WhatsApp
+    dock_text = f"🌐 {BRAND_WEBSITE}   |   💬 WhatsApp: {BRAND_PHONE}"
+    draw.text((dock_x + 36, dock_y + 24), dock_text, fill=(255, 255, 255), font=get_font(21, bold=True))
+
+    # Right Icon Badge (White Circle with Orange Arrow)
+    circle_size = 46
+    cx = dock_x + dock_w - 60
+    cy = dock_y + (dock_h - circle_size) // 2
+    draw.ellipse([cx, cy, cx + circle_size, cy + circle_size], fill=(255, 255, 255))
+    draw.text((cx + 14, cy + 9), "➔", fill=(255, 122, 0), font=get_font(24, bold=True))
+
+    # 7. Final Output Save
+    final_img = base.convert("RGB")
+    final_img.save(output_path, "PNG", quality=98)
+    print(f"[Personal Brand Engine] Successfully generated: {output_path}")
+    return output_path
+
 def create_facebook_graphic(post_data, output_path="fb_graphic.png"):
-    """Creates attention-grabbing Facebook & Instagram feed graphic using curated templates."""
-    return render_template_poster(post_data, output_path, is_linkedin=False)
+    """Creates attention-grabbing Facebook & Instagram feed graphic using Tauhid's personal brand style."""
+    return render_personal_brand_graphic(post_data, output_path, is_linkedin=False)
 
 def create_linkedin_graphic(post_data, output_path="li_graphic.png"):
-    """Creates executive authority LinkedIn feed graphic using curated templates."""
-    return render_template_poster(post_data, output_path, is_linkedin=True)
+    """Creates executive authority LinkedIn feed graphic using Tauhid's personal brand style."""
+    return render_personal_brand_graphic(post_data, output_path, is_linkedin=True)
 
 if __name__ == "__main__":
     sample_data = {
