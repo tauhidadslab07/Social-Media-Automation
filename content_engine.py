@@ -124,16 +124,19 @@ def generate_dual_social_post():
     
     if pillar == "GOOGLE_ADS":
         strict_instruction = f"""
-STRICT NICHE MANDATE: This post must be 100% STRICTLY ABOUT GOOGLE ADS FOR LOCAL BUSINESSES (Doctors, Dentists, Lawyers, Clinics, Home Services, Real Estate, Local Stores).
-- Do NOT talk about Facebook or Instagram ads as a good option. Contrast Facebook boosting (interruption, tire-kickers) with Google Search Ads (urgent high-intent buyers ready with credit cards).
+CRITICAL BUSINESSMAN-FIRST MANDATE: This post must speak DIRECTLY to Local Business Owners, Founders & CEOs (Clinics, High-Ticket Contractors, Lawyers, Dentists, Home Services, Local Stores).
+- ADDRESS THEIR WALLET & PROFIT: Contrast wasting cash on 'boosted Facebook posts' (interruption, cheap likes, tire-kickers) with Google Search Ads (urgent high-intent buyers searching with credit card in hand ready to buy).
 - Focus on: {day_cfg.get('core_concept')}.
-- Tone: High-authority, practical, showing local business owners how to stop burning cash on useless clicks and start getting inbound phone calls and booked appointments.
+- Tone: High-authority, practical business advice showing owners how to stop burning ad budget on useless clicks and start generating direct inbound phone calls and booked client appointments.
 """
     else:
         strict_instruction = f"""
-STRICT NICHE MANDATE: This post must be 100% STRICTLY ABOUT ADVANCED CONVERSION TRACKING & WEB ANALYTICS (GTM, GA4, Server-Side Tracking, Meta Conversions API / CAPI, Enhanced Conversions across all niches: Shopify, WordPress, WooCommerce, Lead Gen).
+CRITICAL BUSINESSMAN-FIRST MANDATE: This post must speak DIRECTLY to E-Commerce Founders, DTC Brand CEOs, and Business Owners spending $5,000 to $100,000/month on paid advertising.
+- NEVER SOUND LIKE A GENERIC TECH MANUAL: Businessmen do not care about cookies or DNS in isolation; they care about net profit, wasted ad spend, and high customer acquisition costs (CPA).
+- THE FINANCIAL BOTTLENECK: When client-side tracking leaks 25-35% of real sales, Meta Advantage+ and Google Smart Bidding optimize on incomplete data, bidding on cheap tire-kickers rather than high-LTV buyers.
+- THE CONTRAST: Reported Vanity ROAS in ad managers vs REAL CASH in the company bank account.
 - Focus on: {day_cfg.get('core_concept')}.
-- Tone: Highly technical yet accessible, expert data architect, demonstrating that running ads with broken tracking is like pouring water into a leaky bucket.
+- Tone: Contrarian, high-stakes executive growth advisor diagnosing why ad performance plateaus and how fixing attribution directly restores profit margins.
 """
 
     prompt = f"""
@@ -151,31 +154,31 @@ CORE GOAL: {day_cfg.get('goal')}
 
 {strict_instruction}
 
-CRITICAL COPYWRITING ARCHITECTURE:
+CRITICAL COPYWRITING ARCHITECTURE FOR BUSINESS OWNERS & FOUNDERS:
 1. LANGUAGE: 100% ENGLISH ONLY. Flawless, punchy, persuasive American/International English.
-2. HOOK: First sentence must be a bold, scroll-stopping contrarian hook in **bold**.
-3. REAL BOTTLENECK: Explain clearly why common methods fail and burn budget.
-4. ACTIONABLE FRAMEWORK: Break down the solution into 2 to 3 bullet points with emojis (✔, 🚀, 💡, 📞, 🎯) and **bold titles**.
-5. THE AHA MOMENT: Contrast interruption vs intent (e.g. scrolling sofa vs urgent emergency search / paying customers vs cheap form-fills).
-6. ENGAGEMENT QUESTION: End with a direct question to Founders, Local Business Owners, or Agency Heads.
-7. CALL TO ACTION & LINKS:
-   - Free 30-Min Consultation: {BRAND_CALENDLY}
-   - Website: {BRAND_WEBSITE}
-   - Phone / WhatsApp: {BRAND_PHONE}
-8. BOLDING: Use **double asterisks** around critical headlines and bullet points so our system converts them to TRUE BOLD on Facebook and LinkedIn.
+2. HOOK: First sentence must be a bold, scroll-stopping contrarian hook in **bold** that calls out the business owner and their wallet. (e.g. "**If your Shopify sales don't match your ad dashboard, you are scaling campaigns on pure fiction.**")
+3. THE CASH BLEED: Explain clearly how much revenue or ad capital is being silently lost and why.
+4. ACTIONABLE FRAMEWORK: Break down the solution into 2 to 3 high-impact bullet points with emojis (✔, 🚀, 💡, 📞, 🎯) and **bold titles**.
+5. THE BOTTOM-LINE RESULT: Explain the direct financial outcome: lower Cost Per Acquisition (CPA), higher ROAS, and ad algorithms optimizing for actual paying customers.
+6. FOUNDER ENGAGEMENT QUESTION: End with a direct question that forces founders to check their numbers (e.g. "E-Commerce Founders: Have you audited your bank deposits against your reported Meta ROAS this month?").
+7. CALL TO ACTION & CONTACT:
+   - Free 30-Min Growth & Tracking Audit: {BRAND_CALENDLY}
+   - Official Agency Portal: {BRAND_WEBSITE}
+   - WhatsApp / Direct Line: {BRAND_PHONE}
+8. BOLDING: Use **double asterisks** around critical headlines and bullet points so our system converts them to TRUE BOLD on Facebook and LinkedIn feeds.
 
 The response MUST be valid JSON with the following exact keys:
 {{
   "category": "{day_cfg.get('badge')}",
-  "graphic_title_line1": "{day_cfg.get('graphic_title_line1')}",
-  "graphic_title_line2": "{day_cfg.get('graphic_title_line2')}",
-  "graphic_subtitle": "{day_cfg.get('graphic_subtitle')}",
+  "graphic_title_line1": "Punchy 2-4 words targeting founder pain (e.g. WHY META ADS MISS 30% / STOP BOOSTING POSTS)",
+  "graphic_title_line2": "Actionable business outcome (e.g. RECOVER LOST PROFIT / GET INBOUND BUYERS)",
+  "graphic_subtitle": "One crisp sentence explaining the direct financial or revenue benefit for the business owner.",
   "bullet_points": {json.dumps(day_cfg.get('bullet_points', []))},
   "cta_text": "{day_cfg.get('cta_text', 'BOOK FREE AUDIT')}",
   "facebook_caption": "Complete formatted 100% English Facebook post using **bold** markers...",
-  "facebook_hashtags": "#TauhidAdsLab #GoogleAds #LocalBusiness #Tracking #Day{day_cfg.get('day')}",
+  "facebook_hashtags": "#TauhidAdsLab #EcommerceGrowth #MetaAds #GoogleAds #ServerSideTracking #Day{day_cfg.get('day')}",
   "linkedin_caption": "Complete formatted 100% English LinkedIn post using **bold** markers...",
-  "linkedin_hashtags": "#PerformanceMarketing #GoogleAds #LocalSEO #TauhidAdsLab #Day{day_cfg.get('day')}"
+  "linkedin_hashtags": "#PerformanceMarketing #EcommerceGrowth #B2BGrowth #TauhidAdsLab #Day{day_cfg.get('day')}"
 }}
 
 Output ONLY valid raw JSON without markdown code fences or backticks.

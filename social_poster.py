@@ -427,13 +427,11 @@ def post_carousel_to_linkedin(image_paths, caption):
             print(f"Details: {post_res.text}")
         return False
 
-def post_document_to_linkedin(pdf_path, caption, title="Shopify & GA4 Tracking Blueprint", image_paths=None):
+def post_document_to_linkedin(pdf_path, caption, title="Server-Side Tracking Blueprint"):
     """
-    Publishes carousel to LinkedIn. If image_paths is provided, publishes as a
-    multi-image carousel (guaranteed 100% compatibility with LinkedIn's public API permissions).
+    Publishes a true native swipeable PDF Document post to LinkedIn using
+    LinkedIn's modern REST Documents API (/rest/documents & /rest/posts).
     """
-    if image_paths and len(image_paths) > 0:
-        return post_carousel_to_linkedin(image_paths, caption)
     token = os.getenv("LINKEDIN_ACCESS_TOKEN", LI_TOKEN)
     urn = os.getenv("LINKEDIN_AUTHOR_URN", LI_AUTHOR_URN)
 
@@ -444,64 +442,69 @@ def post_document_to_linkedin(pdf_path, caption, title="Shopify & GA4 Tracking B
     headers = {
         "Authorization": f"Bearer {token}",
         "X-Restli-Protocol-Version": "2.0.0",
+        "Linkedin-Version": "202511",
         "Content-Type": "application/json"
     }
 
     try:
-        # Step 1: Register document upload
-        register_url = "https://api.linkedin.com/v2/assets?action=registerUpload"
-        register_payload = {
-            "registerUploadRequest": {
-                "recipes": ["urn:li:digitalmediaRecipe:feedshare-document"],
-                "owner": urn,
-                "serviceRelationships": [{
-                    "relationshipType": "OWNER",
-                    "identifier": "urn:li:userGeneratedContent"
-                }]
+        # Step 1: Initialize document upload
+        init_url = "https://api.linkedin.com/rest/documents?action=initializeUpload"
+        init_payload = {
+            "initializeUploadRequest": {
+                "owner": urn
             }
         }
-        reg_res = requests.post(register_url, headers=headers, json=register_payload, timeout=30)
-        reg_res.raise_for_status()
-        upload_data = reg_res.json()
+        init_res = requests.post(init_url, headers=headers, json=init_payload, timeout=30)
+        init_res.raise_for_status()
+        init_data = init_res.json()["value"]
         
-        upload_url = upload_data["value"]["uploadMechanism"]["com.linkedin.digitalmedia.uploading.MediaUploadHttpRequest"]["uploadUrl"]
-        asset_urn = upload_data["value"]["asset"]
+        upload_url = init_data["uploadUrl"]
+        doc_urn = init_data["document"]
+        print(f"[LinkedIn Document] Initialized successfully. Document URN: {doc_urn}")
 
         # Step 2: Upload PDF binary via PUT
         with open(pdf_path, "rb") as f:
+            pdf_bytes = f.read()
             up_res = requests.put(
                 upload_url,
-                data=f,
-                headers={"Authorization": f"Bearer {token}", "Content-Type": "application/pdf"},
+                data=pdf_bytes,
+                headers={"Content-Type": "application/pdf"},
                 timeout=60
             )
             up_res.raise_for_status()
+        print("[LinkedIn Document] PDF binary uploaded successfully.")
 
-        # Step 3: Create UGC Post with shareMediaCategory DOCUMENT
-        post_url = "https://api.linkedin.com/v2/ugcPosts"
-        ugc_payload = {
+        # Step 3: Create Post via /rest/posts referencing document
+        post_url = "https://api.linkedin.com/rest/posts"
+        post_payload = {
             "author": urn,
-            "lifecycleState": "PUBLISHED",
-            "specificContent": {
-                "com.linkedin.ugc.ShareContent": {
-                    "shareCommentary": {"text": caption},
-                    "shareMediaCategory": "DOCUMENT",
-                    "media": [{
-                        "status": "READY",
-                        "description": {"text": title},
-                        "media": asset_urn,
-                        "title": {"text": title}
-                    }]
+            "commentary": caption,
+            "visibility": "PUBLIC",
+            "distribution": {
+                "feedDistribution": "MAIN_FEED",
+                "targetEntities": [],
+                "thirdPartyDistributionChannels": []
+            },
+            "content": {
+                "media": {
+                    "id": doc_urn,
+                    "title": title
                 }
             },
-            "visibility": {"com.linkedin.ugc.MemberNetworkVisibility": "PUBLIC"}
+            "lifecycleState": "PUBLISHED",
+            "isReshareDisabledByAuthor": false
         }
 
-        post_res = requests.post(post_url, headers=headers, json=ugc_payload, timeout=30)
+        post_res = requests.post(post_url, headers=headers, json=post_payload, timeout=30)
         post_res.raise_for_status()
-        post_id = post_res.json().get("id")
-        print(f"[LinkedIn Document Carousel] Successfully published! Post ID: {post_id}")
+        post_id = post_res.headers.get("x-restli-id", post_res.headers.get("X-RestLi-Id", "PUBLISHED"))
+        print(f"[LinkedIn Native PDF Document] Successfully published! Post ID: {post_id}")
         return True
+
     except Exception as e:
-        print(f"[LinkedIn Document Carousel] Post failed: {e}")
+        print(f"[LinkedIn Document] Post failed: {e}")
+        if 'init_res' in locals():
+            print(f"Init Details: {init_res.text}")
+        if 'post_res' in locals():
+            print(f"Post Details: {post_res.text}")
         return False

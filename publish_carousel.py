@@ -51,26 +51,29 @@ Swipe through this 7-slide blueprint to see how we fix it 1:1 using Server-Side 
     ])
     bullet_text = "\n".join([f"👉 {b}" for b in bullets])
 
-    return f"""Stop letting client-side pixel drops destroy your ad performance. 🚨
+    return f"""E-Commerce Founders & Business Owners: Stop letting invisible tracking drops burn your ad spend. 🚨
 
 Topic: {title}
 
-Here is what most performance marketers don't realize:
+Here is the financial reality most performance marketers don't talk about:
 {core_concept}
 
-Why this directly hits your bottom line:
+Why this directly eats into your bottom-line profit:
 {bullet_text}
 
-When you move tracking to a private Server-Side GTM container, your ad algorithms receive clean, unadulterated conversion signals.
+When you move tracking to a private Server-Side GTM container on your own custom domain:
+✔ Your ad algorithms receive 100% clean, verified conversion signals.
+✔ Meta Advantage+ and Google Smart Bidding stop optimizing for cheap tire-kickers.
+✔ Your Cost Per Acquisition (CPA) drops and your ad ROAS matches real bank deposits.
 
 Swipe through this 7-slide blueprint to see the exact technical architecture. ➡
 
-🎯 Ready to future-proof your tracking stack?
-📅 Book a Free 30-Min Audit: {BRAND_CALENDLY}
-🌐 Agency Case Studies: {BRAND_WEBSITE}
+🎯 Ready to future-proof your tracking pipeline?
+📅 Book a Free 30-Min Strategy Call: {BRAND_CALENDLY}
+🌐 Agency Case Studies & Results: {BRAND_WEBSITE}
 💬 WhatsApp / Direct Line: {BRAND_PHONE}
 
-#ServerSideTracking #MetaCAPI #GoogleAds #GA4 #Attribution #TauhidAdsLab"""
+#EcommerceFounders #ShopifyGrowth #ServerSideTracking #MetaCAPI #GoogleAds #TauhidAdsLab"""
 
 def run_carousel_publish():
     print("=" * 70)
@@ -106,9 +109,9 @@ def run_carousel_publish():
         print("\n--- 📸 Publishing Swipeable Carousel to Instagram (@tauhidadslab) ---")
         results["Instagram Carousel"] = post_carousel_to_instagram(image_paths, caption)
 
-    # LinkedIn Carousel Post (Multi-Image Carousel)
-    print("\n--- 💼 Publishing Swipeable Multi-Image Carousel to LinkedIn ---")
-    results["LinkedIn Carousel"] = post_carousel_to_linkedin(image_paths, caption)
+    # LinkedIn Native PDF Document Carousel Post
+    print("\n--- 💼 Publishing Swipeable PDF Document Carousel to LinkedIn ---")
+    results["LinkedIn PDF Document"] = post_document_to_linkedin(pdf_path, caption, title=topic_title)
 
     # 4. Summary
     print("\n" + "=" * 70)
