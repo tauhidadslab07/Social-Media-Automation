@@ -97,7 +97,7 @@ def create_base_canvas():
     base = Image.alpha_composite(base, glow)
     return base
 
-def draw_header(draw, guide_text="Learn in 5 Slides ➔"):
+def draw_header(draw, guide_text="Learn in 5 Slides →"):
     """Renders the top brand header, T logo icon, and horizontal divider."""
     hx, hy = 80, 70
     
@@ -173,7 +173,7 @@ def render_cover_slide(title_text):
     canvas = create_base_canvas()
     draw = ImageDraw.Draw(canvas)
 
-    draw_header(draw, guide_text="Learn in 5 Slides ➔")
+    draw_header(draw, guide_text="Learn in 5 Slides →")
 
     # Center Headline
     title_font = get_font(74, bold=True)
@@ -186,10 +186,10 @@ def render_cover_slide(title_text):
 
     draw.text((80, ty), wrapped_title, fill=(255, 255, 255), font=title_font, spacing=16)
 
-    # 5 Emerald Directional Arrows
+    # 5 Emerald Directional Arrows (Matching viral swipeable guide)
     arrow_y = ty + th + 60
     arrow_font = get_font(44, bold=False)
-    arrow_str = "➔   ➔   ➔   ➔   ➔"
+    arrow_str = "→   →   →   →   →"
     draw.text((80, arrow_y), arrow_str, fill=(34, 197, 94), font=arrow_font)
 
     draw_footer_and_progress(draw, active_step=1, total_steps=5)
@@ -208,7 +208,7 @@ def render_step_slide(step_num, title, description, total_steps=5):
     draw.text((80, num_y), f"{step_num}.", fill=(255, 255, 255), font=num_font)
 
     arrow_font = get_font(52, bold=False)
-    draw.text((WIDTH - 200, num_y + 35), "➔  ➔", fill=(34, 197, 94), font=arrow_font)
+    draw.text((WIDTH - 200, num_y + 35), "→  →", fill=(34, 197, 94), font=arrow_font)
 
     # Core Headline (Font size 58-62)
     h_y = num_y + 150
@@ -233,7 +233,7 @@ def render_outro_slide(outro_title="Save this Blueprint", outro_sub=None):
     canvas = create_base_canvas()
     draw = ImageDraw.Draw(canvas)
 
-    draw_header(draw, guide_text="Action Step ➔")
+    draw_header(draw, guide_text="Action Step →")
 
     # Bookmark Icon Box
     bw, bh = 100, 100
@@ -276,7 +276,7 @@ def render_outro_slide(outro_title="Save this Blueprint", outro_sub=None):
     draw.rounded_rectangle([btn_x, btn_y, btn_x + btn_w, btn_y + btn_h], radius=36, fill=(34, 197, 94))
     
     btn_font = get_font(28, bold=True)
-    btn_text = "Book Free Audit ➔"
+    btn_text = "Book Free Audit →"
     bw_box = draw.textbbox((0, 0), btn_text, font=btn_font)
     btn_tw = bw_box[2] - bw_box[0]
     draw.text((btn_x + (btn_w - btn_tw) // 2, btn_y + 20), btn_text, fill=(6, 9, 19), font=btn_font)

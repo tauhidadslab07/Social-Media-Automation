@@ -744,7 +744,7 @@ def render_personal_brand_graphic(post_data, output_path, is_linkedin=False):
         fill=(34, 197, 94) # Official Website Emerald Button
     )
     btn_font = get_font(16, bold=True)
-    draw.text((btn_x + 22, btn_y + 13), "Book Audit ➔", fill=(6, 9, 19), font=btn_font)
+    draw.text((btn_x + 22, btn_y + 13), "Book Audit →", fill=(6, 9, 19), font=btn_font)
 
     # Finalize and Save
     final_img = base.convert("RGB")
