@@ -13,24 +13,21 @@ BRAND_WEBSITE = os.getenv("BRAND_WEBSITE", "tauhidadslab.com").replace("http://"
 BRAND_CALENDLY = os.getenv("BRAND_CALENDLY", "calendly.com/tauhidadslab/30min").replace("https://", "").replace("http://", "")
 
 # ---------------------------------------------------------------------------
-# BRAND PALETTE (Calibrated to tauhidadslab.com & Viral Emerald Carousel)
+# OFFICIAL BRAND PALETTE (tauhidadslab.com Deep Midnight Identity)
 # ---------------------------------------------------------------------------
 WIDTH = 1080
 HEIGHT = 1350
 
 COLORS = {
-    "bg_base": (6, 9, 19),             # Midnight Obsidian
-    "bg_teal": (8, 28, 24),            # Dark Forest Teal
-    "flare_emerald": (34, 197, 94),    # Emerald Glow (#22C55E)
+    "bg_base": (6, 9, 19),             # Deep Midnight Obsidian (#060913)
     "flare_cyan": (56, 189, 248),      # Electric Cyan (#38BDF8)
+    "flare_emerald": (34, 197, 94),    # Emerald Green (#22C55E)
     "text_white": (255, 255, 255),
-    "text_slate": (148, 163, 184),     # #94A3B8
+    "text_slate": (148, 163, 184),     # Slate Grey (#94A3B8)
     "text_muted": (100, 116, 139),
-    "accent_emerald": (34, 197, 94),
     "accent_cyan": (56, 189, 248),
-    "divider": (255, 255, 255, 42),
-    "card_glass": (255, 255, 255, 18),
-    "card_border": (255, 255, 255, 45),
+    "accent_emerald": (34, 197, 94),
+    "divider": (255, 255, 255, 32),
 }
 
 def get_font(size, bold=False):
@@ -59,45 +56,42 @@ def get_font(size, bold=False):
 
 def create_base_canvas():
     """
-    Renders the signature 1080x1350 canvas:
-    - Midnight obsidian to forest teal radial gradient
-    - Soft emerald and cyan ambient flares
+    Renders the official Tauhid Ads Lab midnight canvas:
+    - Deep Midnight Obsidian (#060913)
+    - Ambient Electric Cyan (#38BDF8) flare top-left
+    - Ambient Emerald Green (#22C55E) flare bottom-right
+    - Subtle high-tech dot grid texture
     """
-    # 1. Base image with vertical gradient from teal to obsidian
+    # 1. Base Deep Midnight Obsidian
     base = Image.new("RGBA", (WIDTH, HEIGHT), COLORS["bg_base"] + (255,))
     
-    # Gradient overlay
-    grad = Image.new("RGBA", (WIDTH, HEIGHT), (0, 0, 0, 0))
-    g_draw = ImageDraw.Draw(grad)
-    for y in range(HEIGHT):
-        ratio = y / HEIGHT
-        r = int(COLORS["bg_teal"][0] * (1 - ratio) + COLORS["bg_base"][0] * ratio)
-        g = int(COLORS["bg_teal"][1] * (1 - ratio) + COLORS["bg_base"][1] * ratio)
-        b = int(COLORS["bg_teal"][2] * (1 - ratio) + COLORS["bg_base"][2] * ratio)
-        g_draw.line([(0, y), (WIDTH, y)], fill=(r, g, b, 255))
-    
-    base = Image.alpha_composite(base, grad)
-
-    # 2. Top-Center Emerald Radial Flare
+    # 2. Ambient Flares
     glow = Image.new("RGBA", (WIDTH, HEIGHT), (0, 0, 0, 0))
     glow_draw = ImageDraw.Draw(glow)
-    
-    cx, cy = WIDTH // 2, 320
-    fe = COLORS["flare_emerald"]
-    for r in range(540, 0, -25):
-        alpha = int(48 * (1 - (r / 540)))
-        glow_draw.ellipse([cx - r, cy - r, cx + r, cy + r], fill=(fe[0], fe[1], fe[2], alpha))
 
-    # Bottom-Right Cyan Flare
+    # Top-Left Electric Cyan Flare
     fc = COLORS["flare_cyan"]
-    for r in range(450, 0, -30):
-        alpha = int(25 * (1 - (r / 450)))
-        glow_draw.ellipse([WIDTH + 50 - r, HEIGHT - 100 - r, WIDTH + 50 + r, HEIGHT - 100 + r], fill=(fc[0], fc[1], fc[2], alpha))
+    for r in range(480, 0, -25):
+        alpha = int(32 * (1 - (r / 480)))
+        glow_draw.ellipse([-80 - r, -80 - r, -80 + r, -80 + r], fill=(fc[0], fc[1], fc[2], alpha))
+
+    # Bottom-Right Emerald Green Flare
+    fe = COLORS["flare_emerald"]
+    for r in range(500, 0, -25):
+        alpha = int(28 * (1 - (r / 500)))
+        glow_draw.ellipse([WIDTH + 60 - r, HEIGHT - 50 - r, WIDTH + 60 + r, HEIGHT - 50 + r], fill=(fe[0], fe[1], fe[2], alpha))
 
     base = Image.alpha_composite(base, glow)
+    draw = ImageDraw.Draw(base)
+
+    # 3. High-Tech Dot Grid Texture
+    for x in range(36, WIDTH, 36):
+        for y in range(36, HEIGHT, 36):
+            draw.point((x, y), fill=(255, 255, 255, 18))
+
     return base
 
-def draw_header(draw, guide_text="Learn in 5 Slides →"):
+def draw_header(draw, guide_text="5-SLIDE BLUEPRINT"):
     """Renders the top brand header, T logo icon, and horizontal divider."""
     hx, hy = 80, 70
     
@@ -122,19 +116,20 @@ def draw_header(draw, guide_text="Learn in 5 Slides →"):
     w_a = draw.textbbox((0, 0), "ADS ", font=brand_font)[2]
     draw.text((tx + w_t + w_a, hy + 5), "LAB", fill=(34, 197, 94), font=brand_font)
 
-    # Right Guide Text
-    guide_font = get_font(22, bold=False)
+    # Right Guide Text (Clean uppercase without arrows)
+    guide_font = get_font(20, bold=True)
     g_w = draw.textbbox((0, 0), guide_text, font=guide_font)[2]
-    draw.text((WIDTH - 80 - g_w, hy + 7), guide_text, fill=(203, 213, 225), font=guide_font)
+    draw.text((WIDTH - 80 - g_w, hy + 8), guide_text, fill=(148, 163, 184), font=guide_font)
 
     # Horizontal Divider Line
-    draw.line([(80, hy + 58), (WIDTH - 80, hy + 58)], fill=(255, 255, 255, 45), width=2)
+    draw.line([(80, hy + 58), (WIDTH - 80, hy + 58)], fill=(255, 255, 255, 32), width=1)
 
 def draw_footer_and_progress(draw, active_step=1, total_steps=5, all_active=False):
     """
     Renders the 5-segment progress bar and the bottom footer:
-    - Founder Name on left
-    - Agency website on right
+    - Active segment in Electric Cyan
+    - All-active outro in Emerald Green
+    - Founder Name on left, Agency website on right
     """
     # 1. Segmented Progress Bar
     bar_y = HEIGHT - 145
@@ -146,13 +141,13 @@ def draw_footer_and_progress(draw, active_step=1, total_steps=5, all_active=Fals
     for i in range(total_steps):
         sx = bar_x + i * (seg_w + gap)
         if all_active:
-            col = (34, 197, 94, 255)
+            col = (34, 197, 94, 255) # Emerald Green
         elif i + 1 == active_step:
-            col = (255, 255, 255, 255)
+            col = (56, 189, 248, 255) # Electric Cyan
         else:
-            col = (255, 255, 255, 55)
+            col = (255, 255, 255, 38)
 
-        draw.rounded_rectangle([sx, bar_y, sx + seg_w, bar_y + 5], radius=3, fill=col)
+        draw.rounded_rectangle([sx, bar_y, sx + seg_w, bar_y + 4], radius=2, fill=col)
 
     # 2. Bottom Footer
     footer_y = HEIGHT - 95
@@ -165,62 +160,79 @@ def draw_footer_and_progress(draw, active_step=1, total_steps=5, all_active=Fals
     draw.text((WIDTH - 80 - w_w, footer_y), web_text, fill=(56, 189, 248), font=w_font)
 
 # ---------------------------------------------------------------------------
-# SLIDE BUILDERS (1080x1350 Minimalist High-Contrast Carousel)
+# SLIDE BUILDERS (Official Midnight Obsidian, ZERO ARROWS)
 # ---------------------------------------------------------------------------
 
-def render_cover_slide(title_text):
-    """Renders Slide 1 (Cover Hook) with giant white typography and 5 arrows."""
+def render_cover_slide(title_text, category_badge="SERVER-SIDE TRACKING", subtitle_text=None):
+    """Renders Slide 1 (Cover Hook) with midnight background and zero arrows."""
     canvas = create_base_canvas()
     draw = ImageDraw.Draw(canvas)
 
-    draw_header(draw, guide_text="Learn in 5 Slides →")
+    draw_header(draw, guide_text="5-SLIDE BLUEPRINT")
 
-    # Center Headline
-    title_font = get_font(74, bold=True)
+    # Category Pill
+    pill_y = 380
+    badge_text = f"● {category_badge.upper()}"
+    badge_font = get_font(14, bold=True)
+    b_w = draw.textbbox((0, 0), badge_text, font=badge_font)[2] + 28
+    draw.rounded_rectangle(
+        [80, pill_y, 80 + b_w, pill_y + 32],
+        radius=16,
+        fill=(14, 165, 233, 30),
+        outline=(56, 189, 248, 85),
+        width=1
+    )
+    draw.text((80 + 14, pill_y + 8), badge_text, fill=(56, 189, 248), font=badge_font)
+
+    # Main Headline (Two-Tone Swiss Grotesk, Large Bold White)
+    h_y = pill_y + 54
+    title_font = get_font(76, bold=True)
     wrapped_title = textwrap.fill(title_text, width=22)
-    
-    # Calculate text positioning
-    bbox = draw.textbbox((0, 0), wrapped_title, font=title_font)
-    th = bbox[3] - bbox[1]
-    ty = 480 - (th // 3)
+    draw.text((80, h_y), wrapped_title, fill=(255, 255, 255), font=title_font, spacing=14)
 
-    draw.text((80, ty), wrapped_title, fill=(255, 255, 255), font=title_font, spacing=16)
+    t_bbox = draw.textbbox((0, 0), wrapped_title, font=title_font)
+    t_height = t_bbox[3] - t_bbox[1]
 
-    # 5 Emerald Directional Arrows (Matching viral swipeable guide)
-    arrow_y = ty + th + 60
-    arrow_font = get_font(44, bold=False)
-    arrow_str = "→   →   →   →   →"
-    draw.text((80, arrow_y), arrow_str, fill=(34, 197, 94), font=arrow_font)
+    # Subtitle (Refined Slate Grey, NO ARROWS)
+    if not subtitle_text:
+        subtitle_text = "Stop letting client-side pixel drops destroy your conversion tracking and ad ROAS."
+    sub_y = h_y + t_height + 34
+    sub_font = get_font(30, bold=False)
+    wrapped_sub = textwrap.fill(subtitle_text, width=44)
+    draw.text((80, sub_y), wrapped_sub, fill=(148, 163, 184), font=sub_font, spacing=10)
 
     draw_footer_and_progress(draw, active_step=1, total_steps=5)
     return canvas.convert("RGB")
 
 def render_step_slide(step_num, title, description, total_steps=5):
-    """Renders Steps 1 to 5 with giant number, directional arrows, and punchy body."""
+    """
+    Renders Step Slides (1 to 5) with:
+    - ZERO ARROW SIGNS (100% removed as requested)
+    - Electric Cyan Step Number
+    - Pure White Headline
+    - Slate Grey Technical Subtitle
+    """
     canvas = create_base_canvas()
     draw = ImageDraw.Draw(canvas)
 
-    draw_header(draw, guide_text=f"Slide 0{step_num}")
+    draw_header(draw, guide_text=f"SLIDE 0{step_num}")
 
-    # Top Row: Big Number on Left, Two Arrows on Right
+    # Step Number in Brand Electric Cyan (NO ARROWS)
     num_y = 380
-    num_font = get_font(125, bold=True)
-    draw.text((80, num_y), f"{step_num}.", fill=(255, 255, 255), font=num_font)
+    num_font = get_font(135, bold=True)
+    draw.text((80, num_y), f"{step_num}.", fill=(56, 189, 248), font=num_font)
 
-    arrow_font = get_font(52, bold=False)
-    draw.text((WIDTH - 200, num_y + 35), "→  →", fill=(34, 197, 94), font=arrow_font)
-
-    # Core Headline (Font size 58-62)
-    h_y = num_y + 150
-    h_font = get_font(58, bold=True)
+    # Core Headline (Pure White, 60-64px)
+    h_y = num_y + 140
+    h_font = get_font(60, bold=True)
     wrapped_title = textwrap.fill(title, width=26)
     draw.text((80, h_y), wrapped_title, fill=(255, 255, 255), font=h_font, spacing=12)
 
     t_bbox = draw.textbbox((0, 0), wrapped_title, font=h_font)
     t_height = t_bbox[3] - t_bbox[1]
 
-    # Subtitle / Technical Explanation
-    desc_y = h_y + t_height + 34
+    # Subtitle / Technical Explanation (Slate Grey, 32px)
+    desc_y = h_y + t_height + 32
     desc_font = get_font(30, bold=False)
     wrapped_desc = textwrap.fill(description, width=44)
     draw.text((80, desc_y), wrapped_desc, fill=(148, 163, 184), font=desc_font, spacing=10)
@@ -229,17 +241,17 @@ def render_step_slide(step_num, title, description, total_steps=5):
     return canvas.convert("RGB")
 
 def render_outro_slide(outro_title="Save this Blueprint", outro_sub=None):
-    """Renders Slide 7 (Outro / Call-to-Action) with Bookmark icon and Emerald CTA."""
+    """Renders Slide 7 (Outro / Action Step) in Midnight Obsidian with Emerald CTA."""
     canvas = create_base_canvas()
     draw = ImageDraw.Draw(canvas)
 
-    draw_header(draw, guide_text="Action Step →")
+    draw_header(draw, guide_text="ACTION STEP")
 
-    # Bookmark Icon Box
+    # Bookmark Icon Box (Frosted Slate with Cyan Trim)
     bw, bh = 100, 100
     bx = (WIDTH - bw) // 2
     by = 380
-    draw.rounded_rectangle([bx, by, bx + bw, by + bh], radius=26, fill=(255, 255, 255, 20), outline=(255, 255, 255, 45), width=2)
+    draw.rounded_rectangle([bx, by, bx + bw, by + bh], radius=26, fill=(15, 23, 42, 190), outline=(56, 189, 248, 90), width=1)
     
     # White Ribbon Bookmark Shape
     rx = bx + 34
@@ -251,7 +263,7 @@ def render_outro_slide(outro_title="Save this Blueprint", outro_sub=None):
         (rx + rw, ry + rh),
         (rx + (rw // 2), ry + rh - 12),
         (rx, ry + rh)
-    ], fill=(255, 255, 255))
+    ], fill=(56, 189, 248)) # Electric Cyan Bookmark
 
     # Headline
     o_font = get_font(72, bold=True)
@@ -268,7 +280,7 @@ def render_outro_slide(outro_title="Save this Blueprint", outro_sub=None):
     s_w = s_bbox[2] - s_bbox[0]
     draw.text(((WIDTH - s_w) // 2, by + bh + 145), wrapped_sub, fill=(148, 163, 184), font=sub_font, spacing=8, align="center")
 
-    # Emerald CTA Button
+    # Emerald CTA Button (Book Free Audit)
     btn_w = 340
     btn_h = 72
     btn_x = (WIDTH - btn_w) // 2
@@ -276,7 +288,7 @@ def render_outro_slide(outro_title="Save this Blueprint", outro_sub=None):
     draw.rounded_rectangle([btn_x, btn_y, btn_x + btn_w, btn_y + btn_h], radius=36, fill=(34, 197, 94))
     
     btn_font = get_font(28, bold=True)
-    btn_text = "Book Free Audit →"
+    btn_text = "Book Free Audit"
     bw_box = draw.textbbox((0, 0), btn_text, font=btn_font)
     btn_tw = bw_box[2] - bw_box[0]
     draw.text((btn_x + (btn_w - btn_tw) // 2, btn_y + 20), btn_text, fill=(6, 9, 19), font=btn_font)
@@ -303,7 +315,11 @@ def build_shopify_ga4_carousel(output_dir="carousel_output"):
     slides = []
 
     # Slide 1: Cover
-    s1 = render_cover_slide("5 Reasons Your Shopify & GA4 Sales Never Match")
+    s1 = render_cover_slide(
+        title_text="5 Reasons Your Shopify & GA4 Sales Never Match",
+        category_badge="SHOPIFY & GA4 RECONCILIATION",
+        subtitle_text="Why browser pixels distort your e-commerce revenue reporting and how to fix it."
+    )
     slides.append(s1)
 
     # Slide 2: Step 1
@@ -376,8 +392,8 @@ def build_shopify_ga4_carousel(output_dir="carousel_output"):
 
 def build_daily_carousel(day_cfg=None, output_dir="carousel_output"):
     """
-    Builds a complete 7-slide Viral Emerald Carousel (1080x1350) for any day in the calendar.
-    Strictly aligns with the minimalist 5-step framework learned from the high-converting swipeable guide.
+    Builds a complete 7-slide Viral Carousel (1080x1350) in official Midnight Obsidian brand colors.
+    Zero arrow signs on slides — clean, authoritative, executive Swiss typography.
     """
     os.makedirs(output_dir, exist_ok=True)
     if not day_cfg or day_cfg.get("day", 1) == 1:
@@ -396,8 +412,11 @@ def build_daily_carousel(day_cfg=None, output_dir="carousel_output"):
     if len(cover_title) > 55:
         cover_title = f"5 Ways to Fix {day_cfg.get('title', 'Server-Side Tracking')}"
     
+    badge = day_cfg.get("badge", "SERVER-SIDE TRACKING")
+    subtitle = day_cfg.get("graphic_subtitle", "Don't let client-side pixel drops destroy your conversion tracking.")
+    
     slides = []
-    slides.append(render_cover_slide(cover_title))
+    slides.append(render_cover_slide(cover_title, category_badge=badge, subtitle_text=subtitle))
 
     # Step 1
     s1_title = bullets[0] if len(bullets) > 0 else "Extend Cookie Lifetime to 1 Year"

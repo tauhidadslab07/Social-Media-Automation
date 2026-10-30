@@ -1,8 +1,6 @@
 const fs = require('fs');
 const path = require('path');
-const { execSync } = require('child_process');
 
-const CHROME_PATH = "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe";
 const OUTPUT_DIR = __dirname;
 
 const HTML_CONTENT = `<!DOCTYPE html>
@@ -29,44 +27,45 @@ const HTML_CONTENT = `<!DOCTYPE html>
     height: 1350px;
     position: relative;
     overflow: hidden;
-    /* Rich Emerald & Cyan Gradient over Deep Midnight Obsidian */
-    background: radial-gradient(circle at 50% 22%, #0e3b30 0%, #08221c 38%, #051616 68%, #060913 100%);
+    /* Official Website Identity: Deep Midnight Obsidian (#060913) */
+    background-color: #060913;
     color: #ffffff;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    padding: 70px 80px 60px 80px;
+    padding: 75px 84px 65px 84px;
   }
 
-  /* Ambient light flares */
-  .flare-emerald {
-    position: absolute;
-    width: 800px;
-    height: 800px;
-    top: -200px;
-    left: 140px;
-    background: radial-gradient(circle, rgba(34, 197, 94, 0.22) 0%, rgba(34, 197, 94, 0) 70%);
-    pointer-events: none;
-  }
-
+  /* Ambient light flares matching tauhidadslab.com */
   .flare-cyan {
     position: absolute;
-    width: 600px;
-    height: 600px;
-    bottom: 100px;
-    right: -100px;
-    background: radial-gradient(circle, rgba(56, 189, 248, 0.12) 0%, rgba(56, 189, 248, 0) 70%);
+    width: 750px;
+    height: 750px;
+    top: -180px;
+    left: -120px;
+    background: radial-gradient(circle, rgba(56, 189, 248, 0.16) 0%, rgba(56, 189, 248, 0) 70%);
     pointer-events: none;
   }
 
-  /* Subtle diagonal tech texture lines */
-  .diagonal-light {
+  .flare-emerald {
+    position: absolute;
+    width: 700px;
+    height: 700px;
+    bottom: -150px;
+    right: -100px;
+    background: radial-gradient(circle, rgba(34, 197, 94, 0.14) 0%, rgba(34, 197, 94, 0) 70%);
+    pointer-events: none;
+  }
+
+  /* Subtle high-tech dot grid */
+  .dot-grid {
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.03) 0%, transparent 40%, rgba(34, 197, 94, 0.04) 70%, transparent 100%);
+    background-image: radial-gradient(rgba(255, 255, 255, 0.08) 1.2px, transparent 1.2px);
+    background-size: 36px 36px;
     pointer-events: none;
   }
 
@@ -87,19 +86,19 @@ const HTML_CONTENT = `<!DOCTYPE html>
   .brand-logo-wrap {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 14px;
   }
 
   .brand-badge-icon {
-    width: 38px;
-    height: 38px;
-    border-radius: 10px;
+    width: 40px;
+    height: 40px;
+    border-radius: 11px;
     background: linear-gradient(135deg, #0ea5e9, #22c55e);
     display: flex;
     align-items: center;
     justify-content: center;
     font-weight: 900;
-    font-size: 19px;
+    font-size: 20px;
     color: #fff;
     box-shadow: 0 4px 14px rgba(14, 165, 233, 0.35);
   }
@@ -120,16 +119,17 @@ const HTML_CONTENT = `<!DOCTYPE html>
   }
 
   .header-guide {
-    font-size: 24px;
-    font-weight: 600;
-    color: #cbd5e1;
-    letter-spacing: -0.2px;
+    font-size: 22px;
+    font-weight: 700;
+    color: #94a3b8;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
   }
 
   .header-divider {
     width: 100%;
     height: 1.5px;
-    background: rgba(255, 255, 255, 0.16);
+    background: rgba(255, 255, 255, 0.12);
   }
 
   /* Content area */
@@ -140,60 +140,58 @@ const HTML_CONTENT = `<!DOCTYPE html>
     display: flex;
     flex-direction: column;
     justify-content: center;
-    padding: 40px 0;
+    padding: 30px 0;
   }
 
-  /* Cover Slide Elements */
+  /* Category pill */
+  .category-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 18px;
+    border-radius: 9999px;
+    background: rgba(14, 165, 233, 0.12);
+    border: 1px solid rgba(56, 189, 248, 0.35);
+    color: #38bdf8;
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    width: fit-content;
+    margin-bottom: 32px;
+  }
+
+  /* Cover Slide */
   .cover-title {
-    font-size: 78px;
-    font-weight: 800;
-    line-height: 1.08;
-    letter-spacing: -1.8px;
-    color: #ffffff;
-    max-width: 900px;
-    margin-bottom: 50px;
-  }
-
-  .cover-arrows {
-    display: flex;
-    gap: 20px;
-    align-items: center;
-  }
-
-  .cover-arrow-item {
-    font-size: 48px;
-    font-weight: 300;
-    color: #22c55e;
-    line-height: 1;
-    transition: transform 0.2s;
-  }
-
-  /* Step Slide Elements */
-  .step-top-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 40px;
-  }
-
-  .step-number {
-    font-size: 130px;
+    font-size: 80px;
     font-weight: 900;
-    line-height: 0.9;
+    line-height: 1.08;
     letter-spacing: -2px;
     color: #ffffff;
+    max-width: 900px;
+    margin-bottom: 28px;
   }
 
-  .step-arrows {
-    display: flex;
-    gap: 16px;
+  .cover-title span.cyan {
+    color: #38bdf8;
   }
 
-  .step-arrows span {
-    font-size: 56px;
-    font-weight: 300;
-    color: #22c55e;
-    line-height: 1;
+  .cover-subtitle {
+    font-size: 32px;
+    font-weight: 500;
+    line-height: 1.4;
+    color: #94a3b8;
+    max-width: 820px;
+  }
+
+  /* Step Slide (ZERO ARROWS - 100% Clean Swiss Authority) */
+  .step-number {
+    font-size: 140px;
+    font-weight: 900;
+    line-height: 0.88;
+    letter-spacing: -2.5px;
+    color: #38bdf8; /* Brand Electric Cyan */
+    margin-bottom: 28px;
   }
 
   .step-title {
@@ -203,18 +201,18 @@ const HTML_CONTENT = `<!DOCTYPE html>
     letter-spacing: -1.2px;
     color: #ffffff;
     margin-bottom: 24px;
-    max-width: 880px;
+    max-width: 890px;
   }
 
   .step-desc {
     font-size: 32px;
     font-weight: 500;
-    line-height: 1.4;
+    line-height: 1.45;
     color: #94a3b8;
     max-width: 860px;
   }
 
-  /* Outro Slide Elements */
+  /* Outro Slide */
   .outro-box {
     display: flex;
     flex-direction: column;
@@ -223,22 +221,22 @@ const HTML_CONTENT = `<!DOCTYPE html>
   }
 
   .bookmark-icon-wrap {
-    width: 110px;
-    height: 110px;
-    border-radius: 28px;
-    background: rgba(255, 255, 255, 0.07);
-    border: 1.5px solid rgba(255, 255, 255, 0.18);
+    width: 104px;
+    height: 104px;
+    border-radius: 26px;
+    background: rgba(15, 23, 42, 0.7);
+    border: 1.5px solid rgba(56, 189, 248, 0.35);
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-bottom: 36px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+    margin-bottom: 32px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
   }
 
   .bookmark-svg {
-    width: 54px;
-    height: 54px;
-    fill: #ffffff;
+    width: 50px;
+    height: 50px;
+    fill: #38bdf8;
   }
 
   .outro-title {
@@ -253,28 +251,29 @@ const HTML_CONTENT = `<!DOCTYPE html>
     font-size: 28px;
     font-weight: 500;
     color: #94a3b8;
-    margin-bottom: 46px;
+    margin-bottom: 44px;
     max-width: 720px;
+    line-height: 1.4;
   }
 
   .cta-pill-btn {
     display: inline-flex;
     align-items: center;
-    gap: 12px;
+    justify-content: center;
     background: #22c55e;
     color: #060913;
-    padding: 20px 48px;
+    padding: 22px 52px;
     border-radius: 9999px;
     font-size: 28px;
     font-weight: 800;
     letter-spacing: -0.3px;
-    box-shadow: 0 10px 28px rgba(34, 197, 94, 0.4);
+    box-shadow: 0 10px 28px rgba(34, 197, 94, 0.35);
     margin-bottom: 24px;
   }
 
   .outro-contact-cue {
     font-size: 24px;
-    font-weight: 600;
+    font-weight: 700;
     color: #38bdf8;
   }
 
@@ -283,7 +282,7 @@ const HTML_CONTENT = `<!DOCTYPE html>
     position: relative;
     z-index: 10;
     width: 100%;
-    margin-bottom: 36px;
+    margin-bottom: 34px;
   }
 
   .progress-bar-segments {
@@ -296,17 +295,17 @@ const HTML_CONTENT = `<!DOCTYPE html>
     flex: 1;
     height: 4px;
     border-radius: 2px;
-    background: rgba(255, 255, 255, 0.22);
+    background: rgba(255, 255, 255, 0.15);
   }
 
   .progress-segment.active {
-    background: #ffffff;
-    box-shadow: 0 0 8px rgba(255, 255, 255, 0.6);
+    background: #38bdf8; /* Brand Electric Cyan */
+    box-shadow: 0 0 10px rgba(56, 189, 248, 0.6);
   }
 
   .progress-segment.all-active {
     background: #22c55e;
-    box-shadow: 0 0 8px rgba(34, 197, 94, 0.6);
+    box-shadow: 0 0 10px rgba(34, 197, 94, 0.6);
   }
 
   /* Footer */
@@ -316,8 +315,8 @@ const HTML_CONTENT = `<!DOCTYPE html>
     display: flex;
     justify-content: space-between;
     align-items: center;
-    font-size: 26px;
-    font-weight: 600;
+    font-size: 25px;
+    font-weight: 700;
     color: #94a3b8;
   }
 
@@ -332,11 +331,11 @@ const HTML_CONTENT = `<!DOCTYPE html>
 </head>
 <body>
 
-  <!-- SLIDE 1: COVER -->
+  <!-- SLIDE 1: COVER (Brand Obsidian & Electric Cyan) -->
   <div class="slide-container" id="slide-1">
-    <div class="flare-emerald"></div>
     <div class="flare-cyan"></div>
-    <div class="diagonal-light"></div>
+    <div class="flare-emerald"></div>
+    <div class="dot-grid"></div>
 
     <div class="header">
       <div class="header-top">
@@ -344,20 +343,15 @@ const HTML_CONTENT = `<!DOCTYPE html>
           <div class="brand-badge-icon">T</div>
           <div class="brand-name">TAUHID <span class="cyan">ADS</span> <span class="emerald">LAB</span></div>
         </div>
-        <div class="header-guide">Learn in 5 Slides ➔</div>
+        <div class="header-guide">5-Slide Blueprint</div>
       </div>
       <div class="header-divider"></div>
     </div>
 
     <div class="content-body">
-      <h1 class="cover-title">5 Ways Safari ITP Wipes Your Data & How to Fix It</h1>
-      <div class="cover-arrows">
-        <span class="cover-arrow-item">➔</span>
-        <span class="cover-arrow-item">➔</span>
-        <span class="cover-arrow-item">➔</span>
-        <span class="cover-arrow-item">➔</span>
-        <span class="cover-arrow-item">➔</span>
-      </div>
+      <div class="category-pill">● SAFARI ITP · FIRST-PARTY DATA</div>
+      <h1 class="cover-title">5 Ways Safari ITP <span class="cyan">Wipes Your Data</span> & How to Fix It</h1>
+      <p class="cover-subtitle">Don't let Apple's 7-day cookie wipe destroy your high-ticket retargeting and ad attribution.</p>
     </div>
 
     <div>
@@ -377,11 +371,11 @@ const HTML_CONTENT = `<!DOCTYPE html>
     </div>
   </div>
 
-  <!-- SLIDE 2: STEP 1 -->
-  <div class="slide-container" id="slide-2" style="margin-top: 50px;">
-    <div class="flare-emerald"></div>
+  <!-- SLIDE 4: THE EXACT SLIDE IN THE USER'S SCREENSHOT (Zero Arrows, Brand Colors) -->
+  <div class="slide-container" id="slide-4" style="margin-top: 50px;">
     <div class="flare-cyan"></div>
-    <div class="diagonal-light"></div>
+    <div class="flare-emerald"></div>
+    <div class="dot-grid"></div>
 
     <div class="header">
       <div class="header-top">
@@ -389,30 +383,24 @@ const HTML_CONTENT = `<!DOCTYPE html>
           <div class="brand-badge-icon">T</div>
           <div class="brand-name">TAUHID <span class="cyan">ADS</span> <span class="emerald">LAB</span></div>
         </div>
-        <div class="header-guide">Slide 01</div>
+        <div class="header-guide">Slide 04</div>
       </div>
       <div class="header-divider"></div>
     </div>
 
     <div class="content-body">
-      <div class="step-top-row">
-        <div class="step-number">1.</div>
-        <div class="step-arrows">
-          <span>➔</span>
-          <span>➔</span>
-        </div>
-      </div>
-      <h2 class="step-title">Extend Cookie Lifetime from 7 Days to 1 Year</h2>
-      <p class="step-desc">Apple's Safari ITP caps browser JavaScript cookies to 7 days. Server-side tracking via custom domain sets true HTTP-only cookies that survive for up to 1-2 years.</p>
+      <div class="step-number">4.</div>
+      <h2 class="step-title">Bulletproof Safari Retargeting</h2>
+      <p class="step-desc">Feed Meta CAPI and Google Ads uncorrupted conversion signals with high Event Match Quality (8.5+).</p>
     </div>
 
     <div>
       <div class="progress-wrap">
         <div class="progress-bar-segments">
+          <div class="progress-segment"></div>
+          <div class="progress-segment"></div>
+          <div class="progress-segment"></div>
           <div class="progress-segment active"></div>
-          <div class="progress-segment"></div>
-          <div class="progress-segment"></div>
-          <div class="progress-segment"></div>
           <div class="progress-segment"></div>
         </div>
       </div>
@@ -423,11 +411,11 @@ const HTML_CONTENT = `<!DOCTYPE html>
     </div>
   </div>
 
-  <!-- SLIDE 7: OUTRO -->
+  <!-- SLIDE 7: OUTRO (Brand Obsidian & Emerald CTA) -->
   <div class="slide-container" id="slide-7" style="margin-top: 50px;">
-    <div class="flare-emerald"></div>
     <div class="flare-cyan"></div>
-    <div class="diagonal-light"></div>
+    <div class="flare-emerald"></div>
+    <div class="dot-grid"></div>
 
     <div class="header">
       <div class="header-top">
@@ -435,7 +423,7 @@ const HTML_CONTENT = `<!DOCTYPE html>
           <div class="brand-badge-icon">T</div>
           <div class="brand-name">TAUHID <span class="cyan">ADS</span> <span class="emerald">LAB</span></div>
         </div>
-        <div class="header-guide">Action Step ➔</div>
+        <div class="header-guide">Action Step</div>
       </div>
       <div class="header-divider"></div>
     </div>
@@ -447,8 +435,8 @@ const HTML_CONTENT = `<!DOCTYPE html>
         </svg>
       </div>
       <h2 class="outro-title">Save this Blueprint</h2>
-      <p class="outro-sub">Reconcile your ad attribution 1:1 and eliminate tracking blindspots with Server-Side GTM.</p>
-      <div class="cta-pill-btn">Book Free Audit ➔</div>
+      <p class="outro-sub">Reconcile your conversions 1:1 and eliminate tracking blindspots with Server-Side GTM.</p>
+      <div class="cta-pill-btn">Book Free Audit</div>
       <div class="outro-contact-cue">💬 WhatsApp: +8801624608468</div>
     </div>
 
@@ -474,4 +462,4 @@ const HTML_CONTENT = `<!DOCTYPE html>
 `;
 
 fs.writeFileSync(path.join(OUTPUT_DIR, 'preview_carousel.html'), HTML_CONTENT, 'utf8');
-console.log('HTML template written to preview_carousel.html');
+console.log('Updated preview_carousel.html with official Tauhid Ads Lab midnight brand identity and ZERO arrows!');
