@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap');
+  
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  }
+
+  body {
+    margin: 0;
+    background: #000;
+  }
+
+  .slide-container {
+    width: 1080px;
+    height: 1350px;
+    position: relative;
+    overflow: hidden;
+    /* Rich Emerald & Cyan Gradient over Deep Midnight Obsidian */
+    background: radial-gradient(circle at 50% 22%, #0e3b30 0%, #08221c 38%, #051616 68%, #060913 100%);
+    color: #ffffff;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 70px 80px 60px 80px;
+  }
+
+  /* Ambient light flares */
+  .flare-emerald {
+    position: absolute;
+    width: 800px;
+    height: 800px;
+    top: -200px;
+    left: 140px;
+    background: radial-gradient(circle, rgba(34, 197, 94, 0.22) 0%, rgba(34, 197, 94, 0) 70%);
+    pointer-events: none;
+  }
+
+  .flare-cyan {
+    position: absolute;
+    width: 600px;
+    height: 600px;
+    bottom: 100px;
+    right: -100px;
+    background: radial-gradient(circle, rgba(56, 189, 248, 0.12) 0%, rgba(56, 189, 248, 0) 70%);
+    pointer-events: none;
+  }
+
+  /* Subtle diagonal tech texture lines */
+  .diagonal-light {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.03) 0%, transparent 40%, rgba(34, 197, 94, 0.04) 70%, transparent 100%);
+    pointer-events: none;
+  }
+
+  /* Header */
+  .header {
+    position: relative;
+    z-index: 10;
+    width: 100%;
+  }
+
+  .header-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 22px;
+  }
+
+  .brand-logo-wrap {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .brand-badge-icon {
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    background: linear-gradient(135deg, #0ea5e9, #22c55e);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 900;
+    font-size: 19px;
+    color: #fff;
+    box-shadow: 0 4px 14px rgba(14, 165, 233, 0.35);
+  }
+
+  .brand-name {
+    font-size: 26px;
+    font-weight: 800;
+    letter-spacing: -0.3px;
+    color: #ffffff;
+  }
+
+  .brand-name span.cyan {
+    color: #38bdf8;
+  }
+
+  .brand-name span.emerald {
+    color: #22c55e;
+  }
+
+  .header-guide {
+    font-size: 24px;
+    font-weight: 600;
+    color: #cbd5e1;
+    letter-spacing: -0.2px;
+  }
+
+  .header-divider {
+    width: 100%;
+    height: 1.5px;
+    background: rgba(255, 255, 255, 0.16);
+  }
+
+  /* Content area */
+  .content-body {
+    position: relative;
+    z-index: 10;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 40px 0;
+  }
+
+  /* Cover Slide Elements */
+  .cover-title {
+    font-size: 78px;
+    font-weight: 800;
+    line-height: 1.08;
+    letter-spacing: -1.8px;
+    color: #ffffff;
+    max-width: 900px;
+    margin-bottom: 50px;
+  }
+
+  .cover-arrows {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+  }
+
+  .cover-arrow-item {
+    font-size: 48px;
+    font-weight: 300;
+    color: #22c55e;
+    line-height: 1;
+    transition: transform 0.2s;
+  }
+
+  /* Step Slide Elements */
+  .step-top-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 40px;
+  }
+
+  .step-number {
+    font-size: 130px;
+    font-weight: 900;
+    line-height: 0.9;
+    letter-spacing: -2px;
+    color: #ffffff;
+  }
+
+  .step-arrows {
+    display: flex;
+    gap: 16px;
+  }
+
+  .step-arrows span {
+    font-size: 56px;
+    font-weight: 300;
+    color: #22c55e;
+    line-height: 1;
+  }
+
+  .step-title {
+    font-size: 64px;
+    font-weight: 800;
+    line-height: 1.12;
+    letter-spacing: -1.2px;
+    color: #ffffff;
+    margin-bottom: 24px;
+    max-width: 880px;
+  }
+
+  .step-desc {
+    font-size: 32px;
+    font-weight: 500;
+    line-height: 1.4;
+    color: #94a3b8;
+    max-width: 860px;
+  }
+
+  /* Outro Slide Elements */
+  .outro-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .bookmark-icon-wrap {
+    width: 110px;
+    height: 110px;
+    border-radius: 28px;
+    background: rgba(255, 255, 255, 0.07);
+    border: 1.5px solid rgba(255, 255, 255, 0.18);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 36px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+  }
+
+  .bookmark-svg {
+    width: 54px;
+    height: 54px;
+    fill: #ffffff;
+  }
+
+  .outro-title {
+    font-size: 72px;
+    font-weight: 800;
+    letter-spacing: -1.5px;
+    color: #ffffff;
+    margin-bottom: 16px;
+  }
+
+  .outro-sub {
+    font-size: 28px;
+    font-weight: 500;
+    color: #94a3b8;
+    margin-bottom: 46px;
+    max-width: 720px;
+  }
+
+  .cta-pill-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    background: #22c55e;
+    color: #060913;
+    padding: 20px 48px;
+    border-radius: 9999px;
+    font-size: 28px;
+    font-weight: 800;
+    letter-spacing: -0.3px;
+    box-shadow: 0 10px 28px rgba(34, 197, 94, 0.4);
+    margin-bottom: 24px;
+  }
+
+  .outro-contact-cue {
+    font-size: 24px;
+    font-weight: 600;
+    color: #38bdf8;
+  }
+
+  /* Segmented Progress Bar */
+  .progress-wrap {
+    position: relative;
+    z-index: 10;
+    width: 100%;
+    margin-bottom: 36px;
+  }
+
+  .progress-bar-segments {
+    display: flex;
+    gap: 12px;
+    width: 100%;
+  }
+
+  .progress-segment {
+    flex: 1;
+    height: 4px;
+    border-radius: 2px;
+    background: rgba(255, 255, 255, 0.22);
+  }
+
+  .progress-segment.active {
+    background: #ffffff;
+    box-shadow: 0 0 8px rgba(255, 255, 255, 0.6);
+  }
+
+  .progress-segment.all-active {
+    background: #22c55e;
+    box-shadow: 0 0 8px rgba(34, 197, 94, 0.6);
+  }
+
+  /* Footer */
+  .footer {
+    position: relative;
+    z-index: 10;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 26px;
+    font-weight: 600;
+    color: #94a3b8;
+  }
+
+  .footer-name {
+    color: #cbd5e1;
+  }
+
+  .footer-handle {
+    color: #38bdf8;
+  }
+</style>
+</head>
+<body>
+
+  <!-- SLIDE 1: COVER -->
+  <div class="slide-container" id="slide-1">
+    <div class="flare-emerald"></div>
+    <div class="flare-cyan"></div>
+    <div class="diagonal-light"></div>
+
+    <div class="header">
+      <div class="header-top">
+        <div class="brand-logo-wrap">
+          <div class="brand-badge-icon">T</div>
+          <div class="brand-name">TAUHID <span class="cyan">ADS</span> <span class="emerald">LAB</span></div>
+        </div>
+        <div class="header-guide">Learn in 5 Slides ➔</div>
+      </div>
+      <div class="header-divider"></div>
+    </div>
+
+    <div class="content-body">
+      <h1 class="cover-title">5 Ways Safari ITP Wipes Your Data & How to Fix It</h1>
+      <div class="cover-arrows">
+        <span class="cover-arrow-item">➔</span>
+        <span class="cover-arrow-item">➔</span>
+        <span class="cover-arrow-item">➔</span>
+        <span class="cover-arrow-item">➔</span>
+        <span class="cover-arrow-item">➔</span>
+      </div>
+    </div>
+
+    <div>
+      <div class="progress-wrap">
+        <div class="progress-bar-segments">
+          <div class="progress-segment active"></div>
+          <div class="progress-segment"></div>
+          <div class="progress-segment"></div>
+          <div class="progress-segment"></div>
+          <div class="progress-segment"></div>
+        </div>
+      </div>
+      <div class="footer">
+        <div class="footer-name">Md. Tauhidul Islam Bhuian</div>
+        <div class="footer-handle">tauhidadslab.com</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 2: STEP 1 -->
+  <div class="slide-container" id="slide-2" style="margin-top: 50px;">
+    <div class="flare-emerald"></div>
+    <div class="flare-cyan"></div>
+    <div class="diagonal-light"></div>
+
+    <div class="header">
+      <div class="header-top">
+        <div class="brand-logo-wrap">
+          <div class="brand-badge-icon">T</div>
+          <div class="brand-name">TAUHID <span class="cyan">ADS</span> <span class="emerald">LAB</span></div>
+        </div>
+        <div class="header-guide">Slide 01</div>
+      </div>
+      <div class="header-divider"></div>
+    </div>
+
+    <div class="content-body">
+      <div class="step-top-row">
+        <div class="step-number">1.</div>
+        <div class="step-arrows">
+          <span>➔</span>
+          <span>➔</span>
+        </div>
+      </div>
+      <h2 class="step-title">Extend Cookie Lifetime from 7 Days to 1 Year</h2>
+      <p class="step-desc">Apple's Safari ITP caps browser JavaScript cookies to 7 days. Server-side tracking via custom domain sets true HTTP-only cookies that survive for up to 1-2 years.</p>
+    </div>
+
+    <div>
+      <div class="progress-wrap">
+        <div class="progress-bar-segments">
+          <div class="progress-segment active"></div>
+          <div class="progress-segment"></div>
+          <div class="progress-segment"></div>
+          <div class="progress-segment"></div>
+          <div class="progress-segment"></div>
+        </div>
+      </div>
+      <div class="footer">
+        <div class="footer-name">Md. Tauhidul Islam Bhuian</div>
+        <div class="footer-handle">tauhidadslab.com</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 7: OUTRO -->
+  <div class="slide-container" id="slide-7" style="margin-top: 50px;">
+    <div class="flare-emerald"></div>
+    <div class="flare-cyan"></div>
+    <div class="diagonal-light"></div>
+
+    <div class="header">
+      <div class="header-top">
+        <div class="brand-logo-wrap">
+          <div class="brand-badge-icon">T</div>
+          <div class="brand-name">TAUHID <span class="cyan">ADS</span> <span class="emerald">LAB</span></div>
+        </div>
+        <div class="header-guide">Action Step ➔</div>
+      </div>
+      <div class="header-divider"></div>
+    </div>
+
+    <div class="content-body outro-box">
+      <div class="bookmark-icon-wrap">
+        <svg class="bookmark-svg" viewBox="0 0 24 24">
+          <path d="M17 3H7c-1.1 0-2 .9-2 2v16l7-3 7 3V5c0-1.1-.9-2-2-2z"/>
+        </svg>
+      </div>
+      <h2 class="outro-title">Save this Blueprint</h2>
+      <p class="outro-sub">Reconcile your ad attribution 1:1 and eliminate tracking blindspots with Server-Side GTM.</p>
+      <div class="cta-pill-btn">Book Free Audit ➔</div>
+      <div class="outro-contact-cue">💬 WhatsApp: +8801624608468</div>
+    </div>
+
+    <div>
+      <div class="progress-wrap">
+        <div class="progress-bar-segments">
+          <div class="progress-segment all-active"></div>
+          <div class="progress-segment all-active"></div>
+          <div class="progress-segment all-active"></div>
+          <div class="progress-segment all-active"></div>
+          <div class="progress-segment all-active"></div>
+        </div>
+      </div>
+      <div class="footer">
+        <div class="footer-name">Md. Tauhidul Islam Bhuian</div>
+        <div class="footer-handle">tauhidadslab.com</div>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>
