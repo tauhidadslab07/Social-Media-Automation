@@ -514,8 +514,16 @@ def render_template_poster(post_data, output_path, is_linkedin=False):
 
 def render_personal_brand_graphic(post_data, output_path, is_linkedin=False):
     """
-    Renders high-converting Personal Branding Feed Post Graphic matching the creator style
-    requested by Md. Tauhidul Islam Bhuian (Warm minimalist beige + personal photo + bold typography + orange CTA dock).
+    Renders an Ultra-High-End Executive Authority Personal Branding Graphic
+    calibrated 100% to the official Tauhid Ads Lab website brand identity (tauhidadslab.com):
+    - Deep Midnight Obsidian (#060913) with Ambient Electric Cyan & Emerald Green flares
+    - High-Tech Dot Grid Texture
+    - Official Logo: TAUHID (White) ADS (Cyan #38BDF8) LAB (Emerald #22C55E)
+    - Live Telemetry Badge (1:1 DATA RECONCILED)
+    - Two-Tone Swiss Grotesk Headline
+    - Md. Tauhidul Islam Bhuian's Studio Portrait in an Architectural Glassmorphic Card
+    - Floating Authority Telemetry Badges (100% CAPI Delivery & 8.9/10 EMQ Score)
+    - Signature Website Conversion Dock with Emerald CTA Button
     """
     WIDTH, HEIGHT = 1080, 1080
     portrait_path = os.path.join(os.path.dirname(__file__), "tauhid_portrait.jpg")
@@ -524,167 +532,219 @@ def render_personal_brand_graphic(post_data, output_path, is_linkedin=False):
         print("[Personal Brand Engine] tauhid_portrait.jpg not found, falling back to template poster.")
         return render_template_poster(post_data, output_path, is_linkedin=is_linkedin)
 
-    # 1. Warm Minimalist Cream Background (#FFFDF8)
-    base = Image.new("RGBA", (WIDTH, HEIGHT), (255, 253, 248, 255))
+    # 1. Base Canvas: Deep Midnight Space Navy (#060913)
+    base = Image.new("RGBA", (WIDTH, HEIGHT), (6, 9, 19, 255))
     glow = Image.new("RGBA", (WIDTH, HEIGHT), (0, 0, 0, 0))
     glow_draw = ImageDraw.Draw(glow)
 
-    # Ambient warm golden glow behind subject
-    glow_center_x, glow_center_y = WIDTH // 2, 650
-    for r in range(400, 0, -20):
-        alpha = int(35 * (1 - (r / 400)))
-        glow_draw.ellipse(
-            [glow_center_x - r, glow_center_y - r, glow_center_x + r, glow_center_y + r],
-            fill=(254, 215, 170, alpha)
-        )
+    # Top-Left Electric Cyan Flare (#38BDF8)
+    for r in range(450, 0, -25):
+        alpha = int(32 * (1 - (r / 450)))
+        glow_draw.ellipse([-80 - r, -80 - r, -80 + r, -80 + r], fill=(56, 189, 248, alpha))
+
+    # Bottom-Right Emerald Green Flare (#22C55E)
+    for r in range(480, 0, -25):
+        alpha = int(28 * (1 - (r / 480)))
+        glow_draw.ellipse([WIDTH + 60 - r, HEIGHT - 50 - r, WIDTH + 60 + r, HEIGHT - 50 + r], fill=(34, 197, 94, alpha))
+
     base = Image.alpha_composite(base, glow)
     draw = ImageDraw.Draw(base)
 
-    # -------------------------------------------------------------
-    # 2. TOP BRAND PILL (Vibrant Orange like 'Rasel Insights')
-    # -------------------------------------------------------------
-    brand_pill_x, brand_pill_y = 60, 48
-    brand_pill_h = 50
-    brand_font = get_font(19, bold=True)
-    brand_text = f"✦ {BRAND_NAME.upper()}"
-    bbox = draw.textbbox((0, 0), brand_text, font=brand_font)
-    brand_pill_w = (bbox[2] - bbox[0]) + 44
+    # Subtle High-Tech Dot Grid
+    for x in range(40, WIDTH, 40):
+        for y in range(40, HEIGHT, 40):
+            draw.point((x, y), fill=(255, 255, 255, 18))
 
+    # -------------------------------------------------------------
+    # 2. TOP HEADER: Official Website Logo + Live Reconciled Pill
+    # -------------------------------------------------------------
+    header_y = 48
+    header_x = 54
+
+    # Glowing Gradient Logo Icon
+    logo_size = 44
     draw.rounded_rectangle(
-        [brand_pill_x, brand_pill_y, brand_pill_x + brand_pill_w, brand_pill_y + brand_pill_h],
-        radius=25,
-        fill=(255, 122, 0)
-    )
-    draw.text((brand_pill_x + 22, brand_pill_y + 14), brand_text, fill=(255, 255, 255), font=brand_font)
-
-    # -------------------------------------------------------------
-    # 3. CATEGORY PILL (Soft Butter Yellow like 'এআই প্রম্পট')
-    # -------------------------------------------------------------
-    cat_y = brand_pill_y + brand_pill_h + 16
-    cat_h = 38
-    cat_font = get_font(14, bold=True)
-    category = post_data.get("badge", post_data.get("category", "SERVER-SIDE TRACKING")).upper()
-    cat_text = f"● {category}"
-    c_bbox = draw.textbbox((0, 0), cat_text, font=cat_font)
-    cat_w = (c_bbox[2] - c_bbox[0]) + 32
-
-    draw.rounded_rectangle(
-        [brand_pill_x, cat_y, brand_pill_x + cat_w, cat_y + cat_h],
-        radius=19,
-        fill=(254, 243, 199),
-        outline=(245, 158, 11, 160),
+        [header_x, header_y, header_x + logo_size, header_y + logo_size],
+        radius=12,
+        fill=(14, 165, 233),
+        outline=(56, 189, 248),
         width=1
     )
-    draw.text((brand_pill_x + 16, cat_y + 10), cat_text, fill=(180, 83, 9), font=cat_font)
+    draw.text((header_x + 14, header_y + 8), "T", fill=(255, 255, 255), font=get_font(22, bold=True))
 
-    # -------------------------------------------------------------
-    # 4. DOMINANT HEADLINE (Bold High-Contrast Swiss Black)
-    # -------------------------------------------------------------
-    title_y = cat_y + cat_h + 18
-    h1 = post_data.get("graphic_title_line1", "").strip(".")
-    h2 = post_data.get("graphic_title_line2", "").strip(".")
-    full_title = post_data.get("title", f"{h1} {h2}").strip()
-    
-    title_font = get_font(38, bold=True)
-    wrapped_title = textwrap.fill(full_title, width=28)
-    draw.text((brand_pill_x, title_y), wrapped_title, fill=(17, 24, 39), font=title_font, spacing=8)
+    # Brand Title: TAUHID (White) ADS (Cyan) LAB (Emerald)
+    tx = header_x + logo_size + 14
+    brand_font = get_font(22, bold=True)
+    draw.text((tx, header_y + 2), "TAUHID ", fill=(255, 255, 255), font=brand_font)
+    w_t = draw.textbbox((0, 0), "TAUHID ", font=brand_font)[2]
+    draw.text((tx + w_t, header_y + 2), "ADS ", fill=(56, 189, 248), font=brand_font)
+    w_a = draw.textbbox((0, 0), "ADS ", font=brand_font)[2]
+    draw.text((tx + w_t + w_a, header_y + 2), "LAB", fill=(34, 197, 94), font=brand_font)
 
-    t_box = draw.textbbox((brand_pill_x, title_y), wrapped_title, font=title_font, spacing=8)
-    after_title_y = t_box[3] + 14
+    # Sub-tagline
+    tagline_font = get_font(10, bold=True)
+    draw.text((tx, header_y + 27), "GOOGLE & META ADS + TRACKING", fill=(148, 163, 184), font=tagline_font)
 
-    # Accent Underline Bar (Warm Amber/Yellow)
+    # Right Live Status Pill
+    status_font = get_font(12, bold=True)
+    status_text = "1:1 DATA RECONCILED"
+    st_w = draw.textbbox((0, 0), status_text, font=status_font)[2] + 46
+    st_x = WIDTH - 54 - st_w
     draw.rounded_rectangle(
-        [brand_pill_x, after_title_y, brand_pill_x + 130, after_title_y + 8],
-        radius=4,
-        fill=(245, 158, 11)
+        [st_x, header_y + 4, WIDTH - 54, header_y + 40],
+        radius=18,
+        fill=(15, 23, 42, 220),
+        outline=(56, 189, 248, 110),
+        width=1
     )
-
-    # Subtitle
-    sub_y = after_title_y + 16
-    sub_text = post_data.get("graphic_subtitle", post_data.get("core_concept", "Reconcile your revenue 1:1 with Server-Side GTM."))
-    sub_font = get_font(18, bold=False)
-    wrapped_sub = textwrap.fill(sub_text, width=44)
-    draw.text((brand_pill_x, sub_y), wrapped_sub, fill=(75, 85, 99), font=sub_font, spacing=6)
+    # Pulsing Green Dot
+    draw.ellipse([st_x + 14, header_y + 18, st_x + 24, header_y + 28], fill=(34, 197, 94))
+    draw.text((st_x + 32, header_y + 14), status_text, fill=(226, 232, 240), font=status_font)
 
     # -------------------------------------------------------------
-    # 5. PERSONAL PORTRAIT (Md. Tauhidul Islam Bhuian)
+    # 3. TOPIC BADGE PILL & HEADLINE
+    # -------------------------------------------------------------
+    content_y = 120
+    topic_text = f"● {post_data.get('badge', post_data.get('category', 'SERVER-SIDE TRACKING')).upper()}"
+    topic_font = get_font(12, bold=True)
+    tp_w = draw.textbbox((0, 0), topic_text, font=topic_font)[2] + 32
+    draw.rounded_rectangle(
+        [header_x, content_y, header_x + tp_w, content_y + 30],
+        radius=15,
+        fill=(14, 165, 233, 35),
+        outline=(56, 189, 248, 90),
+        width=1
+    )
+    draw.text((header_x + 16, content_y + 7), topic_text, fill=(56, 189, 248), font=topic_font)
+
+    # Main Headline (White + Cyan + Emerald Two-Tone)
+    h_y = content_y + 42
+    h_font = get_font(42, bold=True)
+    h1 = post_data.get("graphic_title_line1", "Why Browser Pixels").strip(".")
+    h2 = post_data.get("graphic_title_line2", "Miss 30% Conversions").strip(".")
+    
+    draw.text((header_x, h_y), h1.upper(), fill=(255, 255, 255), font=h_font)
+    h_y += 52
+    draw.text((header_x, h_y), h2.upper(), fill=(56, 189, 248), font=h_font)
+    h_y += 54
+
+    # Subhead (Refined Slate)
+    subhead_font = get_font(18, bold=False)
+    sub = post_data.get("graphic_subtitle", "Reconcile Shopify and GA4 1:1 with Server-Side GTM.")
+    draw.text((header_x, h_y), textwrap.fill(sub, width=52), fill=(148, 163, 184), font=subhead_font, spacing=6)
+
+    # -------------------------------------------------------------
+    # 4. PORTRAIT STAGE: Glassmorphic Capsule Card for Tauhid
     # -------------------------------------------------------------
     try:
         with Image.open(portrait_path) as p_img:
             p_rgba = p_img.convert("RGBA")
             
-            # Card dimensions for portrait arch / capsule
-            card_w = 680
-            card_h = 580
+            card_w = 720
+            card_h = 560
             card_x = (WIDTH - card_w) // 2
-            card_y = HEIGHT - 110 - card_h + 30 # Sits right behind the bottom bar
+            card_y = HEIGHT - 110 - card_h + 30
 
             # Scale and crop portrait to fill card
             p_scaled = p_rgba.resize((card_w, int(card_w * (p_rgba.height / p_rgba.width))), Image.Resampling.LANCZOS)
             
-            # Create rounded capsule mask with soft top corners
+            # Card mask with rounded top corners
             mask = Image.new("L", (card_w, card_h), 0)
             m_draw = ImageDraw.Draw(mask)
-            m_draw.rounded_rectangle([0, 0, card_w, card_h], radius=44, fill=255)
+            m_draw.rounded_rectangle([0, 0, card_w, card_h], radius=48, fill=255)
 
-            # Soft drop shadow under the portrait capsule
+            # Diffused drop shadow & glow under portrait card
             shadow = Image.new("RGBA", (WIDTH, HEIGHT), (0, 0, 0, 0))
             s_draw = ImageDraw.Draw(shadow)
-            s_draw.rounded_rectangle([card_x + 6, card_y + 16, card_x + card_w - 6, card_y + card_h + 18], radius=44, fill=(15, 23, 42, 35))
-            shadow = shadow.filter(ImageFilter.GaussianBlur(22))
+            s_draw.rounded_rectangle([card_x, card_y + 10, card_x + card_w, card_y + card_h + 16], radius=48, fill=(0, 0, 0, 110))
+            shadow = shadow.filter(ImageFilter.GaussianBlur(24))
             base = Image.alpha_composite(base, shadow)
 
-            # Composite cropped portrait
+            # Paste portrait with mask
             p_crop = p_scaled.crop((0, 0, card_w, card_h))
             base.paste(p_crop, (card_x, card_y), mask)
 
-            # Clean border outline around portrait card
-            c_overlay = Image.new("RGBA", (WIDTH, HEIGHT), (0, 0, 0, 0))
-            co_draw = ImageDraw.Draw(c_overlay)
-            co_draw.rounded_rectangle([card_x, card_y, card_x + card_w, card_y + card_h], radius=44, outline=(255, 255, 255, 220), width=3)
-            base = Image.alpha_composite(base, c_overlay)
+            # Elegant high-tech border around portrait card
+            b_overlay = Image.new("RGBA", (WIDTH, HEIGHT), (0, 0, 0, 0))
+            bo_draw = ImageDraw.Draw(b_overlay)
+            bo_draw.rounded_rectangle([card_x, card_y, card_x + card_w, card_y + card_h], radius=48, outline=(56, 189, 248, 120), width=2)
+            base = Image.alpha_composite(base, b_overlay)
 
     except Exception as pe:
         print(f"[Personal Brand Engine] Portrait rendering error: {pe}")
 
     # -------------------------------------------------------------
-    # 6. SIGNATURE BOTTOM ACTION DOCK (Vivid Orange CTA Pill)
+    # 5. FLOATING AUTHORITY BADGES
     # -------------------------------------------------------------
     draw = ImageDraw.Draw(base)
-    dock_x = 50
-    dock_y = HEIGHT - 100
-    dock_w = WIDTH - 100
-    dock_h = 74
+    badge_y = HEIGHT - 225
 
-    # Diffused shadow under dock
-    d_shadow = Image.new("RGBA", (WIDTH, HEIGHT), (0, 0, 0, 0))
-    ds_draw = ImageDraw.Draw(d_shadow)
-    ds_draw.rounded_rectangle([dock_x + 4, dock_y + 10, dock_x + dock_w - 4, dock_y + dock_h + 12], radius=37, fill=(255, 122, 0, 50))
-    d_shadow = d_shadow.filter(ImageFilter.GaussianBlur(16))
-    base = Image.alpha_composite(base, d_shadow)
+    # Left Badge: 100% CAPI Delivery (Emerald)
+    draw.rounded_rectangle(
+        [54, badge_y, 250, badge_y + 64],
+        radius=18,
+        fill=(11, 17, 32, 235),
+        outline=(34, 197, 94, 130),
+        width=1
+    )
+    draw.rounded_rectangle([66, badge_y + 14, 102, badge_y + 50], radius=10, fill=(34, 197, 94, 50))
+    draw.text((78, badge_y + 20), "✔", fill=(34, 197, 94), font=get_font(18, bold=True))
+    draw.text((112, badge_y + 15), "DELIVERY STATUS", fill=(148, 163, 184), font=get_font(10, bold=True))
+    draw.text((112, badge_y + 32), "100% CAPI", fill=(255, 255, 255), font=get_font(15, bold=True))
 
-    draw = ImageDraw.Draw(base)
+    # Right Badge: 8.9+ Event Match Quality (Cyan)
+    draw.rounded_rectangle(
+        [WIDTH - 250, badge_y, WIDTH - 54, badge_y + 64],
+        radius=18,
+        fill=(11, 17, 32, 235),
+        outline=(56, 189, 248, 130),
+        width=1
+    )
+    draw.rounded_rectangle([WIDTH - 238, badge_y + 14, WIDTH - 202, badge_y + 50], radius=10, fill=(56, 189, 248, 50))
+    draw.text((WIDTH - 225, badge_y + 20), "⚡", fill=(56, 189, 248), font=get_font(18, bold=True))
+    draw.text((WIDTH - 192, badge_y + 15), "MATCH QUALITY", fill=(148, 163, 184), font=get_font(10, bold=True))
+    draw.text((WIDTH - 192, badge_y + 32), "8.9 / 10 Score", fill=(255, 255, 255), font=get_font(15, bold=True))
+
+    # -------------------------------------------------------------
+    # 6. SIGNATURE CONVERSION DOCK (Website Style)
+    # -------------------------------------------------------------
+    dock_x = 54
+    dock_y = HEIGHT - 98
+    dock_w = WIDTH - 108
+    dock_h = 76
+
+    # Glassmorphism container with cyan/emerald trim
     draw.rounded_rectangle(
         [dock_x, dock_y, dock_x + dock_w, dock_y + dock_h],
-        radius=37,
-        fill=(255, 122, 0)
+        radius=22,
+        fill=(11, 17, 32, 245),
+        outline=(56, 189, 248, 90),
+        width=1
     )
 
-    # Dock Text: Website and WhatsApp
-    dock_text = f"🌐 {BRAND_WEBSITE}   |   💬 WhatsApp: {BRAND_PHONE}"
-    draw.text((dock_x + 36, dock_y + 24), dock_text, fill=(255, 255, 255), font=get_font(21, bold=True))
+    # Left: Website and WhatsApp
+    d_font = get_font(18, bold=True)
+    draw.text((dock_x + 28, dock_y + 26), f"🌐 {BRAND_WEBSITE}", fill=(255, 255, 255), font=d_font)
+    draw.text((dock_x + 260, dock_y + 26), "|", fill=(51, 65, 85), font=d_font)
+    draw.text((dock_x + 285, dock_y + 26), f"💬 WhatsApp: {BRAND_PHONE}", fill=(56, 189, 248), font=d_font)
 
-    # Right Icon Badge (White Circle with Orange Arrow)
-    circle_size = 46
-    cx = dock_x + dock_w - 60
-    cy = dock_y + (dock_h - circle_size) // 2
-    draw.ellipse([cx, cy, cx + circle_size, cy + circle_size], fill=(255, 255, 255))
-    draw.text((cx + 14, cy + 9), "➔", fill=(255, 122, 0), font=get_font(24, bold=True))
+    # Right: Emerald Button (Book Audit ➔)
+    btn_w = 170
+    btn_h = 48
+    btn_x = dock_x + dock_w - btn_w - 14
+    btn_y = dock_y + 14
+    draw.rounded_rectangle(
+        [btn_x, btn_y, btn_x + btn_w, btn_y + btn_h],
+        radius=14,
+        fill=(34, 197, 94) # Official Website Emerald Button
+    )
+    btn_font = get_font(16, bold=True)
+    draw.text((btn_x + 22, btn_y + 13), "Book Audit ➔", fill=(6, 9, 19), font=btn_font)
 
-    # 7. Final Output Save
+    # Finalize and Save
     final_img = base.convert("RGB")
     final_img.save(output_path, "PNG", quality=98)
-    print(f"[Personal Brand Engine] Successfully generated: {output_path}")
+    print(f"[Personal Brand Engine] Official Brand Graphic saved: {output_path}")
     return output_path
 
 def create_facebook_graphic(post_data, output_path="fb_graphic.png"):
