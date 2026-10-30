@@ -617,21 +617,26 @@ def render_personal_brand_graphic(post_data, output_path, is_linkedin=False):
     )
     draw.text((header_x + 16, content_y + 7), topic_text, fill=(56, 189, 248), font=topic_font)
 
-    # Main Headline (White + Cyan + Emerald Two-Tone)
-    h_y = content_y + 42
-    h_font = get_font(42, bold=True)
+    # Main Headline (White + Cyan Two-Tone with Auto-Scaling Safe Zone)
+    h_y = content_y + 40
     h1 = post_data.get("graphic_title_line1", "Why Browser Pixels").strip(".")
     h2 = post_data.get("graphic_title_line2", "Miss 30% Conversions").strip(".")
     
-    draw.text((header_x, h_y), h1.upper(), fill=(255, 255, 255), font=h_font)
-    h_y += 52
-    draw.text((header_x, h_y), h2.upper(), fill=(56, 189, 248), font=h_font)
-    h_y += 54
+    # Auto-scale font based on headline length to guarantee 100% zero cutoff
+    max_len = max(len(h1), len(h2))
+    font_size = 42 if max_len <= 20 else (36 if max_len <= 26 else 32)
+    h_font = get_font(font_size, bold=True)
+    step_y = font_size + 10
 
-    # Subhead (Refined Slate)
+    draw.text((header_x, h_y), h1.upper(), fill=(255, 255, 255), font=h_font)
+    h_y += step_y
+    draw.text((header_x, h_y), h2.upper(), fill=(56, 189, 248), font=h_font)
+    h_y += step_y + 4
+
+    # Subhead (Refined Slate with Safe Word-Wrapping)
     subhead_font = get_font(18, bold=False)
     sub = post_data.get("graphic_subtitle", "Reconcile Shopify and GA4 1:1 with Server-Side GTM.")
-    draw.text((header_x, h_y), textwrap.fill(sub, width=52), fill=(148, 163, 184), font=subhead_font, spacing=6)
+    draw.text((header_x, h_y), textwrap.fill(sub, width=54), fill=(148, 163, 184), font=subhead_font, spacing=6)
 
     # -------------------------------------------------------------
     # 4. PORTRAIT STAGE: Glassmorphic Capsule Card for Tauhid
