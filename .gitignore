@@ -23,3 +23,16 @@ parsed_pins_summary.json
 live_post_test.js
 sample_pins/
 find_person_urn.js
+
+# Media & Reels Video Assets
+*.mp4
+*.mp3
+reels_assets/
+reels_output/
+ads_manager_screen.*
+traffic_*
+render_ads_manager.js
+generate_traffic_ad_reel.js
+reel_engine.js
+topics_timeless_60days.json
+
