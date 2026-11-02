@@ -679,40 +679,9 @@ def render_personal_brand_graphic(post_data, output_path, is_linkedin=False):
         print(f"[Personal Brand Engine] Portrait rendering error: {pe}")
 
     # -------------------------------------------------------------
-    # 5. FLOATING AUTHORITY BADGES
+    # 5. SIGNATURE CONVERSION DOCK (Website Style)
     # -------------------------------------------------------------
     draw = ImageDraw.Draw(base)
-    badge_y = HEIGHT - 225
-
-    # Left Badge: 100% CAPI Delivery (Emerald)
-    draw.rounded_rectangle(
-        [54, badge_y, 250, badge_y + 64],
-        radius=18,
-        fill=(11, 17, 32, 235),
-        outline=(34, 197, 94, 130),
-        width=1
-    )
-    draw.rounded_rectangle([66, badge_y + 14, 102, badge_y + 50], radius=10, fill=(34, 197, 94, 50))
-    draw.text((78, badge_y + 20), "✔", fill=(34, 197, 94), font=get_font(18, bold=True))
-    draw.text((112, badge_y + 15), "DELIVERY STATUS", fill=(148, 163, 184), font=get_font(10, bold=True))
-    draw.text((112, badge_y + 32), "100% CAPI", fill=(255, 255, 255), font=get_font(15, bold=True))
-
-    # Right Badge: 8.9+ Event Match Quality (Cyan)
-    draw.rounded_rectangle(
-        [WIDTH - 250, badge_y, WIDTH - 54, badge_y + 64],
-        radius=18,
-        fill=(11, 17, 32, 235),
-        outline=(56, 189, 248, 130),
-        width=1
-    )
-    draw.rounded_rectangle([WIDTH - 238, badge_y + 14, WIDTH - 202, badge_y + 50], radius=10, fill=(56, 189, 248, 50))
-    draw.text((WIDTH - 225, badge_y + 20), "⚡", fill=(56, 189, 248), font=get_font(18, bold=True))
-    draw.text((WIDTH - 192, badge_y + 15), "MATCH QUALITY", fill=(148, 163, 184), font=get_font(10, bold=True))
-    draw.text((WIDTH - 192, badge_y + 32), "8.9 / 10 Score", fill=(255, 255, 255), font=get_font(15, bold=True))
-
-    # -------------------------------------------------------------
-    # 6. SIGNATURE CONVERSION DOCK (Website Style)
-    # -------------------------------------------------------------
     dock_x = 54
     dock_y = HEIGHT - 98
     dock_w = WIDTH - 108

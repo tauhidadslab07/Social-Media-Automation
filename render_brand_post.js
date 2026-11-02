@@ -230,79 +230,6 @@ function renderBrandPost(postData, outputPath) {
     display: block;
   }
 
-  /* Floating Authority Badges */
-  .badge-left {
-    position: absolute;
-    bottom: 132px;
-    left: 54px;
-    background: rgba(11, 17, 32, 0.94);
-    border: 1px solid rgba(34, 197, 94, 0.45);
-    border-radius: 18px;
-    padding: 12px 20px;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    z-index: 25;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
-    backdrop-filter: blur(12px);
-  }
-
-  .badge-icon-green {
-    width: 32px;
-    height: 32px;
-    border-radius: 10px;
-    background: rgba(34, 197, 94, 0.2);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #22C55E;
-    font-size: 16px;
-    font-weight: 800;
-  }
-
-  .badge-text-title {
-    font-size: 11px;
-    color: #94A3B8;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-  }
-
-  .badge-text-val {
-    font-size: 16px;
-    color: #FFFFFF;
-    font-weight: 800;
-  }
-
-  .badge-right {
-    position: absolute;
-    bottom: 132px;
-    right: 54px;
-    background: rgba(11, 17, 32, 0.94);
-    border: 1px solid rgba(56, 189, 248, 0.45);
-    border-radius: 18px;
-    padding: 12px 20px;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    z-index: 25;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
-    backdrop-filter: blur(12px);
-  }
-
-  .badge-icon-blue {
-    width: 32px;
-    height: 32px;
-    border-radius: 10px;
-    background: rgba(56, 189, 248, 0.2);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #38BDF8;
-    font-size: 16px;
-    font-weight: 800;
-  }
-
   /* Signature Bottom Conversion Dock */
   .bottom-dock {
     position: absolute;
@@ -411,23 +338,6 @@ function renderBrandPost(postData, outputPath) {
   <!-- Portrait Stage -->
   <div class="portrait-stage">
     ${portraitDataUrl ? `<img class="portrait-img" src="${portraitDataUrl}" alt="Tauhid">` : ''}
-  </div>
-
-  <!-- Authority Badges -->
-  <div class="badge-left">
-    <div class="badge-icon-green">✔</div>
-    <div>
-      <div class="badge-text-title">Delivery Status</div>
-      <div class="badge-text-val">100% CAPI</div>
-    </div>
-  </div>
-
-  <div class="badge-right">
-    <div class="badge-icon-blue">⚡</div>
-    <div>
-      <div class="badge-text-title">Match Quality</div>
-      <div class="badge-text-val">8.9 / 10 Score</div>
-    </div>
   </div>
 
   <!-- Signature Bottom Dock -->
