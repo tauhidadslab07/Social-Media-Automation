@@ -2,7 +2,9 @@ const fs = require('fs');
 const path = require('path');
 const { execSync } = require('child_process');
 
-const CHROME = "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe";
+const CHROME = process.platform === 'win32'
+  ? "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe"
+  : (process.env.CHROME_BIN || "/usr/bin/google-chrome" || "google-chrome");
 
 function renderBrandPost(postData, outputPath) {
   const portraitPath = path.join(__dirname, 'tauhid_portrait.jpg');
@@ -358,7 +360,7 @@ function renderBrandPost(postData, outputPath) {
 
   const htmlUrl = 'file:///' + path.resolve(tempHtmlPath).replace(/\\/g, '/');
   console.log(`Rendering graphic to ${outputPath}...`);
-  execSync(`"${CHROME}" --headless=new --screenshot="${outputPath}" --window-size=1080,1080 --hide-scrollbars --virtual-time-budget=3000 "${htmlUrl}"`);
+  execSync(`"${CHROME}" --headless=new --no-sandbox --disable-gpu --screenshot="${outputPath}" --window-size=1080,1080 --hide-scrollbars --virtual-time-budget=3000 "${htmlUrl}"`);
   console.log('Rendering complete!');
 
   try {
