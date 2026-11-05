@@ -31,7 +31,19 @@ COLORS = {
 }
 
 def get_font(size, bold=False):
-    """Locates modern UI fonts across Windows and Linux environments."""
+    """Locates modern UI fonts across Windows and Linux environments, prioritizing local bundled PlusJakartaSans."""
+    fonts_dir = os.path.join(os.path.dirname(__file__), "fonts")
+    bundled = [
+        os.path.join(fonts_dir, "PlusJakartaSans-Bold.ttf" if bold else "PlusJakartaSans-Medium.ttf"),
+        os.path.join(fonts_dir, "PlusJakartaSans-Bold.ttf" if bold else "PlusJakartaSans-Regular.ttf")
+    ]
+    for b in bundled:
+        if os.path.exists(b):
+            try:
+                return ImageFont.truetype(b, size)
+            except Exception:
+                pass
+
     candidates = []
     if os.name == 'nt':
         candidates.extend([

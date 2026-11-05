@@ -369,16 +369,32 @@ function renderBrandPost(postData, outputPath) {
   return outputPath;
 }
 
-// If run directly, render Day 5
+// CLI Execution support
 if (require.main === module) {
-  const day5Data = {
+  let postData = {
     badge: "STORE SPEED · HIGHER ROAS",
     graphic_title_line1: "HEAVY PIXELS KILL CHECKOUTS",
     graphic_title_line2: "CLEAN SPEED & RECOVER ROAS",
     graphic_subtitle: "Stop losing 30% of mobile buyers to slow browser scripts. Move to a single sGTM cloud stream."
   };
-  const out = path.join(__dirname, "tauhid_brand_optimized.png");
-  renderBrandPost(day5Data, out);
+  let out = path.join(__dirname, "tauhid_brand_optimized.png");
+
+  if (process.argv[2]) {
+    try {
+      if (fs.existsSync(process.argv[2])) {
+        postData = JSON.parse(fs.readFileSync(process.argv[2], 'utf8'));
+      } else {
+        postData = JSON.parse(process.argv[2]);
+      }
+    } catch (e) {
+      console.warn("Could not parse CLI JSON argument, using default.");
+    }
+  }
+  if (process.argv[3]) {
+    out = path.resolve(process.argv[3]);
+  }
+
+  renderBrandPost(postData, out);
 }
 
 module.exports = { renderBrandPost };

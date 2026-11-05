@@ -60,7 +60,19 @@ THEMES = [
 ]
 
 def get_font(size, bold=False):
-    """Locates modern UI fonts across Windows and Linux environments."""
+    """Locates modern UI fonts across Windows and Linux environments, prioritizing local bundled PlusJakartaSans."""
+    fonts_dir = os.path.join(os.path.dirname(__file__), "fonts")
+    bundled = [
+        os.path.join(fonts_dir, "PlusJakartaSans-Bold.ttf" if bold else "PlusJakartaSans-Medium.ttf"),
+        os.path.join(fonts_dir, "PlusJakartaSans-Bold.ttf" if bold else "PlusJakartaSans-Regular.ttf")
+    ]
+    for b in bundled:
+        if os.path.exists(b):
+            try:
+                return ImageFont.truetype(b, size)
+            except Exception:
+                pass
+
     candidates = []
     if os.name == 'nt':
         candidates.extend([
@@ -532,6 +544,27 @@ def render_personal_brand_graphic(post_data, output_path, is_linkedin=False):
         print("[Personal Brand Engine] tauhid_portrait.jpg not found, falling back to template poster.")
         return render_template_poster(post_data, output_path, is_linkedin=is_linkedin)
 
+    # 0. Try Chrome Headless Node Engine for 100% pixel-perfect Google Web Fonts & Glassmorphism
+    try:
+        import subprocess
+        import json
+        import tempfile
+        node_script = os.path.join(os.path.dirname(__file__), "render_brand_post.js")
+        if os.path.exists(node_script):
+            with tempfile.NamedTemporaryFile(mode='w', suffix='.json', delete=False, encoding='utf-8') as tf:
+                json.dump(post_data, tf)
+                temp_json = tf.name
+            
+            res = subprocess.run(["node", node_script, temp_json, output_path], capture_output=True, text=True, timeout=20)
+            if os.path.exists(temp_json):
+                os.remove(temp_json)
+            
+            if res.returncode == 0 and os.path.exists(output_path) and os.path.getsize(output_path) > 10000:
+                print(f"[Personal Brand Engine] Rendered via Chrome Headless Engine: {output_path}")
+                return output_path
+    except Exception as ne:
+        print(f"[Personal Brand Engine] Chrome engine unavailable, using Pillow fallback: {ne}")
+
     # 1. Base Canvas: Deep Midnight Space Navy (#060913)
     base = Image.new("RGBA", (WIDTH, HEIGHT), (6, 9, 19, 255))
     glow = Image.new("RGBA", (WIDTH, HEIGHT), (0, 0, 0, 0))
@@ -698,9 +731,9 @@ def render_personal_brand_graphic(post_data, output_path, is_linkedin=False):
 
     # Left: Website and WhatsApp
     d_font = get_font(18, bold=True)
-    draw.text((dock_x + 28, dock_y + 26), f"🌐 {BRAND_WEBSITE}", fill=(255, 255, 255), font=d_font)
-    draw.text((dock_x + 260, dock_y + 26), "|", fill=(51, 65, 85), font=d_font)
-    draw.text((dock_x + 285, dock_y + 26), f"💬 WhatsApp: {BRAND_PHONE}", fill=(56, 189, 248), font=d_font)
+    draw.text((dock_x + 30, dock_y + 26), f"{BRAND_WEBSITE}", fill=(255, 255, 255), font=d_font)
+    draw.text((dock_x + 245, dock_y + 26), "|", fill=(51, 65, 85), font=d_font)
+    draw.text((dock_x + 270, dock_y + 26), f"WhatsApp: {BRAND_PHONE}", fill=(56, 189, 248), font=d_font)
 
     # Right: Emerald Button (Book Audit ➔)
     btn_w = 170
