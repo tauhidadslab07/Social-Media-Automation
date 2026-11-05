@@ -1,0 +1,51 @@
+{
+  "current_day": 6,
+  "history": [
+    {
+      "day": 1,
+      "date": "2026-11-01",
+      "item": "The LEGO Brick",
+      "facebook_post_id": "1325501797313655_122117075265499771",
+      "linkedin_post_id": "urn:li:share:7522541700083548160",
+      "status": "PUBLISHED"
+    },
+    {
+      "day": 2,
+      "date": "2026-11-01",
+      "item": "The Safety Pin",
+      "status": "SKIPPED_BY_USER"
+    },
+    {
+      "day": 3,
+      "date": "2026-11-02",
+      "item": "The BIC Cristal Pen",
+      "facebook_post_id": "1325501797313655_122117559129499771",
+      "linkedin_post_id": "urn:li:share:7523063206248972289",
+      "status": "PUBLISHED"
+    },
+    {
+      "day": 4,
+      "date": "2026-11-03",
+      "item": "WD-40 Formula",
+      "facebook_post_id": "1325501797313655_122117940471499771",
+      "linkedin_post_id": "urn:li:share:7523464390915047428",
+      "status": "PUBLISHED"
+    },
+    {
+      "day": 5,
+      "date": "2026-11-04",
+      "item": "Standard Shipping Container",
+      "facebook_post_id": "1325501797313655_122118149955499771",
+      "linkedin_post_id": "urn:li:share:7523697955804102657",
+      "status": "PUBLISHED"
+    },
+    {
+      "day": 6,
+      "date": "2026-11-05",
+      "item": "Zippo Lifetime Guarantee",
+      "facebook_post_id": "1325501797313655_122118375459499771",
+      "linkedin_post_id": "urn:li:share:7523941423180652544",
+      "status": "PUBLISHED"
+    }
+  ]
+}
