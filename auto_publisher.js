@@ -115,4 +115,75 @@ async function postLinkedIn(imagePath, caption, title) {
   return postData.id;
 }
 
-module.exports = { postFacebook, postLinkedIn };
+async function postLinkedInDocument(pdfPath, caption, title = "Server-Side Tracking Blueprint") {
+  // Step 1: Initialize Document Upload
+  const initRes = await fetch("https://api.linkedin.com/rest/documents?action=initializeUpload", {
+    method: "POST",
+    headers: {
+      "Authorization": `Bearer ${liToken}`,
+      "X-Restli-Protocol-Version": "2.0.0",
+      "Linkedin-Version": "202511",
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      initializeUploadRequest: {
+        owner: liAuthor
+      }
+    })
+  });
+  const initData = await initRes.json();
+  if (!initRes.ok) throw new Error(`LinkedIn Document init failed: ${JSON.stringify(initData)}`);
+
+  const uploadUrl = initData.value.uploadUrl;
+  const docUrn = initData.value.document;
+  console.log(`[LinkedIn Document] Initialized successfully. Document URN: ${docUrn}`);
+
+  // Step 2: Binary Upload via PUT
+  const pdfBytes = fs.readFileSync(pdfPath);
+  const upRes = await fetch(uploadUrl, {
+    method: "PUT",
+    headers: { "Content-Type": "application/pdf" },
+    body: pdfBytes
+  });
+  if (!upRes.ok) throw new Error(`LinkedIn Document upload failed: ${upRes.statusText}`);
+  console.log("[LinkedIn Document] PDF binary uploaded successfully.");
+
+  // Step 3: Create Post via /rest/posts
+  const postRes = await fetch("https://api.linkedin.com/rest/posts", {
+    method: "POST",
+    headers: {
+      "Authorization": `Bearer ${liToken}`,
+      "X-Restli-Protocol-Version": "2.0.0",
+      "Linkedin-Version": "202511",
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      author: liAuthor,
+      commentary: caption,
+      visibility: "PUBLIC",
+      distribution: {
+        feedDistribution: "MAIN_FEED",
+        targetEntities: [],
+        thirdPartyDistributionChannels: []
+      },
+      content: {
+        media: {
+          id: docUrn,
+          title: title
+        }
+      },
+      lifecycleState: "PUBLISHED",
+      isReshareDisabledByAuthor: false
+    })
+  });
+
+  if (!postRes.ok) {
+    const errData = await postRes.text();
+    throw new Error(`LinkedIn Document post failed: ${errData}`);
+  }
+  const postId = postRes.headers.get("x-restli-id") || "PUBLISHED";
+  console.log(`[LinkedIn Native PDF Document] Successfully published! Post ID: ${postId}`);
+  return postId;
+}
+
+module.exports = { postFacebook, postLinkedIn, postLinkedInDocument };

@@ -419,10 +419,15 @@ def build_daily_carousel(day_cfg=None, output_dir="carousel_output"):
         "Higher ROAS & Lower CPA"
     ])
 
-    # Slide 1: Cover
-    cover_title = f"5 Ways {day_cfg.get('graphic_title_line1', 'Safari ITP')} & How to Fix It"
-    if len(cover_title) > 55:
-        cover_title = f"5 Ways to Fix {day_cfg.get('title', 'Server-Side Tracking')}"
+    # Slide 1: Cover (Founder-Centric, Natural Headline)
+    cover_title = day_cfg.get("title")
+    if not cover_title or len(cover_title) > 65:
+        line1 = day_cfg.get("graphic_title_line1", "")
+        line2 = day_cfg.get("graphic_title_line2", "")
+        if line1 and line2:
+            cover_title = f"{line1}: {line2}"
+        else:
+            cover_title = day_cfg.get("title", "Server-Side Tracking Architecture")
     
     badge = day_cfg.get("badge", "SERVER-SIDE TRACKING")
     subtitle = day_cfg.get("graphic_subtitle", "Don't let client-side pixel drops destroy your conversion tracking.")
