@@ -1,5 +1,5 @@
 {
-  "current_day": 6,
+  "current_day": 7,
   "history": [
     {
       "day": 1,
@@ -45,6 +45,14 @@
       "item": "Zippo Lifetime Guarantee",
       "facebook_post_id": "1325501797313655_122118375459499771",
       "linkedin_post_id": "urn:li:share:7523941423180652544",
+      "status": "PUBLISHED"
+    },
+    {
+      "day": 7,
+      "date": "2026-11-06",
+      "item": "The Gem Paperclip",
+      "facebook_post_id": "1325501797313655_122119033683499771",
+      "linkedin_post_id": "urn:li:share:7524532193881317377",
       "status": "PUBLISHED"
     }
   ]

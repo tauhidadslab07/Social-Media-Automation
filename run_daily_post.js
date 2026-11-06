@@ -2,6 +2,20 @@ const fs = require('fs');
 const path = require('path');
 const { postFacebook, postLinkedIn } = require('./auto_publisher');
 
+async function waitForInternet(maxRetries = 15, delayMs = 20000) {
+  const dns = require('dns').promises;
+  for (let i = 1; i <= maxRetries; i++) {
+    try {
+      await dns.lookup('graph.facebook.com');
+      return true;
+    } catch (err) {
+      console.log(`[Network] No internet connection yet (attempt ${i}/${maxRetries}). Waiting ${delayMs / 1000}s...`);
+      await new Promise(r => setTimeout(r, delayMs));
+    }
+  }
+  return false;
+}
+
 async function runDailyPost() {
   console.log("=== RUNNING DAILY AUTOMATED POST ===");
   const statePath = path.join(__dirname, 'published_state.json');
@@ -12,15 +26,36 @@ async function runDailyPost() {
     return;
   }
 
+  // Ensure internet connectivity before proceeding
+  const isOnline = await waitForInternet();
+  if (!isOnline) {
+    console.error("[Network] No internet connection after retrying for 5 minutes. Aborting this run.");
+    return;
+  }
+
   const state = JSON.parse(fs.readFileSync(statePath, 'utf8'));
   const topics = JSON.parse(fs.readFileSync(topicsPath, 'utf8'));
 
-  // Safety Check: Check if a post was already published today
-  const todayStr = new Date().toISOString().split('T')[0];
+  // Safety Check 1: Check if a post was already published today
+  const now = new Date();
+  const todayStr = now.toISOString().split('T')[0];
   const lastHistory = state.history[state.history.length - 1];
   if (lastHistory && lastHistory.date === todayStr && lastHistory.status === 'PUBLISHED') {
     console.log(`[Scheduler] Today's post (Day ${lastHistory.day}: ${lastHistory.item}) was already published today (${todayStr}).`);
     console.log("[Scheduler] Skipping run. Next post will trigger tomorrow.");
+    return;
+  }
+
+  // Safety Check 2: Time Check (Ensure posting happens in the evening at or after 8:30 PM BST / 20:30, or if running manually)
+  // Current local time hour in BST (+6):
+  const bstHour = (now.getUTCHours() + 6) % 24;
+  const bstMinute = now.getUTCMinutes();
+  const isEveningWindow = (bstHour > 20) || (bstHour === 20 && bstMinute >= 30) || (bstHour < 4); // 8:30 PM to 4:00 AM window
+  const isForcedManual = process.argv.includes('--force');
+
+  if (!isEveningWindow && !isForcedManual) {
+    console.log(`[Scheduler] Current BST time is ${bstHour}:${bstMinute}. Waiting for scheduled evening time (8:30 PM BST).`);
+    console.log("[Scheduler] Skipping premature morning/afternoon post.");
     return;
   }
 
@@ -103,6 +138,76 @@ What is the single core problem your business owns?
 
 ---
 #CategoryDesign #BrandPositioning #Leadership #TimelessPrinciples #BusinessStrategy #Growth`;
+  } else if (topic.day === 7) {
+    caption = `In 1899, William Middlebrook patented the Gem paperclip.
+
+Two bent loops of galvanized steel wire. No moving parts. No gears. No digital interface.
+
+In 127 years, humanity invented:
+• Flight and space travel.
+• Transistors and microchips.
+• The World Wide Web and Artificial Intelligence.
+
+Yet, over 11 billion paperclips are manufactured every year in that exact same 1899 geometry.
+
+Why? 
+Because the Gem paperclip has the holy grail of User Experience (UX): Zero Friction.
+→ No instruction manual required.
+→ A child understands how to use it in 2 seconds.
+→ It performs its function without damaging the underlying papers.
+
+In modern product design and marketing funnels, we are addicted to over-engineering:
+— Forcing users through 6-step verification forms when 1 click suffices.
+— Creating convoluted dashboards that require 20-page onboarding decks.
+— Building marketing campaigns so clever that nobody understands what is being sold.
+
+True genius isn't adding more complexity.
+True genius is eliminating every unnecessary barrier until the solution feels as effortless as breathing.
+
+If your product or service requires a tutorial to understand the core value, you don't have an onboarding problem—you have a simplicity problem.
+
+Where can you remove friction in your customer journey today?
+
+---
+#UserExperience #DesignThinking #ProductStrategy #Simplicity #Leadership #TimelessPrinciples`;
+  } else if (topic.day === 8) {
+    caption = `In 1898, Elias St. Elmo Lewis sketched out a 4-step framework for advertising:
+
+1. Attention
+2. Interest
+3. Desire
+4. Action
+
+128 years later, look at what changed:
+• Print ads became radio spots.
+• Radio became television commercials.
+• Television became Facebook, TikTok, and AI algorithms.
+
+Yet, the fundamental sequence of human persuasion hasn’t shifted by a single millimeter.
+
+Why?
+Because human biology and psychological wiring do not upgrade on quarterly software release cycles.
+
+A prospect in 1898 reading a newspaper and a prospect in 2026 scrolling TikTok both share the exact same decision architecture:
+— If you don't hook their ATTENTION in 3 seconds, they are gone.
+— If you don't spark intellectual INTEREST with a relatable insight, they move on.
+— If you don't evoke emotional DESIRE through clear transformation, they hesitate.
+— If you don't command frictionless ACTION with clear guidance, they never buy.
+
+The most dangerous delusion in modern digital marketing is believing that "new tools replace timeless psychology."
+
+AI will change how fast we create.
+Platforms will change where we distribute.
+Algorithms will change how we reach.
+
+But human psychology? It remains permanent.
+
+Stop chasing every fleeting tactical gimmick. Master the eternal laws of human desire.
+
+What is your primary lever for moving customers from Interest to Desire?
+
+---
+#AIDAFunnel #MarketingPsychology #SalesStrategy #ConsumerBehavior #Leadership #TimelessPrinciples`;
   } else {
     caption = `${topic.item} (${topic.year})
 
