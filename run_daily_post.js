@@ -1,5 +1,11 @@
 const fs = require('fs');
 const path = require('path');
+const dns = require('dns');
+
+if (dns.setDefaultResultOrder) {
+  dns.setDefaultResultOrder('ipv4first');
+}
+
 const { postFacebook, postLinkedIn } = require('./auto_publisher');
 
 async function waitForInternet(maxRetries = 15, delayMs = 20000) {
@@ -208,6 +214,92 @@ What is your primary lever for moving customers from Interest to Desire?
 
 ---
 #AIDAFunnel #MarketingPsychology #SalesStrategy #ConsumerBehavior #Leadership #TimelessPrinciples`;
+  } else if (topic.day === 9) {
+    caption = `In 1873, Christopher Latham Sholes arranged keys on a mechanical typewriter to prevent metal jamming.
+
+The result was QWERTY.
+
+Over the next 150 years, dozens of objectively superior, faster, and more ergonomic alternatives were invented (like the Dvorak Simplified Keyboard).
+
+Yet, in 2026, every iPhone, MacBook, Windows PC, and Android screen still runs on QWERTY.
+
+Why?
+Because QWERTY holds the ultimate strategic moat in business: Network Effects & Switching Costs.
+
+Once billions of human fingers learned muscle memory, the cost of switching outweighed the marginal benefits of a "better" alternative.
+
+In software, SaaS, and marketing platforms, founders often make a fatal mistake:
+They believe that having "better features" is enough to beat an incumbent.
+
+It rarely is.
+— Superior tech without user habits loses.
+— Marginal feature advantages cannot overcome entrenched workflows.
+— When a standard captures the collective habit of an industry, it becomes an unbreakable monopoly.
+
+Building a lasting competitive moat isn't just about building superior tools.
+It's about weaving your product so deeply into daily habits that leaving feels unnatural.
+
+Are you building features, or are you capturing user habits?
+
+---
+#NetworkEffects #SwitchingCosts #Moats #BusinessStrategy #ProductStrategy #TimelessPrinciples`;
+  } else if (topic.day === 12) {
+    caption = `In 1891, Karl Elsener revolutionized utility by inventing the Swiss Soldier's Knife.
+
+Instead of forcing soldiers to carry an entire toolbox, he integrated a knife, screwdriver, can opener, and reamer into a single, pocket-sized handle.
+
+135 years later, the Swiss Army Knife is globally recognized as the gold standard of modular design.
+
+Here is the strategic business masterclass it offers:
+True modularity is NOT about bundling random features together.
+It is about creating seamless, high-utility extensions anchored around a singular, reliable core.
+
+In business and agency growth, we often confuse "expansion" with "bloat":
+— Launching uncoordinated services that dilute operational focus.
+— Building fragmented customer journeys with disconnected touchpoints.
+— Adding complex toolings that increase overhead without multiplying value.
+
+The best businesses in the world operate like a Swiss Army Knife:
+1. One solid, unmistakable core foundation.
+2. Carefully engineered extensions that solve adjacent problems for the same user.
+3. Zero unnecessary friction.
+
+Are your new offerings multiplying your core strength, or are they creating operational clutter?
+
+---
+#Modularity #ProductEcosystem #BrandArchitecture #Leadership #DesignThinking #TimelessPrinciples`;
+  } else if (topic.day === 14) {
+    caption = `In 1795, Nicolas-Jacques Conté patented the modern formula of clay and graphite encased in wood.
+
+The wooden pencil was born.
+
+Over the next 231 years, humanity invented:
+• Mechanical typewriters.
+• Touchscreens, styluses, and iPads.
+• Voice recognition and generative AI assistants.
+
+Yet, over 14 billion wooden pencils are still manufactured every single year.
+
+Why?
+Because the wooden pencil has a quality that technology rarely achieves: Instant, Zero-Latency Tactile Immediacy.
+→ No batteries that die.
+→ No software updates that interrupt your train of thought.
+→ No cognitive friction between an idea forming in your brain and the lead marking the page.
+
+In modern business and marketing, we are obsessed with digitizing every single micro-interaction:
+— Replacing human conversations with clunky chatbots that frustrate buyers.
+— Building 10-step digital forms when a direct call closes the deal immediately.
+— Adding layer upon layer of digital bureaucracy that slows down execution.
+
+Technology should remove friction, not invent new varieties of it.
+
+Never digitize a process simply because you can. 
+Preserve the raw, analog simplicity where speed and human touch matter most.
+
+Where has unnecessary tech slowed down your customer experience?
+
+---
+#ProductStrategy #DesignThinking #Simplicity #Leadership #CustomerExperience #TimelessPrinciples`;
   } else {
     caption = `${topic.item} (${topic.year})
 

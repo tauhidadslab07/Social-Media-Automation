@@ -1,0 +1,39 @@
+name: Timeless 60 Days - Daily Cloud Auto-Post
+
+on:
+  schedule:
+    # Daily at 8:30 PM BST (14:30 UTC)
+    - cron: '30 14 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Run Daily Social Media Publisher
+        env:
+          FACEBOOK_PAGE_ID: ${{ secrets.FACEBOOK_PAGE_ID || '1325501797313655' }}
+          FACEBOOK_PAGE_ACCESS_TOKEN: ${{ secrets.FACEBOOK_PAGE_ACCESS_TOKEN }}
+          LINKEDIN_ACCESS_TOKEN: ${{ secrets.LINKEDIN_ACCESS_TOKEN }}
+          LINKEDIN_AUTHOR_URN: ${{ secrets.LINKEDIN_AUTHOR_URN || 'urn:li:person:1AdMFsDmDj' }}
+        run: |
+          node run_daily_post.js --force
+
+      - name: Commit & Push Updated State
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add published_state.json
+          git commit -m "chore(auto): record published post [skip ci]" || echo "No changes to commit"
+          git push

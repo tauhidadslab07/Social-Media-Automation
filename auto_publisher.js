@@ -1,6 +1,12 @@
 const fs = require('fs');
 const https = require('https');
 const path = require('path');
+const dns = require('dns');
+
+// Prioritize IPv4 to prevent IPv6 routing timeouts
+if (dns.setDefaultResultOrder) {
+  dns.setDefaultResultOrder('ipv4first');
+}
 
 function loadEnv() {
   const envPath = path.join(__dirname, '.env');
@@ -23,7 +29,7 @@ const pageToken = process.env.FACEBOOK_PAGE_ACCESS_TOKEN;
 const liToken = process.env.LINKEDIN_ACCESS_TOKEN;
 const liAuthor = process.env.LINKEDIN_AUTHOR_URN || "urn:li:person:1AdMFsDmDj";
 
-async function postFacebook(imagePath, caption) {
+async function postFacebook(imagePath, caption, retries = 3) {
   const boundary = "----WebKitFormBoundary" + Math.random().toString(36).substring(2);
   const imageBuffer = fs.readFileSync(imagePath);
 
@@ -36,20 +42,32 @@ async function postFacebook(imagePath, caption) {
 
   const body = Buffer.concat(postData);
 
-  const res = await fetch(`https://graph.facebook.com/v19.0/${pageId}/photos`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': `multipart/form-data; boundary=${boundary}`,
-      'Content-Length': body.length
-    },
-    body: body
-  });
+  for (let attempt = 1; attempt <= retries; attempt++) {
+    try {
+      const res = await fetch(`https://graph.facebook.com/v19.0/${pageId}/photos`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': `multipart/form-data; boundary=${boundary}`,
+          'Content-Length': body.length
+        },
+        body: body
+      });
 
-  const data = await res.json();
-  if (res.ok && data.id) {
-    return data.post_id || data.id;
+      const data = await res.json();
+      if (res.ok && data.id) {
+        return data.post_id || data.id;
+      }
+      throw new Error(`Facebook API error: ${JSON.stringify(data)}`);
+    } catch (err) {
+      console.warn(`[Facebook] Attempt ${attempt}/${retries} failed: ${err.message}`);
+      if (attempt < retries) {
+        console.log(`[Facebook] Retrying in 5 seconds...`);
+        await new Promise(r => setTimeout(r, 5000));
+      } else {
+        throw err;
+      }
+    }
   }
-  throw new Error(`Facebook failed: ${JSON.stringify(data)}`);
 }
 
 async function postLinkedIn(imagePath, caption, title) {

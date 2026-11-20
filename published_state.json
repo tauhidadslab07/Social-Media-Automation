@@ -1,5 +1,5 @@
 {
-  "current_day": 7,
+  "current_day": 14,
   "history": [
     {
       "day": 1,
@@ -53,6 +53,62 @@
       "item": "The Gem Paperclip",
       "facebook_post_id": "1325501797313655_122119033683499771",
       "linkedin_post_id": "urn:li:share:7524532193881317377",
+      "status": "PUBLISHED"
+    },
+    {
+      "day": 8,
+      "date": "2026-11-07",
+      "item": "The AIDA Funnel",
+      "facebook_post_id": "1325501797313655_122119413261499771",
+      "linkedin_post_id": "urn:li:share:7524886335858446336",
+      "status": "PUBLISHED"
+    },
+    {
+      "day": 9,
+      "date": "2026-11-08",
+      "item": "The QWERTY Keyboard",
+      "facebook_post_id": "1325501797313655_122119836399499771",
+      "linkedin_post_id": "urn:li:share:7525234927383207936",
+      "status": "PUBLISHED"
+    },
+    {
+      "day": 10,
+      "date": "2026-11-10",
+      "item": "Post-it Notes",
+      "facebook_post_id": "1325501797313655_122120507325499771",
+      "linkedin_post_id": "urn:li:share:7525953828291100672",
+      "status": "PUBLISHED"
+    },
+    {
+      "day": 11,
+      "date": "2026-11-15",
+      "item": "Lodge Cast Iron Skillet",
+      "facebook_post_id": "1325501797313655_122122039047499771",
+      "linkedin_post_id": "urn:li:share:7527745909384974336",
+      "status": "PUBLISHED"
+    },
+    {
+      "day": 12,
+      "date": "2026-11-16",
+      "item": "Swiss Army Knife",
+      "facebook_post_id": "1325501797313655_122122283529499771",
+      "linkedin_post_id": "urn:li:share:7528102190234710017",
+      "status": "PUBLISHED"
+    },
+    {
+      "day": 13,
+      "date": "2026-11-17",
+      "item": "The Crown Cork & Bottle Opener",
+      "facebook_post_id": "1325501797313655_122122571475499771",
+      "linkedin_post_id": "urn:li:share:7528508417657839616",
+      "status": "PUBLISHED"
+    },
+    {
+      "day": 14,
+      "date": "2026-11-20",
+      "item": "The Wooden Pencil",
+      "facebook_post_id": "1325501797313655_122123190933499771",
+      "linkedin_post_id": "urn:li:share:7529368672734363648",
       "status": "PUBLISHED"
     }
   ]
