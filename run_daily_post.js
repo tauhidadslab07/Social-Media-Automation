@@ -347,27 +347,45 @@ What is one fundamental principle in your work that will NEVER change?
 #BrandStrategy #TimelessPrinciples #Leadership #DesignThinking #BusinessPhilosophy`;
   }
 
-  console.log(`Publishing Day ${topic.day} to Facebook...`);
-  const fbPostId = await postFacebook(imagePath, caption);
-  console.log(`Facebook Success! Post ID: ${fbPostId}`);
+  let fbPostId = null;
+  let liPostId = null;
 
-  console.log(`Publishing Day ${topic.day} to LinkedIn...`);
-  const liPostId = await postLinkedIn(imagePath, caption, topic.headline);
-  console.log(`LinkedIn Success! Post ID: ${liPostId}`);
+  try {
+    console.log(`Publishing Day ${topic.day} to Facebook...`);
+    fbPostId = await postFacebook(imagePath, caption);
+    console.log(`Facebook Success! Post ID: ${fbPostId}`);
 
-  // Update state
-  state.current_day = topic.day;
-  state.history.push({
-    day: topic.day,
-    date: new Date().toISOString().split('T')[0],
-    item: topic.item,
-    facebook_post_id: fbPostId,
-    linkedin_post_id: liPostId,
-    status: 'PUBLISHED'
-  });
+    console.log(`Publishing Day ${topic.day} to LinkedIn...`);
+    liPostId = await postLinkedIn(imagePath, caption, topic.headline);
+    console.log(`LinkedIn Success! Post ID: ${liPostId}`);
 
-  fs.writeFileSync(statePath, JSON.stringify(state, null, 2));
-  console.log(`State updated. Day ${topic.day} recorded successfully!`);
+    // Update state on success
+    state.current_day = topic.day;
+    state.history.push({
+      day: topic.day,
+      date: new Date().toISOString().split('T')[0],
+      item: topic.item,
+      facebook_post_id: fbPostId,
+      linkedin_post_id: liPostId,
+      status: 'PUBLISHED'
+    });
+
+    fs.writeFileSync(statePath, JSON.stringify(state, null, 2));
+    console.log(`State updated. Day ${topic.day} recorded successfully!`);
+  } catch (err) {
+    console.error(`Error during publishing Day ${topic.day}:`, err.message);
+    state.history.push({
+      day: topic.day,
+      date: new Date().toISOString().split('T')[0],
+      item: topic.item,
+      facebook_post_id: fbPostId,
+      linkedin_post_id: liPostId,
+      status: 'FAILED',
+      error: err.message
+    });
+    fs.writeFileSync(statePath, JSON.stringify(state, null, 2));
+    throw err;
+  }
 }
 
 module.exports = { runDailyPost };
