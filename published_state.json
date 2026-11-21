@@ -1,5 +1,5 @@
 {
-  "current_day": 14,
+  "current_day": 15,
   "history": [
     {
       "day": 1,
@@ -109,6 +109,14 @@
       "item": "The Wooden Pencil",
       "facebook_post_id": "1325501797313655_122123190933499771",
       "linkedin_post_id": "urn:li:share:7529368672734363648",
+      "status": "PUBLISHED"
+    },
+    {
+      "day": 15,
+      "date": "2026-11-21",
+      "item": "The Spring Mousetrap",
+      "facebook_post_id": "1325501797313655_122123482533499771",
+      "linkedin_post_id": "urn:li:share:7529788181769285632",
       "status": "PUBLISHED"
     }
   ]

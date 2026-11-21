@@ -300,6 +300,37 @@ Where has unnecessary tech slowed down your customer experience?
 
 ---
 #ProductStrategy #DesignThinking #Simplicity #Leadership #CustomerExperience #TimelessPrinciples`;
+  } else if (topic.day === 15) {
+    caption = `In 1898, William C. Hooker patented the spring-snap wooden mousetrap.
+
+Ralph Waldo Emerson famously wrote: "Build a better mousetrap, and the world will beat a path to your door."
+
+Over the next 128 years, inventors took that literally:
+• Over 4,400 different patents were granted for "better" mousetraps.
+• Electronic sensor traps, ultrasonic deterrents, pneumatic chambers.
+
+Yet today, in 2026, that simple 1898 wooden block with a torsion spring STILL holds over 80% of global market share.
+
+Why?
+Because you cannot out-engineer functional perfection.
+
+The spring trap costs pennies to make, requires zero software updates, needs no batteries, and works with 99.9% physical certainty.
+
+In modern software and business strategy, founders and marketers suffer from "Feature Addiction":
+— Over-engineering products with 50 complex features when users only need 1 core outcome.
+— Charging 10x more for "innovative" solutions that solve a problem that was already solved simply.
+— Confusing technological sophistication with customer value.
+
+Complexity is easy. 
+Radical, unbreakable simplicity is the ultimate competitive advantage.
+
+Stop trying to reinvent the spring. 
+Deliver the outcome with the least amount of moving parts.
+
+Where are you over-complicating a simple problem in your business?
+
+---
+#ProductStrategy #DesignThinking #Simplicity #Leadership #Engineering #TimelessPrinciples`;
   } else {
     caption = `${topic.item} (${topic.year})
 
