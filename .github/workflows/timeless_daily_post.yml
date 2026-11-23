@@ -31,9 +31,18 @@ jobs:
           node run_daily_post.js --force
 
       - name: Commit & Push Updated State
+        if: always()
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git add published_state.json
           git commit -m "chore(auto): record published post [skip ci]" || echo "No changes to commit"
           git push
+
+      - name: Send Telegram Notification
+        if: always()
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN || '9160899537:AAEfztioL4NVG8c_RRUHYscLCcBGK2kAVIA' }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: |
+          node notify_telegram.js

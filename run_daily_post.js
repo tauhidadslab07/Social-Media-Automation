@@ -7,6 +7,7 @@ if (dns.setDefaultResultOrder) {
 }
 
 const { postFacebook, postLinkedIn } = require('./auto_publisher');
+const { sendTelegramAlert } = require('./notify_telegram');
 
 async function waitForInternet(maxRetries = 15, delayMs = 20000) {
   const dns = require('dns').promises;
@@ -372,6 +373,12 @@ What is one fundamental principle in your work that will NEVER change?
 
     fs.writeFileSync(statePath, JSON.stringify(state, null, 2));
     console.log(`State updated. Day ${topic.day} recorded successfully!`);
+
+    try {
+      await sendTelegramAlert();
+    } catch (tErr) {
+      console.warn('[Telegram] Alert notice:', tErr.message);
+    }
   } catch (err) {
     console.error(`Error during publishing Day ${topic.day}:`, err.message);
     state.history.push({
@@ -384,6 +391,11 @@ What is one fundamental principle in your work that will NEVER change?
       error: err.message
     });
     fs.writeFileSync(statePath, JSON.stringify(state, null, 2));
+
+    try {
+      await sendTelegramAlert();
+    } catch {}
+
     throw err;
   }
 }
