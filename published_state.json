@@ -1,5 +1,5 @@
 {
-  "current_day": 15,
+  "current_day": 16,
   "history": [
     {
       "day": 1,
@@ -117,6 +117,14 @@
       "item": "The Spring Mousetrap",
       "facebook_post_id": "1325501797313655_122123482533499771",
       "linkedin_post_id": "urn:li:share:7529788181769285632",
+      "status": "PUBLISHED"
+    },
+    {
+      "day": 16,
+      "date": "2026-11-24",
+      "item": "The Umbrella Mechanism",
+      "facebook_post_id": "1325501797313655_122124247815499771",
+      "linkedin_post_id": "urn:li:share:7530809057075634176",
       "status": "PUBLISHED"
     }
   ]
